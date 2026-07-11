@@ -1,7 +1,14 @@
 import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { db, DEFAULT_SETTINGS } from '@/lib/db';
-import { eraseAll, mergeImport, setFlow, startFirstCycle, toggleSymptom } from '@/lib/logbook';
+import {
+  eraseAll,
+  mergeImport,
+  setFlow,
+  setNote,
+  startFirstCycle,
+  toggleSymptom,
+} from '@/lib/logbook';
 import { addDays } from '@/lib/dates';
 
 beforeEach(async () => {
@@ -87,6 +94,20 @@ describe('toggleSymptom', () => {
     const log = await db.logs.get('2026-06-10');
     expect(log?.flow).toBe(0);
     expect(log?.symptoms).toEqual(['calm']);
+  });
+
+  it('écritures concurrentes symptôme + note : rien ne se perd (lost update)', async () => {
+    // la course qui a fait tomber la CI : toggle et note lancés sans attente,
+    // leurs get/put doivent être atomiques sinon l'un écrase l'autre
+    await Promise.all([
+      toggleSymptom('2026-06-11', 'headache'),
+      setNote('2026-06-11', 'note du soir'),
+      toggleSymptom('2026-06-11', 'fatigue'),
+    ]);
+    const log = await db.logs.get('2026-06-11');
+    expect(log?.symptoms).toContain('headache');
+    expect(log?.symptoms).toContain('fatigue');
+    expect(log?.note).toBe('note du soir');
   });
 });
 

@@ -67,6 +67,7 @@ Aucune revendication contraceptive ou médicale · pas de compte, cloud sync, fr
 - Fenêtre de prédiction : formule du brief §5 (`lastStart + mean ± sd`), soit +1 jour vs le prototype qui décalait d'un jour.
 - Wordmark « Phase » → `APP_NAME` ; tagline « encre vivante · précision d'instrument » supprimée partout.
 - Label « lutéale » ajouté sur le cadran (le prototype l'omettait) — prototype de référence mis à jour en conséquence.
+- Lissage du ruban : 2 passes .22/.56/.22 au lieu de 3 passes .28/.44/.28 (le rouge menstruel était délavé sur 5 jours) — prototype de référence mis à jour à l'identique, frontières toujours en dégradé.
 - `domMax` au lieu de `domAnimation` (le drag l'exige).
 - En reduced-motion, un resize redessine une frame statique (bug silencieux du prototype, corrigé).
 

@@ -15,8 +15,10 @@ export const hexToRgb = (hex: string): RGB => {
 };
 
 /**
- * Couleur par jour du cycle, puis lissage circulaire en 3 passes
- * (frontières de phases en dégradé, jamais en coupure nette).
+ * Couleur par jour du cycle, puis lissage circulaire (frontières de phases en
+ * dégradé, jamais en coupure nette). 2 passes à poids resserrés : le noyau de
+ * chaque phase garde sa couleur pleine — le lissage d'origine (3 passes
+ * .28/.44/.28) délavait le rouge menstruel sur ses 5 jours.
  */
 export const ribbonColors = (
   L: number,
@@ -25,11 +27,11 @@ export const ribbonColors = (
 ): RGB[] => {
   let cols: RGB[] = [];
   for (let d = 1; d <= L; d++) cols.push(hexToRgb(palette[phaseOfDay(ranges, d).key]));
-  for (let p = 0; p < 3; p++) {
+  for (let p = 0; p < 2; p++) {
     cols = cols.map((c, i) => {
       const a = cols[(i - 1 + L) % L] as RGB;
       const b = cols[(i + 1) % L] as RGB;
-      return c.map((x, k) => (a[k] as number) * 0.28 + x * 0.44 + (b[k] as number) * 0.28) as RGB;
+      return c.map((x, k) => (a[k] as number) * 0.22 + x * 0.56 + (b[k] as number) * 0.22) as RGB;
     });
   }
   return cols;

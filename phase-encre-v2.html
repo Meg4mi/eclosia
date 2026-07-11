@@ -182,8 +182,8 @@ const cnv=document.getElementById('ring'), ctx=cnv.getContext('2d');
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const h2r=h=>{h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16))};
 let cols=[];for(let d=1;d<=L;d++)cols.push(h2r(phaseOf(d).color));
-for(let p=0;p<3;p++)cols=cols.map((c,i)=>{const a=cols[(i-1+L)%L],b=cols[(i+1)%L];
-  return c.map((x,k)=>a[k]*.28+x*.44+b[k]*.28)});
+for(let p=0;p<2;p++)cols=cols.map((c,i)=>{const a=cols[(i-1+L)%L],b=cols[(i+1)%L];
+  return c.map((x,k)=>a[k]*.22+x*.56+b[k]*.22)});
 const opOf=d=>{const u=L-SD-1;return d>u?Math.max(.28,1-(d-u)/(L-u)*.75):1};
 
 let S=0;
