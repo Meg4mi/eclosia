@@ -1,0 +1,174 @@
+/* Onboarding : une seule question, un calendrier au registre du cadran. */
+
+.screen {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(env(safe-area-inset-top) + 24px) 26px calc(env(safe-area-inset-bottom) + 32px);
+  text-align: center;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: 26px;
+  margin-bottom: 6px;
+}
+
+.tagline {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 40px;
+}
+
+.question {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 28px;
+  line-height: 1.25;
+  font-variation-settings: 'opsz' 60;
+  letter-spacing: -0.01em;
+  max-width: 320px;
+  margin-bottom: 8px;
+}
+
+.hint {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.5;
+  max-width: 300px;
+  margin-bottom: 30px;
+}
+
+/* --- calendrier --- */
+
+.calendar {
+  width: min(88vw, 330px);
+  border-top: 1px solid var(--hair);
+  border-bottom: 1px solid var(--hair);
+  padding: 14px 0 18px;
+}
+
+.monthNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+}
+
+.monthName {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.monthBtn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: var(--font-text);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 2px 12px;
+  transition: color 0.35s, opacity 0.35s;
+}
+
+.monthBtn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 6px;
+}
+
+.weekday {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  opacity: 0.8;
+  padding-bottom: 6px;
+}
+
+.dayCell {
+  background: none;
+  border: none;
+  font-family: var(--font-text);
+  font-weight: 300;
+  font-size: 15px;
+  color: var(--ink);
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.35s, color 0.35s, opacity 0.35s;
+}
+
+.dayCell:disabled {
+  opacity: 0.22;
+  cursor: default;
+}
+
+.daySelected {
+  composes: dayCell;
+  background: color-mix(in srgb, var(--c-menst) 26%, transparent);
+  color: #fff;
+}
+
+.dayToday {
+  composes: dayCell;
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+
+/* --- actions --- */
+
+.actions {
+  margin-top: 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  min-height: 96px;
+}
+
+.start {
+  border: none;
+  background: color-mix(in srgb, var(--c-menst) 22%, transparent);
+  color: #fff;
+  font-family: var(--font-text);
+  font-size: 16px;
+  padding: 12px 34px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.35s;
+}
+
+.start:active {
+  transform: scale(0.96);
+}
+
+.unknown {
+  background: none;
+  border: none;
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 1px solid var(--hair);
+  padding-bottom: 1px;
+}

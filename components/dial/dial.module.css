@@ -1,0 +1,123 @@
+/* Cadran — styles transposés de phase-encre-v2.html, valeurs identiques. */
+
+.dialWrap {
+  position: relative;
+  z-index: 1;
+  width: min(92vw, 410px);
+  margin: 0 auto;
+  aspect-ratio: 1;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.hit {
+  stroke: transparent;
+  fill: none;
+  cursor: pointer;
+  pointer-events: stroke;
+  outline: none;
+}
+
+.plab {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 12.5px;
+  fill: var(--muted);
+  text-anchor: middle;
+}
+
+.gtick {
+  stroke: rgba(241, 232, 226, 0.16);
+  stroke-width: 0.8;
+}
+
+.gtickMajor {
+  stroke: rgba(241, 232, 226, 0.34);
+  stroke-width: 1;
+}
+
+.glab {
+  font-family: var(--font-text);
+  font-size: 8.5px;
+  letter-spacing: 0.2em;
+  fill: var(--muted);
+  text-anchor: middle;
+  dominant-baseline: middle;
+  opacity: 0.9;
+}
+
+.uwin {
+  stroke: rgba(241, 232, 226, 0.35);
+  stroke-width: 1;
+  fill: none;
+  stroke-dasharray: 1 4;
+  stroke-linecap: round;
+}
+
+.uncert {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 11px;
+  fill: var(--muted);
+  text-anchor: middle;
+  opacity: 0.85;
+}
+
+.center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+  padding: 0 21%;
+}
+
+.phaseName {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--accent);
+  transition: color 1.5s ease;
+}
+
+.day {
+  font-family: var(--font-display);
+  font-weight: 200;
+  font-size: 92px;
+  line-height: 0.9;
+  margin: 4px 0 8px;
+  font-variation-settings: 'opsz' 144;
+  letter-spacing: -0.02em;
+}
+
+.dayJ {
+  font-style: italic;
+  font-weight: 300;
+  font-size: 0.32em;
+  vertical-align: 0.9em;
+  color: var(--muted);
+}
+
+.context {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 15.5px;
+  line-height: 1.45;
+  color: var(--muted);
+}

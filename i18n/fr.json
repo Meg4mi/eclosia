@@ -1,0 +1,171 @@
+{
+  "common": {
+    "tagline": "encre vivante · précision d'instrument",
+    "close": "fermer",
+    "cancel": "annuler",
+    "confirm": "confirmer",
+    "back": "retour",
+    "day": "J",
+    "cycles_count": "{n} cycles",
+    "days_count": "{n} jours"
+  },
+  "nav": {
+    "today": "aujourd'hui",
+    "history": "historique",
+    "settings": "réglages"
+  },
+  "phases": {
+    "menst": {
+      "name": "menstruelle",
+      "ctx": "Énergie souvent basse — c'est normal de ralentir.",
+      "desc": "L'endomètre se détache : ce sont les règles. Le corps travaille, même au repos.",
+      "facts": [
+        ["énergie", "souvent basse J1–J2"],
+        ["sommeil", "besoin accru"],
+        ["humeur", "sensibilité plus haute"]
+      ],
+      "next": "Ensuite : la folliculaire — l'énergie remonte."
+    },
+    "foll": {
+      "name": "folliculaire",
+      "ctx": "L'énergie remonte, la concentration aussi.",
+      "desc": "Les œstrogènes montent, un follicule mûrit. Souvent la phase la plus légère du cycle.",
+      "facts": [
+        ["énergie", "en hausse continue"],
+        ["sommeil", "généralement bon"],
+        ["concentration", "au plus haut"]
+      ],
+      "next": "Ensuite : la fenêtre ovulatoire — le pic du cycle."
+    },
+    "ovul": {
+      "name": "ovulatoire",
+      "ctx": "Énergie haute · ovulation probable vers J{ov1}–J{ov2}.",
+      "desc": "Pic d'œstrogènes puis libération de l'ovule. Fenêtre courte où tout culmine.",
+      "facts": [
+        ["énergie", "au pic"],
+        ["libido", "souvent au plus haut"],
+        ["température", "légère hausse après"]
+      ],
+      "next": "Ensuite : la lutéale — l'énergie redescend doucement."
+    },
+    "lute": {
+      "name": "lutéale",
+      "ctx": "Le SPM peut approcher — sommeil à protéger.",
+      "desc": "La progestérone domine. En fin de phase, le SPM peut apparaître : anticiper aide.",
+      "facts": [
+        ["énergie", "décroissante"],
+        ["sommeil", "plus fragile en fin de phase"],
+        ["humeur", "SPM possible J-4 à J-1"]
+      ],
+      "next": "Ensuite : retour des règles — {window}."
+    }
+  },
+  "today": {
+    "log_title": "aujourd'hui, en un geste",
+    "saved": "c'est noté",
+    "flow_chip": "règles",
+    "more_symptoms": "toutes les pastilles",
+    "late": "Ton cycle dépasse ta fenêtre habituelle — ça arrive, on observe.",
+    "discovery_phase": "découverte",
+    "discovery_ctx": "Logge tes premières règles et j'apprendrai ton rythme.",
+    "discovery_prediction": "Pas encore de prédiction — je découvre ton cycle avec toi."
+  },
+  "prediction": {
+    "line": "Prochaines règles : {window}",
+    "window": "probablement entre le {start} et le {end}",
+    "confidence": "confiance {level} · basé sur {n} {cycles}",
+    "confidence_one": "confiance {level} · basé sur ton premier cycle",
+    "level_low": "faible",
+    "level_medium": "moyenne",
+    "level_high": "élevée",
+    "cycle_singular": "cycle",
+    "cycle_plural": "cycles",
+    "uncert_label": "fenêtre règles",
+    "long_or_short": "Tes cycles sortent des durées habituelles (21–40 jours). Si ça se répète, en parler à un·e médecin peut aider — sans urgence."
+  },
+  "sheet": {
+    "eyebrow": "phase",
+    "ovulation_hint": "ovulation probable J{ov1}–J{ov2}",
+    "patterns_title": "Tes patterns",
+    "patterns_waiting": "Encore {n} {cycles} et je pourrai te montrer tes patterns personnels.",
+    "patterns_none": "Rien de net dans cette phase pour l'instant — je continue d'observer.",
+    "pattern_source": "vu sur tes {n} derniers cycles"
+  },
+  "patterns": {
+    "from_start": "« {symptom} » revient autour de <em>J{day}</em>, {k} cycles sur {n}.",
+    "before_period": "« {symptom} » revient à <em>J-{day} des règles</em>, {k} cycles sur {n}."
+  },
+  "onboarding": {
+    "question": "Quand ont commencé tes dernières règles ?",
+    "hint": "Une seule question. Tout reste sur ton appareil — rien ne part jamais ailleurs.",
+    "unknown": "je ne sais plus",
+    "start": "commencer",
+    "weekdays": ["lu", "ma", "me", "je", "ve", "sa", "di"]
+  },
+  "history": {
+    "title": "historique",
+    "empty": "Tes cycles clos apparaîtront ici, au fil de l'encre.",
+    "cycle_length": "{n} jours",
+    "current": "cycle en cours",
+    "edit_hint": "toucher un jour pour corriger",
+    "day_sheet_title": "corriger ce jour"
+  },
+  "settings": {
+    "title": "réglages",
+    "backup": "sauvegarde",
+    "export": "exporter mes données",
+    "export_desc": "Un fichier chiffré, lisible uniquement avec ta phrase secrète.",
+    "import": "importer un fichier",
+    "import_desc": "Retrouve tes données depuis un fichier {ext}.",
+    "passphrase": "phrase secrète",
+    "passphrase_hint": "au moins 8 caractères — elle ne quitte jamais cet écran",
+    "passphrase_confirm": "encore une fois",
+    "passphrase_mismatch": "les deux phrases ne correspondent pas",
+    "export_ready": "fichier prêt — garde-le précieusement",
+    "import_preview": "{cycles} cycles, {logs} jours de logs",
+    "import_merge_note": "Tes données actuelles sont conservées ; en cas de doublon sur une date, ton log local gagne.",
+    "import_confirm": "fusionner",
+    "import_done": "c'est importé",
+    "import_error": "impossible de lire ce fichier — phrase secrète ou fichier invalide",
+    "backup_nudge": "Deux cycles d'encre déjà — un export chiffré les mettrait à l'abri.",
+    "language": "langue",
+    "motion": "animations",
+    "motion_system": "comme le système",
+    "motion_on": "activées",
+    "motion_off": "réduites",
+    "danger": "effacement",
+    "erase": "tout effacer",
+    "erase_desc": "Supprime cycles, logs et réglages de cet appareil. Définitif.",
+    "erase_confirm_1": "effacer, vraiment ?",
+    "erase_confirm_2": "dernière confirmation — tout disparaît",
+    "erase_done": "tout est effacé",
+    "about": "à propos",
+    "about_text": "{app} vit entièrement sur ton appareil : pas de compte, pas de serveur, pas de traceurs. Vérifiable dans les outils de développement — aucune requête réseau après le chargement.",
+    "disclaimer_title": "note",
+    "disclaimer": "{app} n'est pas un dispositif médical et ne peut pas servir de contraception. Les prédictions sont des estimations basées sur ton historique."
+  },
+  "symptoms": {
+    "cramps": "douleurs",
+    "fatigue": "fatigue",
+    "low_mood": "humeur basse",
+    "high_energy": "énergie haute",
+    "good_sleep": "bon sommeil",
+    "motivation": "motivation",
+    "libido": "libido",
+    "ovulation_pain": "douleur ovulation",
+    "restless_sleep": "sommeil agité",
+    "irritability": "irritabilité",
+    "sweet_cravings": "envies sucrées",
+    "headache": "maux de tête",
+    "bloating": "ballonnements",
+    "tender_breasts": "seins sensibles",
+    "acne": "peau réactive",
+    "back_pain": "dos douloureux",
+    "anxiety": "anxiété",
+    "focus": "concentration",
+    "digestion": "digestion difficile",
+    "dizziness": "vertiges",
+    "insomnia": "insomnie",
+    "calm": "sérénité"
+  }
+}

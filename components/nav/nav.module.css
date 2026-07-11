@@ -1,0 +1,27 @@
+/* Navigation discrète : trois mots, rien d'autre. */
+
+.nav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 26px;
+  padding: 10px 0 calc(env(safe-area-inset-bottom) + 14px);
+  margin-top: auto;
+}
+
+.link {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 13.5px;
+  color: var(--muted);
+  text-decoration: none;
+  opacity: 0.75;
+  transition: color 0.35s, opacity 0.35s;
+}
+
+.linkActive {
+  composes: link;
+  color: var(--ink);
+  opacity: 1;
+}
