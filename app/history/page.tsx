@@ -24,19 +24,32 @@ import type { Cycle, DailyLog } from '@/lib/types';
 import sheetStyles from '@/components/sheet/sheet.module.css';
 import styles from './history.module.css';
 
-function MiniArc({ lengthDays, periodLength }: { lengthDays: number; periodLength: number }) {
+function MiniArc({
+  lengthDays,
+  periodLength,
+  drawDelay,
+}: {
+  lengthDays: number;
+  periodLength: number;
+  drawDelay?: number; // les arcs se tracent à l'arrivée (absent en reduced-motion)
+}) {
   const ranges = phases(lengthDays, periodLength);
   return (
     <svg className={styles.arc} width="34" height="34" viewBox="0 0 400 400" aria-hidden="true">
-      {ranges.map((p) => (
+      {ranges.map((p, i) => (
         <path
           key={p.key}
           d={arcPath(p.from - 1, p.to, 148, lengthDays)}
+          pathLength={1}
           stroke={PHASE_COLORS[p.key]}
           strokeWidth={44}
           strokeLinecap="round"
           fill="none"
           opacity={0.8}
+          className={drawDelay !== undefined ? styles.arcDraw : undefined}
+          style={
+            drawDelay !== undefined ? { animationDelay: `${drawDelay + i * 0.08}s` } : undefined
+          }
         />
       ))}
     </svg>
@@ -44,7 +57,7 @@ function MiniArc({ lengthDays, periodLength }: { lengthDays: number; periodLengt
 }
 
 export default function HistoryPage() {
-  const { dict, locale, settings } = useApp();
+  const { dict, locale, settings, reduced } = useApp();
   const today = useToday();
   const cycles = useLiveQuery(() => db.cycles.toArray(), [], undefined);
   const logs = useLiveQuery(() => db.logs.toArray(), [], undefined);
@@ -76,16 +89,20 @@ export default function HistoryPage() {
   const renderCycle = (cycle: Cycle, length: number, meta: string, index: number) => (
     <m.div
       key={cycle.id}
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ ...fade, delay: Math.min(index, 8) * 0.05 }}
+      transition={{ ...fade, duration: 0.45, delay: Math.min(index, 8) * 0.08 }}
     >
       <button
         className={styles.row}
         onClick={() => setExpanded(expanded === cycle.id ? null : cycle.id)}
         aria-expanded={expanded === cycle.id}
       >
-        <MiniArc lengthDays={length} periodLength={settings.avgPeriodLength} />
+        <MiniArc
+          lengthDays={length}
+          periodLength={settings.avgPeriodLength}
+          drawDelay={reduced ? undefined : 0.2 + Math.min(index, 8) * 0.08}
+        />
         <span className={styles.rowBody}>
           <span className={styles.range}>
             {formatDate(parseISO(cycle.startDate), locale)} —{' '}

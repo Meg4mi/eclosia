@@ -89,6 +89,19 @@
   flex: none;
 }
 
+/* les mini-arcs se tracent à l'arrivée des lignes */
+.arcDraw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: arcDraw 0.9s cubic-bezier(0.32, 0.72, 0.28, 1) forwards;
+}
+
+@keyframes arcDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 .rowBody {
   flex: 1;
 }

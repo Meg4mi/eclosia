@@ -15,9 +15,39 @@
   height: 100%;
 }
 
-/* l'encre naît en fondu à l'arrivée sur le cadran */
+/* chorégraphie d'arrivée : l'encre S'ÉCRIT autour du cadran (balayage
+   horaire depuis J1, masque conic animé — le rAF n'est pas concerné),
+   puis l'instrument apparaît, puis le centre se lève */
+@property --sweep {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 1turn;
+}
+
 .canvasBirth {
-  animation: inkBirth 1.2s ease-out;
+  --sweep: 1turn;
+  mask-image: conic-gradient(#000 var(--sweep), transparent calc(var(--sweep) + 14deg));
+  -webkit-mask-image: conic-gradient(#000 var(--sweep), transparent calc(var(--sweep) + 14deg));
+  animation:
+    inkSweep 1.8s cubic-bezier(0.32, 0.72, 0.28, 1) backwards,
+    inkBirth 0.5s ease-out backwards;
+}
+
+.overlayBirth {
+  animation: inkBirth 1s ease-out 0.6s backwards;
+}
+
+.centerBirth {
+  animation: centerBirth 0.9s ease-out 1s backwards;
+}
+
+@keyframes inkSweep {
+  from {
+    --sweep: 0turn;
+  }
+  to {
+    --sweep: 1turn;
+  }
 }
 
 @keyframes inkBirth {
@@ -26,6 +56,17 @@
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes centerBirth {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

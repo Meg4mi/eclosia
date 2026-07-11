@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { m } from 'motion/react';
+import { fade } from '@/lib/motion-tokens';
 import type { Flow } from '@/lib/types';
 import styles from './log.module.css';
 
@@ -44,8 +45,8 @@ export function FlowChip({
             <m.span
               key={i}
               className={filled ? `${styles.drop} ${styles.dropFilled}` : styles.drop}
-              animate={justFilled ? { scale: [1, 1.45, 1] } : { scale: 1 }}
-              transition={{ duration: 0.35, ease: 'easeOut' }}
+              animate={justFilled ? { scale: [1, 1.7, 1] } : { scale: 1 }}
+              transition={{ duration: 0.45, ease: 'easeOut' }}
             />
           );
         })}
@@ -58,18 +59,33 @@ export function SymptomChip({
   label,
   on,
   onToggle,
+  enterDelay,
 }: {
   label: string;
   on: boolean;
   onToggle: () => void;
+  /** Ondée d'apparition (feuilles ouvertes volontairement) — les chips de la
+   * ligne de saisie n'en ont pas : l'entrée rejouerait à chaque navigation. */
+  enterDelay?: number;
 }) {
+  const className = on ? `${styles.chip} ${styles.chipOn}` : styles.chip;
+  if (enterDelay === undefined) {
+    return (
+      <button className={className} onClick={onToggle} aria-pressed={on}>
+        {label}
+      </button>
+    );
+  }
   return (
-    <button
-      className={on ? `${styles.chip} ${styles.chipOn}` : styles.chip}
+    <m.button
+      className={className}
       onClick={onToggle}
       aria-pressed={on}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ ...fade, duration: 0.3, delay: enterDelay }}
     >
       {label}
-    </button>
+    </m.button>
   );
 }

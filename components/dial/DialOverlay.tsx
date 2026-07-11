@@ -21,6 +21,7 @@ export interface DialOverlayProps {
   dayLetter: string; // « J » / « D »
   uncertLabel: string;
   showUncert: boolean;
+  birth?: boolean; // chorégraphie d'arrivée (désactivée en reduced-motion)
   onPhaseTap: (key: PhaseKey) => void;
 }
 
@@ -32,6 +33,7 @@ export function DialOverlay({
   dayLetter,
   uncertLabel,
   showUncert,
+  birth = false,
   onPhaseTap,
 }: DialOverlayProps) {
   const ticks = Array.from({ length: L }, (_, d) => {
@@ -46,7 +48,11 @@ export function DialOverlay({
   const [ux, uy] = pointAt(ang(L - 1, L), RO + 54);
 
   return (
-    <svg className={styles.overlay} viewBox="0 0 400 400" aria-hidden={false}>
+    <svg
+      className={birth ? `${styles.overlay} ${styles.overlayBirth}` : styles.overlay}
+      viewBox="0 0 400 400"
+      aria-hidden={false}
+    >
       {ticks.map(({ x1, y1, x2, y2, maj, d }) => (
         <line
           key={d}

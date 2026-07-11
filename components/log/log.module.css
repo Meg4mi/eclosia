@@ -29,11 +29,13 @@
   font-size: 13px;
   color: var(--muted);
   opacity: 0;
-  transition: opacity 0.4s;
+  transform: translateY(4px);
+  transition: opacity 0.4s, transform 0.4s;
 }
 
 .savedShow {
   opacity: 0.9;
+  transform: translateY(0);
 }
 
 .note {
