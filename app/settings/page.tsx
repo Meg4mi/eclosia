@@ -14,7 +14,7 @@ import { eraseAll, mergeImport } from '@/lib/logbook';
 import { decryptExport, encryptExport, type ExportData } from '@/lib/crypto';
 import { createPinRecord, isValidPin, verifyPin } from '@/lib/pin';
 import { UNLOCK_KEY } from '@/components/lock/LockScreen';
-import { APP_NAME, EXPORT_EXTENSION } from '@/lib/config';
+import { APP_BUILT_AT, APP_COMMIT, APP_NAME, APP_VERSION, EXPORT_EXTENSION } from '@/lib/config';
 import { todayISO } from '@/lib/dates';
 import { tpl } from '@/i18n';
 import type { Locale } from '@/i18n';
@@ -273,6 +273,9 @@ export default function SettingsPage() {
         <section className={styles.section}>
           <div className={styles.sectionTitle}>{dict.settings.about}</div>
           <p className={styles.para}>{tpl(dict.settings.about_text, { app: APP_NAME })}</p>
+          <p className={styles.version}>
+            {tpl(dict.settings.version, { v: APP_VERSION, c: APP_COMMIT, d: APP_BUILT_AT })}
+          </p>
         </section>
       </div>
       <Nav />
