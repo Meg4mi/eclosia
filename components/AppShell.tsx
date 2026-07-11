@@ -8,6 +8,7 @@ import { db, DEFAULT_SETTINGS } from '@/lib/db';
 import { getDict, type Dict, type Locale } from '@/i18n';
 import type { Settings } from '@/lib/types';
 import { LockScreen, UNLOCK_KEY } from '@/components/lock/LockScreen';
+import { SwRegister } from '@/components/SwRegister';
 
 interface AppContextValue {
   settings: Settings;
@@ -71,6 +72,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <LazyMotion features={domMax} strict>
         <MotionConfig reducedMotion={reduced ? 'always' : 'never'}>
           {locked ? <LockScreen onUnlock={() => setUnlockedThisSession(true)} /> : children}
+          <SwRegister />
         </MotionConfig>
       </LazyMotion>
     </AppContext.Provider>

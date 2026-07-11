@@ -44,7 +44,7 @@ Aucune revendication contraceptive ou médicale · pas de compte, cloud sync, fr
 ## Pièges connus (appris à la dure)
 
 - **La date du jour vient de `useToday()`** (lib/hooks), jamais de `todayISO()` appelé dans un composant : le hook re-rend à minuit et au retour au premier plan — sinon une app laissée ouverte logge sur la veille.
-- **Service worker sans `skipWaiting`** : le nouveau SW attend la fermeture des anciens onglets, sinon une page déjà chargée perd ses chunks hashés à la purge du cache. Ne pas « accélérer » la mise à jour.
+- **Service worker sans `skipWaiting` automatique** : le nouveau SW attend la fermeture des anciens onglets, sinon une page déjà chargée perd ses chunks hashés à la purge du cache. La seule activation immédiate passe par le toast « nouvelle version prête · recharger » (`SwRegister`) : geste utilisateur → `SKIP_WAITING` → reload sur `controllerchange`. Ne pas « accélérer » autrement.
 - **Banc de parité** : le CSS global injecté dans le prototype référence `var(--font-newsreader)` que seul next/font définit — le script injecte les variables manquantes, et tolère ± 2 px d'alignement vertical sur la feuille (ancrage bas fractionnaire).
 
 - **`InkRing.tsx`** : la nappe floue (blur par trait, identique au prototype) est pré-rendue dans un offscreen à cadence adaptative. Le coût du blur canvas est payé à la **rasterisation différée**, pas à l'appel de dessin — on jauge la lenteur de l'appareil sur le delta de frame qui SUIT un rendu de nappe. Appliquer le blur par frame sur le canvas principal écroule l'event loop (2 fps en rendu logiciel) et retarde les événements IndexedDB de plusieurs secondes.
