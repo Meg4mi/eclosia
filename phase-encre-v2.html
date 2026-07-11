@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Phase — Encre ∙ instrument</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200..600;1,9..144,200..600&family=Newsreader:ital,opsz,wght@0,6..72,300..500;1,6..72,300..500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#120d14;
+    --ink:#f1e8e2;
+    --muted:#8d7f88;
+    --hair:rgba(241,232,226,.12);
+    --c-menst:#e2543f;
+    --c-foll:#a9c27a;
+    --c-ovul:#f0b153;
+    --c-lute:#a678c9;
+    --accent:var(--c-ovul);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{background:var(--bg);color:var(--ink);
+    font-family:"Newsreader",serif;font-weight:300;
+    min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(110% 80% at 50% 15%, var(--tint,rgba(240,177,83,.07)), transparent 62%);
+    transition:background 1.5s ease}
+  header{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:baseline;
+    padding:calc(env(safe-area-inset-top) + 20px) 26px 0}
+  .wordmark{font-family:"Fraunces",serif;font-weight:500;font-style:italic;font-size:22px}
+  .date{font-family:"Newsreader",serif;font-style:italic;font-size:13px;color:var(--muted)}
+  .sub{position:relative;z-index:2;text-align:center;font-family:"Newsreader",serif;font-style:italic;
+    font-size:13px;color:var(--muted);padding-top:6px;opacity:.85}
+  .dial-wrap{position:relative;z-index:1;width:min(92vw,410px);margin:0 auto;aspect-ratio:1}
+  canvas#ring{position:absolute;inset:0;width:100%;height:100%}
+  svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .hit{stroke:transparent;fill:none;cursor:pointer;pointer-events:stroke}
+  .plab{font-family:"Newsreader",serif;font-style:italic;font-size:12.5px;fill:var(--muted);text-anchor:middle}
+  .gtick{stroke:rgba(241,232,226,.16);stroke-width:.8}
+  .gtick.major{stroke:rgba(241,232,226,.34);stroke-width:1}
+  .glab{font-family:"Newsreader",serif;font-size:8.5px;letter-spacing:.2em;
+    fill:var(--muted);text-anchor:middle;dominant-baseline:middle;opacity:.9}
+  .uwin{stroke:rgba(241,232,226,.35);stroke-width:1;fill:none;stroke-dasharray:1 4;stroke-linecap:round}
+  .uncert{font-family:"Newsreader",serif;font-style:italic;font-size:11px;fill:var(--muted);text-anchor:middle;opacity:.85}
+  .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;text-align:center;pointer-events:none;padding:0 21%}
+  .center .phase-name{font-family:"Newsreader",serif;font-style:italic;font-size:16px;
+    color:var(--accent);transition:color 1.5s ease}
+  .center .day{font-family:"Fraunces",serif;font-weight:200;font-size:92px;line-height:.9;
+    margin:4px 0 8px;font-variation-settings:"opsz" 144;letter-spacing:-.02em}
+  .center .day .j{font-style:italic;font-weight:300;font-size:.32em;vertical-align:.9em;color:var(--muted)}
+  .center .context{font-family:"Newsreader",serif;font-style:italic;font-size:15.5px;
+    line-height:1.45;color:var(--muted)}
+  .prediction{position:relative;z-index:1;text-align:center;margin:8px 26px 0;
+    font-family:"Newsreader",serif;font-size:14.5px;font-style:italic;color:var(--muted);line-height:1.6}
+  .prediction em{font-style:italic;color:var(--ink);border-bottom:1px solid var(--hair)}
+  .prediction .conf{display:block;font-size:12px;opacity:.8;margin-top:2px}
+  .log{position:relative;z-index:1;margin:22px auto calc(env(safe-area-inset-bottom) + 28px);
+    width:min(92vw,410px);border-top:1px solid var(--hair);padding-top:16px}
+  .log-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+  .log-head .t{font-family:"Newsreader",serif;font-style:italic;font-size:14px;color:var(--muted)}
+  .saved{font-family:"Newsreader",serif;font-style:italic;font-size:13px;color:var(--muted);
+    opacity:0;transition:opacity .4s}
+  .saved.show{opacity:.9}
+  .log-row{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{border:none;background:rgba(241,232,226,.06);color:var(--ink);
+    font-family:"Newsreader",serif;font-size:15px;font-weight:400;
+    padding:10px 18px;border-radius:999px;cursor:pointer;transition:all .35s;
+    display:flex;align-items:center;gap:7px}
+  .chip.on{background:color-mix(in srgb,var(--accent) 22%,transparent);color:#fff}
+  .chip:active{transform:scale(.96)}
+  .chip .drops{display:flex;gap:2px}
+  .drop{width:7px;height:9px;border-radius:50%/60% 60% 40% 40%;background:var(--hair);transform:rotate(180deg)}
+  .chip.on .drop.f{background:var(--c-menst)}
+  .backdrop{position:fixed;inset:0;background:rgba(10,7,11,.6);opacity:0;pointer-events:none;
+    transition:opacity .35s;z-index:8}
+  .backdrop.open{opacity:1;pointer-events:auto}
+  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:9;background:#1b141d;
+    border-radius:28px 28px 0 0;padding:14px 28px calc(env(safe-area-inset-bottom) + 30px);
+    transform:translateY(105%);transition:transform .48s cubic-bezier(.32,.72,.28,1);
+    max-height:78dvh;overflow-y:auto}
+  .sheet.open{transform:translateY(0)}
+  .grab{width:36px;height:4px;border-radius:2px;background:var(--hair);margin:0 auto 20px}
+  .sheet .eyebrow{font-family:"Newsreader",serif;font-style:italic;font-size:14px;color:var(--sa,var(--accent))}
+  .sheet h2{font-family:"Fraunces",serif;font-weight:300;font-size:40px;margin:2px 0 0;
+    font-variation-settings:"opsz" 144;letter-spacing:-.01em}
+  .sheet .range{font-family:"Newsreader",serif;font-style:italic;font-size:13.5px;color:var(--muted);margin-bottom:18px}
+  .sheet .desc{font-size:16px;line-height:1.6;opacity:.92;margin-bottom:18px}
+  .fact{display:flex;justify-content:space-between;gap:16px;padding:11px 0;
+    border-bottom:1px solid rgba(241,232,226,.07);font-size:15px}
+  .fact .k{color:var(--muted);font-style:italic} .fact .v{text-align:right}
+  .next{font-style:italic;font-size:15px;color:var(--muted);margin:16px 0 20px;line-height:1.55}
+  .pt-title{font-family:"Newsreader",serif;font-style:italic;font-size:14px;color:var(--muted);margin-bottom:10px}
+  .pattern{border-left:2px solid var(--sa,var(--accent));padding:2px 0 2px 14px;margin-bottom:12px;
+    font-size:15px;line-height:1.55}
+  .pattern em{font-style:italic;color:#fff}
+  .pattern .src{display:block;font-size:12.5px;font-style:italic;color:var(--muted);margin-top:2px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wordmark">Phase</div>
+  <div class="date" id="todayDate"></div>
+</header>
+<div class="sub">encre vivante · précision d'instrument</div>
+
+<div class="dial-wrap">
+  <canvas id="ring"></canvas>
+  <svg id="overlay" viewBox="0 0 400 400"></svg>
+  <div class="center">
+    <div class="phase-name" id="cPhase"></div>
+    <div class="day" id="cDay"></div>
+    <div class="context" id="cContext"></div>
+  </div>
+</div>
+
+<div class="prediction" id="prediction"></div>
+
+<div class="log">
+  <div class="log-head"><span class="t">aujourd'hui, en un geste</span><span class="saved" id="saved">c'est noté</span></div>
+  <div class="log-row" id="logRow"></div>
+</div>
+
+<div class="backdrop" id="backdrop"></div>
+<div class="sheet" id="sheet">
+  <div class="grab"></div>
+  <div class="eyebrow" id="sEyebrow"></div>
+  <h2 id="sTitle"></h2>
+  <div class="range" id="sRange"></div>
+  <div class="desc" id="sDesc"></div>
+  <div id="sFacts"></div>
+  <div class="next" id="sNext"></div>
+  <div class="pt-title">Tes patterns</div>
+  <div id="sPatterns"></div>
+</div>
+
+<script>
+const MS=864e5, today=new Date(); today.setHours(0,0,0,0);
+const hist={lengths:[29,27,28,30], period:5, lastStart:new Date(today-15*MS)};
+const mean=a=>a.reduce((s,x)=>s+x,0)/a.length;
+const L=Math.round(mean(hist.lengths));
+const SD=Math.max(1,Math.round(Math.sqrt(mean(hist.lengths.map(x=>(x-mean(hist.lengths))**2)))));
+const P=hist.period, ov=L-14, todayDay=Math.round((today-hist.lastStart)/MS)+1;
+const v=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const PH={
+  menst:{key:'menst',name:'menstruelle',color:v('--c-menst'),from:1,to:P,
+    ctx:"Énergie souvent basse — c'est normal de ralentir.",
+    desc:"L'endomètre se détache : ce sont les règles. Le corps travaille, même au repos.",
+    facts:[['énergie','souvent basse J1–J2'],['sommeil','besoin accru'],['humeur','sensibilité plus haute']],
+    next:"Ensuite : la folliculaire — l'énergie remonte."},
+  foll:{key:'foll',name:'folliculaire',color:v('--c-foll'),from:P+1,to:ov-3,
+    ctx:"L'énergie remonte, la concentration aussi.",
+    desc:"Les œstrogènes montent, un follicule mûrit. Souvent la phase la plus légère du cycle.",
+    facts:[['énergie','en hausse continue'],['sommeil','généralement bon'],['concentration','au plus haut']],
+    next:"Ensuite : la fenêtre ovulatoire — le pic du cycle."},
+  ovul:{key:'ovul',name:'ovulatoire',color:v('--c-ovul'),from:ov-2,to:ov+1,
+    ctx:`Énergie haute · ovulation probable vers J${ov-1}–J${ov}.`,
+    desc:"Pic d'œstrogènes puis libération de l'ovule. Fenêtre courte où tout culmine.",
+    facts:[['énergie','au pic'],['libido','souvent au plus haut'],['température','légère hausse après']],
+    next:"Ensuite : la lutéale — l'énergie redescend doucement."},
+  lute:{key:'lute',name:'lutéale',color:v('--c-lute'),from:ov+2,to:L,
+    ctx:"Le SPM peut approcher — sommeil à protéger.",
+    desc:"La progestérone domine. En fin de phase, le SPM peut apparaître : anticiper aide.",
+    facts:[['énergie','décroissante'],['sommeil','plus fragile en fin de phase'],['humeur','SPM possible J-4 à J-1']],
+    next:"Ensuite : retour des règles — "+wtxt()+"."},
+};
+function wtxt(){
+  const f=d=>d.toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
+  return `probablement entre le ${f(new Date(+hist.lastStart+(L-SD-1)*MS))} et le ${f(new Date(+hist.lastStart+(L+SD-1)*MS))}`;
+}
+const phaseOf=d=>Object.values(PH).find(p=>d>=p.from&&d<=p.to)||PH.lute;
+const PERSONAL={
+  menst:[{t:"Tes douleurs se concentrent sur <em>J1 et J2</em>, puis chutent nettement.",s:"vu sur tes 4 derniers cycles"}],
+  foll:[{t:"Ta phase la plus régulière : quasi aucun symptôme <em>entre J6 et J11</em>.",s:"vu sur tes 4 derniers cycles"}],
+  ovul:[{t:"« Énergie haute » loggée <em>3 cycles sur 4</em> autour de J14–J16.",s:"vu sur tes 4 derniers cycles"}],
+  lute:[{t:"Ton sommeil se dégrade à <em>J-3 des règles</em>, 3 cycles sur 4.",s:"le pattern le plus net de ton historique"}],
+};
+
+/* ---------- anneau d'encre vivante (canvas) ---------- */
+const cnv=document.getElementById('ring'), ctx=cnv.getContext('2d');
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const h2r=h=>{h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16))};
+let cols=[];for(let d=1;d<=L;d++)cols.push(h2r(phaseOf(d).color));
+for(let p=0;p<3;p++)cols=cols.map((c,i)=>{const a=cols[(i-1+L)%L],b=cols[(i+1)%L];
+  return c.map((x,k)=>a[k]*.28+x*.44+b[k]*.28)});
+const opOf=d=>{const u=L-SD-1;return d>u?Math.max(.28,1-(d-u)/(L-u)*.75):1};
+
+let S=0;
+function sizeCanvas(){
+  const rect=cnv.getBoundingClientRect();
+  S=rect.width;
+  cnv.width=S*devicePixelRatio; cnv.height=S*devicePixelRatio;
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+}
+sizeCanvas(); addEventListener('resize',sizeCanvas);
+
+const angOf=d=>-Math.PI/2 + (d/L)*Math.PI*2;
+function render(t){
+  ctx.clearRect(0,0,S,S);
+  const cx=S/2, cy=S/2, R=S*.37;
+  const N=240; // résolution du ruban
+  const tt=reduced?0:t*.00022;
+  // deux passes : nappe floue puis filament net
+  for(const pass of [0,1]){
+    ctx.save();
+    ctx.filter = pass===0 ? `blur(${S*.045}px)` : 'none';
+    for(let i=0;i<N;i++){
+      const day = (i/N)*L;
+      const a1=angOf(day), a2=angOf(day+L/N+.004);
+      // ondulation organique : rayon et épaisseur respirent lentement
+      const und = Math.sin(a1*3+tt*2)*S*.012 + Math.sin(a1*5-tt*1.3)*S*.007;
+      const r = R + (pass===0? und*1.4 : und);
+      const w = (pass===0? S*.075 : S*.02) * (1 + .22*Math.sin(a1*4+tt*1.7));
+      const ci=Math.min(L-1,Math.floor(day));
+      const c=cols[ci], o=opOf(ci+1)*(pass===0?.5:.95);
+      const bright = pass===1 ? 1.28 : 1;
+      ctx.beginPath();
+      ctx.arc(cx,cy,r,a1,a2+.01);
+      ctx.strokeStyle=`rgba(${Math.min(255,c[0]*bright)|0},${Math.min(255,c[1]*bright)|0},${Math.min(255,c[2]*bright)|0},${o})`;
+      ctx.lineWidth=w;
+      ctx.lineCap='round';
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  // goutte "aujourd'hui" : perle claire qui respire
+  const a=angOf(todayDay-.5);
+  const und=Math.sin(a*3+tt*2)*S*.012 + Math.sin(a*5-tt*1.3)*S*.007;
+  const px=cx+(R+und)*Math.cos(a), py=cy+(R+und)*Math.sin(a);
+  const puls=reduced?0:(Math.sin(t*.0014)+1)/2;
+  // aiguille hairline : la précision de l'instrument dans la chair organique
+  ctx.beginPath();
+  ctx.moveTo(cx+S*.09*Math.cos(a),cy+S*.09*Math.sin(a));
+  ctx.lineTo(px-S*.02*Math.cos(a),py-S*.02*Math.sin(a));
+  ctx.strokeStyle='rgba(241,232,226,.22)';
+  ctx.lineWidth=1;
+  ctx.stroke();
+  ctx.save();
+  ctx.filter=`blur(${S*.02}px)`;
+  ctx.beginPath();ctx.arc(px,py,S*.028+puls*S*.012,0,7);
+  ctx.fillStyle=`rgba(255,250,244,${.5+puls*.25})`;ctx.fill();
+  ctx.restore();
+  ctx.beginPath();ctx.arc(px,py,S*.011,0,7);
+  ctx.fillStyle='#fdf8f1';ctx.fill();
+  if(!reduced) requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+
+/* ---------- overlay SVG : étiquettes + zones tactiles ---------- */
+const NS='http://www.w3.org/2000/svg', svg=document.getElementById('overlay');
+const CX=200,CY=200,RO=148;
+const ang=d=>(-90+(d/L)*360)*Math.PI/180;
+const pt=(a,r)=>[CX+r*Math.cos(a),CY+r*Math.sin(a)];
+const el=(t,at)=>{const e=document.createElementNS(NS,t);for(const k in at)e.setAttribute(k,at[k]);svg.appendChild(e);return e};
+const arc=(d1,d2,r)=>{const s=ang(d1),e=ang(d2),[x1,y1]=pt(s,r),[x2,y2]=pt(e,r);
+  return `M ${x1} ${y1} A ${r} ${r} 0 ${(d2-d1)/L>.5?1:0} 1 ${x2} ${y2}`};
+/* squelette d'instrument sous l'encre : graduations fines, une par jour */
+for(let d=0;d<L;d++){
+  const a=ang(d), maj=d%7===0;
+  const [x1,y1]=pt(a,RO+22), [x2,y2]=pt(a,RO+(maj?31:26));
+  el('line',{x1,y1,x2,y2,class:'gtick'+(maj?' major':'')});
+}
+[[1,'J1'],[8,'J8'],[15,'J15'],[22,'J22']].forEach(([d,lab])=>{
+  const [x,y]=pt(ang(d-1),RO+42);
+  const t=el('text',{x,y,class:'glab'});t.textContent=lab;
+});
+/* fenêtre d'incertitude cotée en pointillés sur la graduation */
+el('path',{d:arc(L-SD-1,L+0,RO+22),class:'uwin'});
+for(const p of Object.values(PH)){
+  const [x,y]=pt(ang((p.from-1+p.to)/2),RO-38);
+  if(p.key!=='lute'){const t=el('text',{x,y:y+4,class:'plab'});t.textContent=p.name;}
+  const h=el('path',{d:arc(p.from-1,p.to,RO),'stroke-width':64,class:'hit'});
+  h.addEventListener('click',()=>openSheet(p));
+}
+{const [x,y]=pt(ang(L-1),RO+54);const t=el('text',{x,y,class:'uncert'});t.textContent='fenêtre règles';}
+
+/* ---------- centre & prédiction ---------- */
+const cur=phaseOf(todayDay);
+cPhase.textContent=cur.name;
+cDay.innerHTML=`<span class="j">J</span>${todayDay}`;
+cContext.textContent=cur.ctx;
+todayDate.textContent=today.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+prediction.innerHTML=`Prochaines règles : <em>${wtxt()}</em><span class="conf">confiance élevée · basé sur 4 cycles</span>`;
+setAccent(cur);
+function setAccent(p){
+  document.documentElement.style.setProperty('--accent',p.color);
+  const c=h2r(p.color);
+  document.documentElement.style.setProperty('--tint',`rgba(${c[0]},${c[1]},${c[2]},.08)`);
+}
+
+/* ---------- saisie ---------- */
+const state={flow:0,chips:{}};
+const flowChip=document.createElement('button');
+flowChip.className='chip';
+flowChip.innerHTML=`règles <span class="drops">${'<span class="drop"></span>'.repeat(3)}</span>`;
+flowChip.onclick=()=>{state.flow=(state.flow+1)%4;
+  flowChip.classList.toggle('on',state.flow>0);
+  flowChip.querySelectorAll('.drop').forEach((e,i)=>e.classList.toggle('f',i<state.flow));flash()};
+logRow.appendChild(flowChip);
+({menst:['douleurs','fatigue','humeur basse'],foll:['énergie haute','bon sommeil','motivation'],
+  ovul:['énergie haute','libido','douleur ovulation'],lute:['sommeil agité','irritabilité','envies sucrées']})[cur.key]
+  .forEach(l=>{const c=document.createElement('button');c.className='chip';c.textContent=l;
+    c.onclick=()=>{state.chips[l]=!state.chips[l];c.classList.toggle('on',state.chips[l]);flash()};
+    logRow.appendChild(c)});
+let tm;function flash(){saved.classList.add('show');clearTimeout(tm);tm=setTimeout(()=>saved.classList.remove('show'),1400)}
+
+/* ---------- panneau ---------- */
+function openSheet(p){
+  sEyebrow.textContent='phase';sTitle.textContent=p.name;
+  sRange.textContent=`J${p.from} – J${p.to}`+(p.key==='ovul'?` · ovulation probable J${ov-1}–J${ov}`:'');
+  sDesc.textContent=p.desc;
+  sFacts.innerHTML=p.facts.map(([k,vv])=>`<div class="fact"><span class="k">${k}</span><span class="v">${vv}</span></div>`).join('');
+  sNext.textContent=p.next;
+  sPatterns.innerHTML=PERSONAL[p.key].map(x=>`<div class="pattern">${x.t}<span class="src">${x.s}</span></div>`).join('');
+  sheet.style.setProperty('--sa',p.color);
+  setAccent(p);
+  sheet.classList.add('open');backdrop.classList.add('open');
+}
+backdrop.onclick=()=>{sheet.classList.remove('open');backdrop.classList.remove('open');setAccent(cur)};
+let sy=null;
+sheet.addEventListener('touchstart',e=>sy=e.touches[0].clientY,{passive:true});
+sheet.addEventListener('touchend',e=>{if(sy!==null&&e.changedTouches[0].clientY-sy>70)backdrop.onclick();sy=null},{passive:true});
+</script>
+</body>
+</html>
