@@ -16,6 +16,13 @@ import type { Pattern, PhaseKey, PhaseRange, Prediction } from '@/lib/types';
 import { BottomSheet } from './BottomSheet';
 import styles from './sheet.module.css';
 
+/** Stagger du contenu de la feuille : chaque bloc se lève à ~50 ms d'écart. */
+const arrive = (order: number) => ({
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  transition: { ...fade, duration: 0.4, delay: 0.1 + order * 0.05 },
+});
+
 export const PHASE_COLORS: Record<PhaseKey, string> = {
   menst: '#e2543f',
   foll: '#a9c27a',
@@ -53,35 +60,45 @@ export function PhaseSheet({ phase, prediction, patterns, closedCount, onClose }
     <BottomSheet open={phase !== null} onClose={onClose} accent={key ? PHASE_COLORS[key] : undefined}>
       {phase && info && (
         <>
-          <div className={styles.eyebrow}>{dict.sheet.eyebrow}</div>
-          <h2 className={styles.title}>{info.name}</h2>
-          <div className={styles.range}>
+          <m.div className={styles.eyebrow} {...arrive(0)}>
+            {dict.sheet.eyebrow}
+          </m.div>
+          <m.h2 className={styles.title} {...arrive(1)}>
+            {info.name}
+          </m.h2>
+          <m.div className={styles.range} {...arrive(2)}>
             {`${dict.common.day}${phase.from} – ${dict.common.day}${phase.to}`}
             {key === 'ovul' &&
               ` · ${tpl(dict.sheet.ovulation_hint, { ov1: ov - 1, ov2: ov })}`}
-          </div>
-          <div className={styles.desc}>{info.desc}</div>
+          </m.div>
+          <m.div className={styles.desc} {...arrive(3)}>
+            {info.desc}
+          </m.div>
           <div>
-            {info.facts.map(([k, v]) => (
-              <div key={k} className={styles.fact}>
+            {info.facts.map(([k, v], i) => (
+              <m.div key={k} className={styles.fact} {...arrive(4 + i)}>
                 <span className={styles.factK}>{k}</span>
                 <span className={styles.factV}>{v}</span>
-              </div>
+              </m.div>
             ))}
           </div>
-          <div className={styles.next}>
+          <m.div className={styles.next} {...arrive(7)}>
             {key === 'lute' ? tpl(info.next, { window: windowText }) : info.next}
-          </div>
-          <div className={styles.ptTitle}>{dict.sheet.patterns_title}</div>
+          </m.div>
+          <m.div className={styles.ptTitle} {...arrive(8)}>
+            {dict.sheet.patterns_title}
+          </m.div>
           {closedCount < MIN_CYCLES_FOR_PATTERNS ? (
-            <div className={styles.waiting}>
+            <m.div className={styles.waiting} {...arrive(9)}>
               {tpl(dict.sheet.patterns_waiting, {
                 n: missing,
                 cycles: missing > 1 ? dict.prediction.cycle_plural : dict.prediction.cycle_singular,
               })}
-            </div>
+            </m.div>
           ) : phasePatterns.length === 0 ? (
-            <div className={styles.waiting}>{dict.sheet.patterns_none}</div>
+            <m.div className={styles.waiting} {...arrive(9)}>
+              {dict.sheet.patterns_none}
+            </m.div>
           ) : (
             phasePatterns.map((p, i) => {
               const template =
@@ -98,7 +115,7 @@ export function PhaseSheet({ phase, prediction, patterns, closedCount, onClose }
                   className={styles.pattern}
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ ...fade, duration: 0.45, delay: 0.2 + i * 0.1 }}
+                  transition={{ ...fade, duration: 0.45, delay: 0.55 + i * 0.12 }}
                 >
                   {/* contenu issu de nos seuls dictionnaires — pas d'entrée utilisatrice */}
                   <span dangerouslySetInnerHTML={{ __html: html }} />

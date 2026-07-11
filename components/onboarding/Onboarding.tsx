@@ -113,8 +113,12 @@ export function Onboarding() {
             iso === null ? (
               <span key={`empty-${i}`} />
             ) : (
-              <button
+              // vague d'apparition des jours, rejouée au changement de mois
+              <m.button
                 key={iso}
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, ease: 'easeOut', delay: 0.5 + i * 0.014 }}
                 className={
                   iso === selected
                     ? styles.daySelected
@@ -127,7 +131,7 @@ export function Onboarding() {
                 aria-pressed={iso === selected}
               >
                 {Number(iso.slice(8, 10))}
-              </button>
+              </m.button>
             ),
           )}
         </div>
