@@ -182,5 +182,13 @@ export function InkRing({ colors, L, SD, todayDay, reduced, fadeWindow }: InkRin
     kickRef.current();
   }, [colors, L, SD, todayDay, reduced, fadeWindow]);
 
-  return <canvas ref={canvasRef} className={styles.canvas} aria-hidden="true" />;
+  // naissance du ruban : l'encre apparaît en fondu au montage (CSS pur,
+  // le rAF n'est pas concerné) — désactivé en reduced-motion
+  return (
+    <canvas
+      ref={canvasRef}
+      className={reduced ? styles.canvas : `${styles.canvas} ${styles.canvasBirth}`}
+      aria-hidden="true"
+    />
+  );
 }

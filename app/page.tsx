@@ -4,7 +4,9 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { AnimatePresence, m } from 'motion/react';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { fade } from '@/lib/motion-tokens';
 import { useApp } from '@/components/AppShell';
 import { InkRing } from '@/components/dial/InkRing';
 import { DialOverlay } from '@/components/dial/DialOverlay';
@@ -179,16 +181,28 @@ export default function TodayPage() {
       </div>
 
       <div className={styles.prediction}>
-        {discovery ? (
-          dict.today.discovery_prediction
-        ) : (
-          <>
-            {predBefore}
-            <em className={styles.predictionEm}>{windowText}</em>
-            {predAfter}
-            <span className={styles.conf}>{confText}</span>
-          </>
-        )}
+        {/* la fenêtre qui se resserre après un log arrive en fondu */}
+        <AnimatePresence mode="wait" initial={false}>
+          <m.span
+            key={discovery ? 'discovery' : `${windowText}·${confText}`}
+            style={{ display: 'block' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={fade}
+          >
+            {discovery ? (
+              dict.today.discovery_prediction
+            ) : (
+              <>
+                {predBefore}
+                <em className={styles.predictionEm}>{windowText}</em>
+                {predAfter}
+                <span className={styles.conf}>{confText}</span>
+              </>
+            )}
+          </m.span>
+        </AnimatePresence>
       </div>
 
       {showAtypical && (

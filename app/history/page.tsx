@@ -3,7 +3,9 @@
 /** Historique (v1) : cycles clos, mini-arc, correction des logs d'un jour passé. */
 
 import { useMemo, useState } from 'react';
+import { m } from 'motion/react';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { fade } from '@/lib/motion-tokens';
 import { useApp } from '@/components/AppShell';
 import { Nav } from '@/components/nav/Nav';
 import { BottomSheet } from '@/components/sheet/BottomSheet';
@@ -67,8 +69,13 @@ export default function HistoryPage() {
   const cycleDays = (cycle: Cycle, length: number): string[] =>
     Array.from({ length }, (_, i) => addDays(cycle.startDate, i)).filter((d) => d <= today);
 
-  const renderCycle = (cycle: Cycle, length: number, meta: string) => (
-    <div key={cycle.id}>
+  const renderCycle = (cycle: Cycle, length: number, meta: string, index: number) => (
+    <m.div
+      key={cycle.id}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ ...fade, delay: Math.min(index, 8) * 0.05 }}
+    >
       <button
         className={styles.row}
         onClick={() => setExpanded(expanded === cycle.id ? null : cycle.id)}
@@ -103,7 +110,7 @@ export default function HistoryPage() {
           })}
         </div>
       )}
-    </div>
+    </m.div>
   );
 
   return (
@@ -119,12 +126,14 @@ export default function HistoryPage() {
             current,
             Math.max(dayOf(today, current.startDate), 1),
             dict.history.current,
+            0,
           )}
-        {closed.map((c) =>
+        {closed.map((c, i) =>
           renderCycle(
             c,
             c.lengthDays as number,
             tpl(dict.history.cycle_length, { n: c.lengthDays as number }),
+            i + (current ? 1 : 0),
           ),
         )}
 
