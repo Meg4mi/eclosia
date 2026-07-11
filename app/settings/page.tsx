@@ -2,7 +2,7 @@
 
 /** Réglages (v1) : export/import chiffré, langue, motion, effacement, disclaimer. */
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useApp } from '@/components/AppShell';
@@ -12,6 +12,8 @@ import { SymptomChip } from '@/components/log/chips';
 import { db, saveSettings } from '@/lib/db';
 import { eraseAll, mergeImport } from '@/lib/logbook';
 import { decryptExport, encryptExport, type ExportData } from '@/lib/crypto';
+import { createPinRecord, isValidPin, verifyPin } from '@/lib/pin';
+import { UNLOCK_KEY } from '@/components/lock/LockScreen';
 import { APP_NAME, EXPORT_EXTENSION } from '@/lib/config';
 import { todayISO } from '@/lib/dates';
 import { tpl } from '@/i18n';
@@ -19,7 +21,7 @@ import type { Locale } from '@/i18n';
 import sheetStyles from '@/components/sheet/sheet.module.css';
 import styles from './settings.module.css';
 
-type SheetMode = 'export' | 'import' | null;
+type SheetMode = 'export' | 'import' | 'lock-set' | 'lock-remove' | null;
 
 export default function SettingsPage() {
   const { dict, settings } = useApp();
@@ -37,6 +39,12 @@ export default function SettingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [eraseStage, setEraseStage] = useState(0);
+  // le bouton d'effacement se désarme tout seul si la confirmation n'arrive pas
+  useEffect(() => {
+    if (eraseStage === 0) return;
+    const t = setTimeout(() => setEraseStage(0), 5000);
+    return () => clearTimeout(t);
+  }, [eraseStage]);
   const [importRaw, setImportRaw] = useState<string | null>(null);
   const [importPreview, setImportPreview] = useState<ExportData | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -109,6 +117,41 @@ export default function SettingsPage() {
     setFeedback(dict.settings.import_done);
     setImportPreview(null);
     setImportRaw(null);
+  };
+
+  const doSetPin = async (): Promise<void> => {
+    if (!isValidPin(pass) || busy) return;
+    if (pass !== pass2) {
+      setError(dict.settings.lock_mismatch);
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    const record = await createPinRecord(pass);
+    await saveSettings(record);
+    // la session courante reste ouverte, le verrou vaudra au prochain lancement
+    sessionStorage.setItem(UNLOCK_KEY, '1');
+    setBusy(false);
+    setFeedback(dict.settings.lock_done);
+    setPass('');
+    setPass2('');
+  };
+
+  const doRemovePin = async (): Promise<void> => {
+    if (pass.length === 0 || busy || !settings.pinHash || !settings.pinSalt) return;
+    setBusy(true);
+    setError(null);
+    const ok = await verifyPin(pass, { pinHash: settings.pinHash, pinSalt: settings.pinSalt });
+    if (!ok) {
+      setBusy(false);
+      setError(dict.settings.lock_wrong);
+      return;
+    }
+    await saveSettings({ pinHash: undefined, pinSalt: undefined });
+    sessionStorage.removeItem(UNLOCK_KEY);
+    setBusy(false);
+    setFeedback(dict.settings.lock_removed);
+    setPass('');
   };
 
   const doErase = async (): Promise<void> => {
@@ -192,6 +235,21 @@ export default function SettingsPage() {
         </section>
 
         <section className={styles.section}>
+          <div className={styles.sectionTitle}>{dict.settings.lock}</div>
+          <button
+            className={styles.item}
+            onClick={() => setSheet(settings.pinHash ? 'lock-remove' : 'lock-set')}
+          >
+            <span className={styles.itemLabel}>
+              {settings.pinHash ? dict.settings.lock_disable : dict.settings.lock_set}
+            </span>
+            <span className={styles.itemDesc} style={{ display: 'block' }}>
+              {settings.pinHash ? dict.settings.lock_disable_desc : dict.settings.lock_set_desc}
+            </span>
+          </button>
+        </section>
+
+        <section className={styles.section}>
           <div className={styles.sectionTitle}>{dict.settings.danger}</div>
           <button className={styles.itemDanger} onClick={() => void doErase()}>
             <span className={`${styles.itemLabel} ${styles.dangerLabel}`}>
@@ -258,6 +316,82 @@ export default function SettingsPage() {
               </button>
               <button className={styles.ghost} onClick={closeSheet}>
                 {dict.common.close}
+              </button>
+            </div>
+            {error && <p className={styles.error}>{error}</p>}
+            {feedback && <p className={styles.feedback}>{feedback}</p>}
+          </>
+        )}
+        {sheet === 'lock-set' && (
+          <>
+            <div className={sheetStyles.eyebrow}>{dict.settings.lock_set}</div>
+            <input
+              className={styles.input}
+              type="password"
+              inputMode="numeric"
+              placeholder={dict.settings.lock_code}
+              value={pass}
+              onChange={(e) => setPass(e.target.value.replace(/\D/g, '').slice(0, 8))}
+              autoFocus
+              autoComplete="off"
+              style={{ marginTop: 14 }}
+            />
+            <input
+              className={styles.input}
+              type="password"
+              inputMode="numeric"
+              placeholder={dict.settings.lock_code_confirm}
+              value={pass2}
+              onChange={(e) => setPass2(e.target.value.replace(/\D/g, '').slice(0, 8))}
+              autoComplete="off"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') void doSetPin();
+              }}
+            />
+            <p className={styles.feedback}>{dict.settings.lock_warning}</p>
+            <div className={styles.sheetActions}>
+              <button
+                className={styles.primary}
+                disabled={!isValidPin(pass) || busy}
+                onClick={() => void doSetPin()}
+              >
+                {dict.common.confirm}
+              </button>
+              <button className={styles.ghost} onClick={closeSheet}>
+                {dict.common.cancel}
+              </button>
+            </div>
+            {error && <p className={styles.error}>{error}</p>}
+            {feedback && <p className={styles.feedback}>{feedback}</p>}
+          </>
+        )}
+        {sheet === 'lock-remove' && (
+          <>
+            <div className={sheetStyles.eyebrow}>{dict.settings.lock_disable}</div>
+            <input
+              className={styles.input}
+              type="password"
+              inputMode="numeric"
+              placeholder={dict.settings.lock_enter}
+              value={pass}
+              onChange={(e) => setPass(e.target.value.replace(/\D/g, '').slice(0, 8))}
+              autoFocus
+              autoComplete="off"
+              style={{ marginTop: 14 }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') void doRemovePin();
+              }}
+            />
+            <div className={styles.sheetActions}>
+              <button
+                className={styles.primary}
+                disabled={pass.length === 0 || busy}
+                onClick={() => void doRemovePin()}
+              >
+                {dict.common.confirm}
+              </button>
+              <button className={styles.ghost} onClick={closeSheet}>
+                {dict.common.cancel}
               </button>
             </div>
             {error && <p className={styles.error}>{error}</p>}

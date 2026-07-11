@@ -14,11 +14,11 @@ npm run build        # next build + génération du SW dans out/ (toujours cette
 npm run lint         # tsc --noEmit (strict)
 npm test             # Vitest — lib/ pur, 100 % des fonctions
 npm run e2e          # Playwright (nécessite un build à jour ; sert out/ sur :4173)
-npm run parity       # garde de parité pixel du cadran vs prototype (nécessite un build ; échec si > 0,5 % de pixels divergents)
+npm run parity       # garde de parité pixel (cadran + feuille) vs prototype (nécessite un build ; échec si > 0,5 % de pixels divergents)
 ```
 
-Avant tout push : `lint` + `test` + `build` + `e2e` + `parity` doivent être verts.
-Dans cet environnement distant, Chromium est à `/opt/pw-browsers/chromium` (surchargeable via `CHROMIUM_PATH`) — ne jamais lancer `playwright install`.
+Avant tout push : `lint` + `test` + `build` + `e2e` + `parity` doivent être verts — la CI (`.github/workflows/ci.yml`) rejoue exactement cette chaîne sur chaque PR.
+Dans cet environnement distant, Chromium est à `/opt/pw-browsers/chromium` (auto-détecté ; en CI/local c'est la résolution Playwright normale) — ne jamais lancer `playwright install` ici.
 
 ## Règles non négociables
 
@@ -43,6 +43,10 @@ Aucune revendication contraceptive ou médicale · pas de compte, cloud sync, fr
 
 ## Pièges connus (appris à la dure)
 
+- **La date du jour vient de `useToday()`** (lib/hooks), jamais de `todayISO()` appelé dans un composant : le hook re-rend à minuit et au retour au premier plan — sinon une app laissée ouverte logge sur la veille.
+- **Service worker sans `skipWaiting`** : le nouveau SW attend la fermeture des anciens onglets, sinon une page déjà chargée perd ses chunks hashés à la purge du cache. Ne pas « accélérer » la mise à jour.
+- **Banc de parité** : le CSS global injecté dans le prototype référence `var(--font-newsreader)` que seul next/font définit — le script injecte les variables manquantes, et tolère ± 2 px d'alignement vertical sur la feuille (ancrage bas fractionnaire).
+
 - **`InkRing.tsx`** : la nappe floue (blur par trait, identique au prototype) est pré-rendue dans un offscreen à cadence adaptative. Le coût du blur canvas est payé à la **rasterisation différée**, pas à l'appel de dessin — on jauge la lenteur de l'appareil sur le delta de frame qui SUIT un rendu de nappe. Appliquer le blur par frame sur le canvas principal écroule l'event loop (2 fps en rendu logiciel) et retarde les événements IndexedDB de plusieurs secondes.
 - **Feuilles scrollables** : avec `touch-action: pan-y`, le navigateur émet `pointercancel` avant que Motion ne voie le geste — le swipe-to-dismiss « en haut du scroll » est piloté par des listeners `touchmove` non-passifs dans `BottomSheet.tsx`, qui écrivent la même motionValue que le drag Motion. Ne pas simplifier.
 - **Dexie** : la version d'IndexedDB stockée = version Dexie × 10 (un `indexedDB.open('eclose', 1)` externe casse). Les scripts de seed ouvrent sans numéro de version.
@@ -53,7 +57,10 @@ Aucune revendication contraceptive ou médicale · pas de compte, cloud sync, fr
 - **Règle des 10 jours** (`lib/logbook.ts`) : un flow > 0 à ≤ 10 j du dernier début étend les règles ; au-delà, il ouvre un nouveau cycle (clôture du précédent, `lengthDays` = différence des débuts). `setFlow` retourne `newCycleStarted` : l'UI affiche alors « nouveau cycle, J1 · annuler » (8 s) — le rebase silencieux du cadran est vécu comme un bug.
 - **Prédiction** (`lib/engine.ts`) : moyenne des 6 derniers cycles clos, fenêtre `lastStart + mean ± sd` (sd min 1 j), confiance faible/moyenne/élevée. 0 cycle → mode découverte (cadran neutre 28 j) ; retard → message calme, jamais alarmiste.
 - **Patterns** (`lib/patterns.ts`) : récurrence ≥ 60 % des cycles clos (min 3), fenêtre ± 1 j, max 2 par phase, formulation toujours sourcée, jamais causale.
-- **Chips adaptatives** (`lib/symptoms.ts`) : défauts par phase, remplacés dès 2 cycles clos par les 3 symptômes réellement les plus loggés dans la phase.
+- **Chips adaptatives** (`lib/symptoms.ts`) : défauts par phase, remplacés dès 2 cycles clos par les 3 symptômes réellement les plus loggés dans la phase (cycle en cours compris, sur sa longueur estimée).
+- **Verrou local** (`lib/pin.ts`) : code 4–8 chiffres, hash PBKDF2 + salt dans Settings, déverrouillage valable par session (`sessionStorage`). Aucune récupération — c'est documenté dans l'UI. Menace couverte : regard indiscret, pas attaque outillée.
+- **Import** (`lib/logbook.ts` `mergeImport`) : les logs/réglages locaux gagnent, sauf appareil vierge où les réglages importés s'appliquent ; un import de données marque l'onboarding comme fait.
+- **Note du jour** : champ `note` de DailyLog, éditée dans la feuille catalogue et l'éditeur d'historique (`NoteField`, écriture débouncée).
 
 ## Écarts assumés vs le prototype/brief (décisions validées)
 

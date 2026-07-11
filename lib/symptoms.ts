@@ -40,19 +40,27 @@ export const PHASE_DEFAULTS: Record<PhaseKey, [string, string, string]> = {
 /**
  * Chips adaptatives : dès 2 cycles clos de données, les 3 symptômes réellement
  * les plus loggés dans cette phase remplacent les défauts (complétés par les
- * défauts si moins de 3).
+ * défauts si moins de 3). Les logs du cycle en cours comptent aussi, sur sa
+ * longueur estimée.
  */
 export const symptomsForPhase = (
   phaseKey: PhaseKey,
   cycles: Cycle[],
   logs: DailyLog[],
   avgPeriodLength: number,
+  estimatedLength = 28,
 ): string[] => {
   const closed = closedCycles(cycles);
   if (closed.length < 2) return [...PHASE_DEFAULTS[phaseKey]];
 
+  const open = [...cycles]
+    .sort((a, b) => a.startDate.localeCompare(b.startDate))
+    .filter((c) => c.lengthDays == null)
+    .slice(-1)
+    .map((c) => ({ ...c, lengthDays: estimatedLength }));
+
   const counts = new Map<string, number>();
-  for (const cycle of closed) {
+  for (const cycle of [...closed, ...open]) {
     const L = cycle.lengthDays as number;
     const ranges = phases(L, avgPeriodLength);
     for (const log of logs) {

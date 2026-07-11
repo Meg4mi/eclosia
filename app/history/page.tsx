@@ -10,10 +10,12 @@ import { useApp } from '@/components/AppShell';
 import { Nav } from '@/components/nav/Nav';
 import { BottomSheet } from '@/components/sheet/BottomSheet';
 import { FlowChip, SymptomChip } from '@/components/log/chips';
+import { NoteField } from '@/components/log/NoteField';
 import { PHASE_COLORS } from '@/components/sheet/PhaseSheet';
 import { db } from '@/lib/db';
-import { addDays, parseISO, todayISO } from '@/lib/dates';
-import { dayOf, phases } from '@/lib/engine';
+import { addDays, parseISO } from '@/lib/dates';
+import { useToday } from '@/lib/hooks/useToday';
+import { dayOf, phases, predict } from '@/lib/engine';
 import { arcPath } from '@/lib/ink';
 import { SYMPTOM_IDS } from '@/lib/symptoms';
 import { setFlow, toggleSymptom } from '@/lib/logbook';
@@ -43,11 +45,13 @@ function MiniArc({ lengthDays, periodLength }: { lengthDays: number; periodLengt
 
 export default function HistoryPage() {
   const { dict, locale, settings } = useApp();
-  const today = todayISO();
+  const today = useToday();
   const cycles = useLiveQuery(() => db.cycles.toArray(), [], undefined);
   const logs = useLiveQuery(() => db.logs.toArray(), [], undefined);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [editDate, setEditDate] = useState<string | null>(null);
+  // une correction peut rebaser le cycle courant : le dire, et pouvoir annuler
+  const [rebasedDate, setRebasedDate] = useState<string | null>(null);
 
   const logByDate = useMemo(() => {
     const map = new Map<string, DailyLog>();
@@ -121,6 +125,20 @@ export default function HistoryPage() {
           <span className={styles.hint}>{dict.history.edit_hint}</span>
         </header>
 
+        {closed.length >= 2 &&
+          (() => {
+            const p = predict(cycles);
+            return (
+              <p className={styles.stats}>
+                {tpl(dict.history.stats, {
+                  len: p.meanLength,
+                  p: settings.avgPeriodLength,
+                  sd: p.sd,
+                })}
+              </p>
+            );
+          })()}
+
         {current &&
           renderCycle(
             current,
@@ -141,7 +159,13 @@ export default function HistoryPage() {
       </div>
       <Nav />
 
-      <BottomSheet open={editDate !== null} onClose={() => setEditDate(null)}>
+      <BottomSheet
+        open={editDate !== null}
+        onClose={() => {
+          setEditDate(null);
+          setRebasedDate(null);
+        }}
+      >
         {editDate && (
           <>
             <div className={sheetStyles.eyebrow}>{dict.history.day_sheet_title}</div>
@@ -152,9 +176,27 @@ export default function HistoryPage() {
               <FlowChip
                 label={dict.today.flow_chip}
                 flow={editFlow}
-                onChange={(next) => void setFlow(editDate, next)}
+                onChange={(next) =>
+                  void setFlow(editDate, next).then((res) => {
+                    if (res.newCycleStarted) setRebasedDate(editDate);
+                  })
+                }
               />
             </div>
+            {rebasedDate === editDate && (
+              <p className={styles.rebaseNotice}>
+                {dict.today.new_cycle}{' '}
+                <button
+                  className={styles.rebaseUndo}
+                  onClick={() => {
+                    void setFlow(editDate, 0);
+                    setRebasedDate(null);
+                  }}
+                >
+                  {dict.today.undo}
+                </button>
+              </p>
+            )}
             <div className={sheetStyles.chipGrid} style={{ marginTop: 12 }}>
               {SYMPTOM_IDS.map((id) => (
                 <SymptomChip
@@ -165,6 +207,7 @@ export default function HistoryPage() {
                 />
               ))}
             </div>
+            <NoteField date={editDate} log={editLog} />
           </>
         )}
       </BottomSheet>

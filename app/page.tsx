@@ -17,7 +17,8 @@ import { CatalogSheet } from '@/components/sheet/CatalogSheet';
 import { Nav } from '@/components/nav/Nav';
 import { Onboarding } from '@/components/onboarding/Onboarding';
 import { db } from '@/lib/db';
-import { todayISO, parseISO } from '@/lib/dates';
+import { parseISO } from '@/lib/dates';
+import { useToday } from '@/lib/hooks/useToday';
 import {
   closedCycles,
   dayOf,
@@ -46,7 +47,7 @@ const DISMISSED = {
 
 export default function TodayPage() {
   const { settings, dict, locale, reduced } = useApp();
-  const today = todayISO();
+  const today = useToday();
 
   const cycles = useLiveQuery(() => db.cycles.toArray(), [], undefined);
   const log = useLiveQuery(() => db.logs.get(today), [today], undefined);
@@ -89,8 +90,9 @@ export default function TodayPage() {
         cycles ?? [],
         logs ?? [],
         settings.avgPeriodLength,
+        L,
       ),
-    [currentPhase?.key, cycles, logs, settings.avgPeriodLength],
+    [currentPhase?.key, cycles, logs, settings.avgPeriodLength, L],
   );
 
   // chargement initial d'IndexedDB (<50 ms) : la coquille reste stable, rien ne clignote

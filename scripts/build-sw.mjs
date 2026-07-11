@@ -41,10 +41,11 @@ const sw = `/* Service worker généré au build — precache-all, cache-first. 
 const CACHE = 'eclose-${version}';
 const ASSETS = ${JSON.stringify([...urls], null, 0)};
 
+// pas de skipWaiting : le nouveau SW attend la fermeture des anciens onglets,
+// sinon une page déjà chargée peut perdre ses chunks (noms hashés) quand
+// l'ancien cache est purgé en pleine session
 self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting())
-  );
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
 });
 
 self.addEventListener('activate', (e) => {

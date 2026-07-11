@@ -7,6 +7,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db, DEFAULT_SETTINGS } from '@/lib/db';
 import { getDict, type Dict, type Locale } from '@/i18n';
 import type { Settings } from '@/lib/types';
+import { LockScreen, UNLOCK_KEY } from '@/components/lock/LockScreen';
 
 interface AppContextValue {
   settings: Settings;
@@ -44,17 +45,33 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const settings = useLiveQuery(async () => (await db.settings.get('singleton')) ?? null, [], null);
   const systemReduced = useSystemReducedMotion();
 
+  // verrou local : redemandé à chaque nouvelle session de l'app
+  const [unlockedThisSession, setUnlockedThisSession] = useState(false);
+
+  // <html lang> suit la langue choisie (lecteurs d'écran, césures)
+  const locale = (settings ?? DEFAULT_SETTINGS).locale;
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
+
   if (!mounted) return null;
 
   const effective: Settings = settings ?? DEFAULT_SETTINGS;
   const reduced =
     effective.reducedMotion === 'on' || (effective.reducedMotion === 'system' && systemReduced);
-  const locale = effective.locale;
+
+  const locked =
+    settings !== null &&
+    Boolean(effective.pinHash) &&
+    !unlockedThisSession &&
+    sessionStorage.getItem(UNLOCK_KEY) !== '1';
 
   return (
     <AppContext.Provider value={{ settings: effective, dict: getDict(locale), locale, reduced }}>
       <LazyMotion features={domMax} strict>
-        <MotionConfig reducedMotion={reduced ? 'always' : 'never'}>{children}</MotionConfig>
+        <MotionConfig reducedMotion={reduced ? 'always' : 'never'}>
+          {locked ? <LockScreen onUnlock={() => setUnlockedThisSession(true)} /> : children}
+        </MotionConfig>
       </LazyMotion>
     </AppContext.Provider>
   );

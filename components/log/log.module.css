@@ -36,16 +36,46 @@
   opacity: 0.9;
 }
 
+.note {
+  width: 100%;
+  margin-top: 14px;
+  background: rgba(241, 232, 226, 0.05);
+  border: 1px solid var(--hair);
+  border-radius: 14px;
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.5;
+  padding: 10px 14px;
+  resize: none;
+  outline: none;
+}
+
+.note::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.note:focus {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
 .undo {
   background: none;
   border: none;
-  padding: 0;
+  /* zone tactile généreuse sans changer le rendu */
+  padding: 10px 8px;
+  margin: -10px -8px;
   font-family: var(--font-text);
   font-style: italic;
   font-size: 13px;
   color: var(--ink);
-  border-bottom: 1px solid var(--hair);
   cursor: pointer;
+}
+
+.undo > span {
+  border-bottom: 1px solid var(--hair);
 }
 
 .logRow {

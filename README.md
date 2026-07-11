@@ -6,7 +6,7 @@ PWA 100 % statique et locale : aucune donnée ne quitte jamais l'appareil. Pas d
 
 ## Trois principes
 
-1. **Local-first radical.** IndexedDB est la seule source de vérité. La seule sauvegarde est un export chiffré (AES-GCM, clé dérivée d'une phrase secrète) que l'utilisatrice garde où elle veut.
+1. **Local-first radical.** IndexedDB est la seule source de vérité. La seule sauvegarde est un export chiffré (AES-GCM, clé dérivée d'une phrase secrète) que l'utilisatrice garde où elle veut. Un verrou local optionnel (code, jamais stocké en clair) protège l'app d'un regard indiscret.
 2. **Une interaction par jour.** Un chip « règles » (intensité en 3 gouttes) + 3 pastilles de symptômes adaptées à la phase courante. Onboarding en une seule question.
 3. **Prédiction honnête.** Jamais de date sèche : une fenêtre (« probablement entre le 24 et le 27 juillet ») avec un niveau de confiance affiché, qui se resserre avec l'historique.
 
@@ -37,7 +37,7 @@ npm run e2e        # Playwright — audit « zéro requête réseau » + parcour
 npm run parity     # garde de parité pixel avec le prototype (après npm run build)
 ```
 
-`npm run parity` rend l'app et le prototype de référence (`phase-encre-v2.html`) dans des conditions identiques et échoue si plus de 0,5 % des pixels du cadran divergent.
+`npm run parity` rend l'app et le prototype de référence (`phase-encre-v2.html`) dans des conditions identiques et échoue si plus de 0,5 % des pixels du cadran ou de la feuille de phase divergent. La CI GitHub Actions rejoue toute la chaîne sur chaque PR.
 
 ## Architecture
 

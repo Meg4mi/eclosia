@@ -5,7 +5,7 @@
  */
 
 import { chromium } from '@playwright/test';
-import { mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 
 const OUT = path.resolve(process.cwd(), 'public/icons');
@@ -45,9 +45,10 @@ const page = (size, safe) => `<!DOCTYPE html><html><head><style>
   c.fillStyle = '#fdf8f1'; c.fill();
 </script></body></html>`;
 
-const browser = await chromium.launch({
-  executablePath: process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium',
-});
+const chromiumPath =
+  process.env.CHROMIUM_PATH ??
+  (existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined);
+const browser = await chromium.launch(chromiumPath ? { executablePath: chromiumPath } : {});
 for (const [name, size, safe] of [
   ['icon-512.png', 512, false],
   ['icon-192.png', 192, false],

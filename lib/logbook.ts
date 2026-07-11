@@ -7,9 +7,8 @@
  */
 
 import { ulid } from 'ulid';
-import { db } from './db';
+import { db, DEFAULT_SETTINGS } from './db';
 import { addDays, diffDays } from './dates';
-import { DEFAULT_PERIOD_LENGTH } from './config';
 import type { Cycle, DailyLog, Flow } from './types';
 
 const EXTEND_MAX_DAYS = 10;
@@ -48,10 +47,9 @@ const recomputeAvgPeriod = async (): Promise<void> => {
     .slice(-6)
     .map((c) => diffDays(c.startDate, c.endDate as string) + 1)
     .filter((n) => n >= 1 && n <= 10);
-  const avg =
-    lengths.length > 0
-      ? Math.round(lengths.reduce((s, x) => s + x, 0) / lengths.length)
-      : DEFAULT_PERIOD_LENGTH;
+  // aucune durée observée : on ne touche pas au réglage (défaut ou importé)
+  if (lengths.length === 0) return;
+  const avg = Math.round(lengths.reduce((s, x) => s + x, 0) / lengths.length);
   const settings = await db.settings.get('singleton');
   if (settings && settings.avgPeriodLength !== avg) {
     await db.settings.update('singleton', { avgPeriodLength: avg });
@@ -136,6 +134,18 @@ export const setFlow = async (date: string, flow: Flow): Promise<SetFlowResult> 
   });
 };
 
+/** Note libre du jour — vide = retirée. */
+export const setNote = async (date: string, note: string): Promise<void> => {
+  requestPersistence();
+  const existing = await db.logs.get(date);
+  await db.logs.put({
+    date,
+    flow: existing?.flow ?? 0,
+    symptoms: existing?.symptoms ?? [],
+    note: note.trim() === '' ? undefined : note,
+  });
+};
+
 export const toggleSymptom = async (date: string, symptomId: string): Promise<void> => {
   requestPersistence();
   const existing = await db.logs.get(date);
@@ -181,7 +191,23 @@ export type ImportPayload = {
  */
 export const mergeImport = async (payload: ImportPayload): Promise<void> => {
   await db.transaction('rw', db.cycles, db.logs, db.settings, async () => {
+    // import juste après un effacement : recréer le singleton de réglages
+    if (!(await db.settings.get('singleton'))) await db.settings.put(DEFAULT_SETTINGS);
     const localStarts = new Set((await db.cycles.toArray()).map((c) => c.startDate));
+    // restauration sur appareil vierge : les réglages importés s'appliquent ;
+    // sinon les réglages locaux gagnent, comme les logs
+    if (localStarts.size === 0 && payload.settings) {
+      const current = (await db.settings.get('singleton')) ?? null;
+      if (current) {
+        const { locale, avgPeriodLength, reducedMotion } = payload.settings;
+        await db.settings.put({
+          ...current,
+          ...(locale ? { locale } : null),
+          ...(avgPeriodLength ? { avgPeriodLength } : null),
+          ...(reducedMotion ? { reducedMotion } : null),
+        });
+      }
+    }
     for (const cycle of payload.cycles) {
       if (!localStarts.has(cycle.startDate)) {
         await db.cycles.add({ ...cycle, id: cycle.id || ulid() });
@@ -194,5 +220,13 @@ export const mergeImport = async (payload: ImportPayload): Promise<void> => {
     }
     await rechainLengths();
     await recomputeAvgPeriod();
+    // restaurer des données implique d'avoir déjà été onboardée :
+    // ne pas reposer la question initiale après un import
+    if (payload.cycles.length > 0 || payload.logs.length > 0) {
+      const settings = await db.settings.get('singleton');
+      if (settings && !settings.onboardedAt) {
+        await db.settings.update('singleton', { onboardedAt: new Date().toISOString() });
+      }
+    }
   });
 };

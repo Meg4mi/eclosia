@@ -43,7 +43,10 @@ export function LogRow({ date, log, suggestedSymptoms, onOpenCatalog }: LogRowPr
     <div className={styles.log}>
       <div className={styles.logHead}>
         <span className={styles.title}>{dict.today.log_title}</span>
-        <span className={notice ? `${styles.saved} ${styles.savedShow}` : styles.saved}>
+        <span
+          className={notice ? `${styles.saved} ${styles.savedShow}` : styles.saved}
+          aria-live="polite"
+        >
           {notice === 'newCycle' ? (
             <>
               {dict.today.new_cycle}{' '}
@@ -54,7 +57,7 @@ export function LogRow({ date, log, suggestedSymptoms, onOpenCatalog }: LogRowPr
                   setNotice(null);
                 }}
               >
-                {dict.today.undo}
+                <span>{dict.today.undo}</span>
               </button>
             </>
           ) : (

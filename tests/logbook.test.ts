@@ -119,6 +119,26 @@ describe('mergeImport — fusion sans écrasement', () => {
     expect(log?.symptoms).toEqual([]);
   });
 
+  it('appareil vierge : les réglages importés s’appliquent ; sinon le local gagne', async () => {
+    await mergeImport({
+      cycles: [{ id: 'i1', startDate: '2026-05-01' }],
+      logs: [],
+      settings: { locale: 'en', avgPeriodLength: 6 },
+    });
+    let settings = await db.settings.get('singleton');
+    expect(settings?.locale).toBe('en');
+    expect(settings?.avgPeriodLength).toBe(6);
+
+    // second import sur données existantes : les réglages locaux sont conservés
+    await mergeImport({
+      cycles: [{ id: 'i2', startDate: '2026-06-01' }],
+      logs: [],
+      settings: { locale: 'fr', avgPeriodLength: 3 },
+    });
+    settings = await db.settings.get('singleton');
+    expect(settings?.locale).toBe('en');
+  });
+
   it('ajoute cycles et logs absents, déduplique par startDate, re-chaîne les longueurs', async () => {
     await startFirstCycle('2026-06-01');
     await mergeImport({
