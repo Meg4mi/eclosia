@@ -6,14 +6,14 @@
  */
 
 import { m } from 'motion/react';
-import { fade } from '@/lib/motion-tokens';
+import { screenIn } from '@/lib/motion-tokens';
 
 export default function Template({ children }: { children: React.ReactNode }) {
   return (
     <m.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 22 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={fade}
+      transition={screenIn}
       style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: '100dvh' }}
     >
       {children}

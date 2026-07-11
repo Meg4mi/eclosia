@@ -44,8 +44,8 @@ export function FlowChip({
             <m.span
               key={i}
               className={filled ? `${styles.drop} ${styles.dropFilled}` : styles.drop}
-              animate={justFilled ? { scale: [1, 1.45, 1] } : { scale: 1 }}
-              transition={{ duration: 0.35, ease: 'easeOut' }}
+              animate={justFilled ? { scale: [1, 1.7, 1] } : { scale: 1 }}
+              transition={{ duration: 0.45, ease: 'easeOut' }}
             />
           );
         })}

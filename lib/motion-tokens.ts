@@ -12,3 +12,6 @@ export const sheetTransition: Transition = { duration: 0.48, ease: [0.32, 0.72, 
 
 /** Fondu unique (backdrop, apparitions discrètes) — .35s comme le prototype. */
 export const fade: Transition = { duration: 0.35, ease: 'easeOut' };
+
+/** Arrivée d'un écran : même courbe que la feuille, plus ample que le fondu. */
+export const screenIn: Transition = { duration: 0.5, ease: [0.32, 0.72, 0.28, 1] };

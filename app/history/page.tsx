@@ -76,9 +76,9 @@ export default function HistoryPage() {
   const renderCycle = (cycle: Cycle, length: number, meta: string, index: number) => (
     <m.div
       key={cycle.id}
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ ...fade, delay: Math.min(index, 8) * 0.05 }}
+      transition={{ ...fade, duration: 0.45, delay: Math.min(index, 8) * 0.08 }}
     >
       <button
         className={styles.row}

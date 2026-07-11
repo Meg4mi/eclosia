@@ -15,9 +15,17 @@
   height: 100%;
 }
 
-/* l'encre naît en fondu à l'arrivée sur le cadran */
+/* chorégraphie d'arrivée : l'encre naît, puis l'instrument, puis le centre */
 .canvasBirth {
-  animation: inkBirth 1.2s ease-out;
+  animation: inkBirth 1.6s ease-out;
+}
+
+.overlayBirth {
+  animation: inkBirth 0.9s ease-out 0.35s backwards;
+}
+
+.centerBirth {
+  animation: centerBirth 0.9s ease-out 0.55s backwards;
 }
 
 @keyframes inkBirth {
@@ -26,6 +34,17 @@
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes centerBirth {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

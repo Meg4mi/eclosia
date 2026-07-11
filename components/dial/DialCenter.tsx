@@ -7,11 +7,12 @@ export interface DialCenterProps {
   dayLetter: string;
   dayNumber: number | null; // null en mode découverte
   context: string;
+  birth?: boolean; // chorégraphie d'arrivée (désactivée en reduced-motion)
 }
 
-export function DialCenter({ phaseName, dayLetter, dayNumber, context }: DialCenterProps) {
+export function DialCenter({ phaseName, dayLetter, dayNumber, context, birth = false }: DialCenterProps) {
   return (
-    <div className={styles.center}>
+    <div className={birth ? `${styles.center} ${styles.centerBirth}` : styles.center}>
       <div className={styles.phaseName}>{phaseName}</div>
       <div className={styles.day}>
         {dayNumber !== null ? (

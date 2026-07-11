@@ -13,8 +13,15 @@ import { saveSettings } from '@/lib/db';
 import { startFirstCycle } from '@/lib/logbook';
 import { addDays, todayISO } from '@/lib/dates';
 import { APP_NAME } from '@/lib/config';
-import { fade } from '@/lib/motion-tokens';
+import { fade, screenIn } from '@/lib/motion-tokens';
 import styles from './onboarding.module.css';
+
+/** Entrée orchestrée du premier écran : chaque bloc se lève l'un après l'autre. */
+const enter = (order: number) => ({
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0 },
+  transition: { ...screenIn, delay: order * 0.12 },
+});
 
 /** Grille d'un mois : lundi en tête, cases vides avant le 1er. */
 const monthGrid = (year: number, month: number): (string | null)[] => {
@@ -65,12 +72,18 @@ export function Onboarding() {
 
   return (
     <div className={styles.screen}>
-      <div className={styles.wordmark}>{APP_NAME}</div>
+      <m.div className={styles.wordmark} {...enter(0)}>
+        {APP_NAME}
+      </m.div>
 
-      <h1 className={styles.question}>{dict.onboarding.question}</h1>
-      <p className={styles.hint}>{dict.onboarding.hint}</p>
+      <m.h1 className={styles.question} {...enter(1)}>
+        {dict.onboarding.question}
+      </m.h1>
+      <m.p className={styles.hint} {...enter(2)}>
+        {dict.onboarding.hint}
+      </m.p>
 
-      <div className={styles.calendar}>
+      <m.div className={styles.calendar} {...enter(3)}>
         <div className={styles.monthNav}>
           <button
             className={styles.monthBtn}
@@ -118,13 +131,13 @@ export function Onboarding() {
             ),
           )}
         </div>
-      </div>
+      </m.div>
 
-      <div className={styles.actions}>
+      <m.div className={styles.actions} {...enter(4)}>
         {selected && (
           <m.button
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 10, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={fade}
             className={styles.start}
             onClick={() => void finish(selected)}
@@ -136,7 +149,7 @@ export function Onboarding() {
         <button className={styles.unknown} onClick={() => void finish(null)} disabled={busy}>
           {dict.onboarding.unknown}
         </button>
-      </div>
+      </m.div>
     </div>
   );
 }

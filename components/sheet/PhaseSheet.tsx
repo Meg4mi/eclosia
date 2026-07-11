@@ -96,9 +96,9 @@ export function PhaseSheet({ phase, prediction, patterns, closedCount, onClose }
                 <m.div
                   key={`${p.symptomId}-${p.mode}`}
                   className={styles.pattern}
-                  initial={{ opacity: 0, y: 6 }}
+                  initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ ...fade, delay: 0.12 + i * 0.06 }}
+                  transition={{ ...fade, duration: 0.45, delay: 0.2 + i * 0.1 }}
                 >
                   {/* contenu issu de nos seuls dictionnaires — pas d'entrée utilisatrice */}
                   <span dangerouslySetInnerHTML={{ __html: html }} />

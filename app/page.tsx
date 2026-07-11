@@ -172,6 +172,7 @@ export default function TodayPage() {
           dayLetter={dict.common.day}
           uncertLabel={dict.prediction.uncert_label}
           showUncert={!discovery}
+          birth={!reduced}
           onPhaseTap={setOpenPhase}
         />
         <DialCenter
@@ -179,6 +180,7 @@ export default function TodayPage() {
           dayLetter={dict.common.day}
           dayNumber={todayDay}
           context={centerCtx}
+          birth={!reduced}
         />
       </div>
 
@@ -188,9 +190,9 @@ export default function TodayPage() {
           <m.span
             key={discovery ? 'discovery' : `${windowText}·${confText}`}
             style={{ display: 'block' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
             transition={fade}
           >
             {discovery ? (
