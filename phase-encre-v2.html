@@ -269,7 +269,7 @@ for(let d=0;d<L;d++){
 el('path',{d:arc(L-SD-1,L+0,RO+22),class:'uwin'});
 for(const p of Object.values(PH)){
   const [x,y]=pt(ang((p.from-1+p.to)/2),RO-38);
-  if(p.key!=='lute'){const t=el('text',{x,y:y+4,class:'plab'});t.textContent=p.name;}
+  {const t=el('text',{x,y:y+4,class:'plab'});t.textContent=p.name;}
   const h=el('path',{d:arc(p.from-1,p.to,RO),'stroke-width':64,class:'hit'});
   h.addEventListener('click',()=>openSheet(p));
 }

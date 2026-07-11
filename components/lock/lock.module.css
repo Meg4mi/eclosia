@@ -1,0 +1,71 @@
+/* Écran de verrou : le strict nécessaire, au registre de l'onboarding. */
+
+.screen {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 26px;
+  text-align: center;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: 26px;
+  margin-bottom: 34px;
+}
+
+.prompt {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+
+.input {
+  width: min(60vw, 200px);
+  background: rgba(241, 232, 226, 0.06);
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 22px;
+  letter-spacing: 0.5em;
+  text-align: center;
+  padding: 12px 0 12px 0.5em;
+  outline: none;
+}
+
+.input:focus {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.inputError {
+  composes: input;
+  border-color: color-mix(in srgb, var(--c-menst) 55%, transparent);
+  animation: lockShake 0.3s ease;
+}
+
+@keyframes lockShake {
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.error {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 13.5px;
+  color: var(--muted);
+  margin-top: 14px;
+  min-height: 20px;
+}

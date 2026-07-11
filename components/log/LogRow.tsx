@@ -22,13 +22,15 @@ export interface LogRowProps {
 
 export function LogRow({ date, log, suggestedSymptoms, onOpenCatalog }: LogRowProps) {
   const { dict } = useApp();
-  const [savedVisible, setSavedVisible] = useState(false);
+  // null : rien · 'saved' : « c'est noté » · 'newCycle' : rebase J1 + annuler
+  const [notice, setNotice] = useState<'saved' | 'newCycle' | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const flash = (): void => {
-    setSavedVisible(true);
+  const flash = (kind: 'saved' | 'newCycle' = 'saved'): void => {
+    setNotice(kind);
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => setSavedVisible(false), 1400);
+    // un rebase de cycle mérite le temps d'être lu (et annulé)
+    timer.current = setTimeout(() => setNotice(null), kind === 'newCycle' ? 8000 : 1400);
   };
 
   const flow: Flow = log?.flow ?? 0;
@@ -41,8 +43,26 @@ export function LogRow({ date, log, suggestedSymptoms, onOpenCatalog }: LogRowPr
     <div className={styles.log}>
       <div className={styles.logHead}>
         <span className={styles.title}>{dict.today.log_title}</span>
-        <span className={savedVisible ? `${styles.saved} ${styles.savedShow}` : styles.saved}>
-          {dict.today.saved}
+        <span
+          className={notice ? `${styles.saved} ${styles.savedShow}` : styles.saved}
+          aria-live="polite"
+        >
+          {notice === 'newCycle' ? (
+            <>
+              {dict.today.new_cycle}{' '}
+              <button
+                className={styles.undo}
+                onClick={() => {
+                  void setFlow(date, 0);
+                  setNotice(null);
+                }}
+              >
+                <span>{dict.today.undo}</span>
+              </button>
+            </>
+          ) : (
+            dict.today.saved
+          )}
         </span>
       </div>
       <div className={styles.logRow}>
@@ -50,7 +70,9 @@ export function LogRow({ date, log, suggestedSymptoms, onOpenCatalog }: LogRowPr
           label={dict.today.flow_chip}
           flow={flow}
           onChange={(next) => {
-            void setFlow(date, next);
+            void setFlow(date, next).then((res) => {
+              if (res.newCycleStarted) flash('newCycle');
+            });
             flash();
           }}
         />

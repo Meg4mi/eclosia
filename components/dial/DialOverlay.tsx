@@ -77,11 +77,9 @@ export function DialOverlay({
         const [x, y] = pointAt(ang((p.from - 1 + p.to) / 2, L), RO - 38);
         return (
           <g key={p.key}>
-            {p.key !== 'lute' && (
-              <text x={x} y={y + 4} className={styles.plab}>
-                {phaseNames[p.key]}
-              </text>
-            )}
+            <text x={x} y={y + 4} className={styles.plab}>
+              {phaseNames[p.key]}
+            </text>
             <path
               d={arcPath(p.from - 1, p.to, RO, L)}
               strokeWidth={64}

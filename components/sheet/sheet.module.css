@@ -19,6 +19,7 @@
   max-height: 78dvh;
   overflow-y: auto;
   overscroll-behavior: contain;
+  outline: none;
 }
 
 .grab {

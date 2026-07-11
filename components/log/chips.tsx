@@ -29,7 +29,13 @@ export function FlowChip({
       {label}
       <span className={styles.drops}>
         {[0, 1, 2].map((i) => (
-          <span key={i} className={flow > i ? `${styles.drop} ${styles.dropFilled}` : styles.drop} />
+          <m.span
+            key={i}
+            className={flow > i ? `${styles.drop} ${styles.dropFilled}` : styles.drop}
+            // la goutte qui vient de se remplir marque le coup d'un petit rebond
+            animate={flow > i ? { scale: [1, 1.45, 1] } : { scale: 1 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+          />
         ))}
       </span>
     </m.button>

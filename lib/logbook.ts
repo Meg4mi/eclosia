@@ -7,9 +7,8 @@
  */
 
 import { ulid } from 'ulid';
-import { db } from './db';
+import { db, DEFAULT_SETTINGS } from './db';
 import { addDays, diffDays } from './dates';
-import { DEFAULT_PERIOD_LENGTH } from './config';
 import type { Cycle, DailyLog, Flow } from './types';
 
 const EXTEND_MAX_DAYS = 10;
@@ -48,10 +47,9 @@ const recomputeAvgPeriod = async (): Promise<void> => {
     .slice(-6)
     .map((c) => diffDays(c.startDate, c.endDate as string) + 1)
     .filter((n) => n >= 1 && n <= 10);
-  const avg =
-    lengths.length > 0
-      ? Math.round(lengths.reduce((s, x) => s + x, 0) / lengths.length)
-      : DEFAULT_PERIOD_LENGTH;
+  // aucune durée observée : on ne touche pas au réglage (défaut ou importé)
+  if (lengths.length === 0) return;
+  const avg = Math.round(lengths.reduce((s, x) => s + x, 0) / lengths.length);
   const settings = await db.settings.get('singleton');
   if (settings && settings.avgPeriodLength !== avg) {
     await db.settings.update('singleton', { avgPeriodLength: avg });
@@ -72,10 +70,13 @@ const lastFlowDay = async (cycle: Cycle): Promise<string | undefined> => {
   return flowDays[flowDays.length - 1];
 };
 
-const applyFlowToCycles = async (date: string): Promise<void> => {
+/** @returns true si un nouveau cycle a été ouvert alors qu'un cycle courait déjà
+ * (le cadran rebase alors sur J1 — l'UI doit le dire et proposer d'annuler). */
+const applyFlowToCycles = async (date: string): Promise<boolean> => {
   const cycles = await sortedCycles();
   const prev = [...cycles].reverse().find((c) => c.startDate <= date);
   const next = cycles.find((c) => c.startDate > date);
+  let rebased = false;
 
   if (prev && diffDays(prev.startDate, date) <= EXTEND_MAX_DAYS) {
     // règles courantes : on étend
@@ -87,9 +88,11 @@ const applyFlowToCycles = async (date: string): Promise<void> => {
     await db.cycles.update(next.id, { startDate: date });
   } else {
     await db.cycles.add({ id: ulid(), startDate: date, endDate: date });
+    rebased = prev !== undefined && next === undefined;
   }
   await rechainLengths();
   await recomputeAvgPeriod();
+  return rebased;
 };
 
 const retractFlowFromCycles = async (date: string): Promise<void> => {
@@ -108,19 +111,38 @@ const retractFlowFromCycles = async (date: string): Promise<void> => {
   await recomputeAvgPeriod();
 };
 
+export interface SetFlowResult {
+  /** Un nouveau cycle vient de s'ouvrir à cette date (le cadran rebase sur J1). */
+  newCycleStarted: boolean;
+}
+
 /** Écrit le flow d'un jour et met les cycles en cohérence. */
-export const setFlow = async (date: string, flow: Flow): Promise<void> => {
+export const setFlow = async (date: string, flow: Flow): Promise<SetFlowResult> => {
   requestPersistence();
-  await db.transaction('rw', db.cycles, db.logs, db.settings, async () => {
+  return db.transaction('rw', db.cycles, db.logs, db.settings, async () => {
     const existing = await db.logs.get(date);
     const hadFlow = (existing?.flow ?? 0) > 0;
     await db.logs.put({ date, flow, symptoms: existing?.symptoms ?? [], note: existing?.note });
-    if (flow > 0 && !hadFlow) await applyFlowToCycles(date);
+    let newCycleStarted = false;
+    if (flow > 0 && !hadFlow) newCycleStarted = await applyFlowToCycles(date);
     if (flow === 0 && hadFlow) await retractFlowFromCycles(date);
     if (flow > 0 && hadFlow) {
       // intensité modifiée : l'étendue des règles peut changer (ex. endDate)
       await applyFlowToCycles(date);
     }
+    return { newCycleStarted };
+  });
+};
+
+/** Note libre du jour — vide = retirée. */
+export const setNote = async (date: string, note: string): Promise<void> => {
+  requestPersistence();
+  const existing = await db.logs.get(date);
+  await db.logs.put({
+    date,
+    flow: existing?.flow ?? 0,
+    symptoms: existing?.symptoms ?? [],
+    note: note.trim() === '' ? undefined : note,
   });
 };
 
@@ -169,7 +191,23 @@ export type ImportPayload = {
  */
 export const mergeImport = async (payload: ImportPayload): Promise<void> => {
   await db.transaction('rw', db.cycles, db.logs, db.settings, async () => {
+    // import juste après un effacement : recréer le singleton de réglages
+    if (!(await db.settings.get('singleton'))) await db.settings.put(DEFAULT_SETTINGS);
     const localStarts = new Set((await db.cycles.toArray()).map((c) => c.startDate));
+    // restauration sur appareil vierge : les réglages importés s'appliquent ;
+    // sinon les réglages locaux gagnent, comme les logs
+    if (localStarts.size === 0 && payload.settings) {
+      const current = (await db.settings.get('singleton')) ?? null;
+      if (current) {
+        const { locale, avgPeriodLength, reducedMotion } = payload.settings;
+        await db.settings.put({
+          ...current,
+          ...(locale ? { locale } : null),
+          ...(avgPeriodLength ? { avgPeriodLength } : null),
+          ...(reducedMotion ? { reducedMotion } : null),
+        });
+      }
+    }
     for (const cycle of payload.cycles) {
       if (!localStarts.has(cycle.startDate)) {
         await db.cycles.add({ ...cycle, id: cycle.id || ulid() });
@@ -182,5 +220,13 @@ export const mergeImport = async (payload: ImportPayload): Promise<void> => {
     }
     await rechainLengths();
     await recomputeAvgPeriod();
+    // restaurer des données implique d'avoir déjà été onboardée :
+    // ne pas reposer la question initiale après un import
+    if (payload.cycles.length > 0 || payload.logs.length > 0) {
+      const settings = await db.settings.get('singleton');
+      if (settings && !settings.onboardedAt) {
+        await db.settings.update('singleton', { onboardedAt: new Date().toISOString() });
+      }
+    }
   });
 };

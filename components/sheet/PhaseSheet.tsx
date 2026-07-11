@@ -5,7 +5,9 @@
  * L'accent global glisse vers la couleur de la phase consultée (géré en amont).
  */
 
+import { m } from 'motion/react';
 import { useApp } from '@/components/AppShell';
+import { fade } from '@/lib/motion-tokens';
 import { formatDate, tpl } from '@/i18n';
 import { parseISO } from '@/lib/dates';
 import { ovulationDay } from '@/lib/engine';
@@ -81,7 +83,7 @@ export function PhaseSheet({ phase, prediction, patterns, closedCount, onClose }
           ) : phasePatterns.length === 0 ? (
             <div className={styles.waiting}>{dict.sheet.patterns_none}</div>
           ) : (
-            phasePatterns.map((p) => {
+            phasePatterns.map((p, i) => {
               const template =
                 p.mode === 'fromStart' ? dict.patterns.from_start : dict.patterns.before_period;
               const html = tpl(template, {
@@ -91,13 +93,19 @@ export function PhaseSheet({ phase, prediction, patterns, closedCount, onClose }
                 n: p.total,
               });
               return (
-                <div key={`${p.symptomId}-${p.mode}`} className={styles.pattern}>
+                <m.div
+                  key={`${p.symptomId}-${p.mode}`}
+                  className={styles.pattern}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ ...fade, delay: 0.12 + i * 0.06 }}
+                >
                   {/* contenu issu de nos seuls dictionnaires — pas d'entrée utilisatrice */}
                   <span dangerouslySetInnerHTML={{ __html: html }} />
                   <span className={styles.patternSrc}>
                     {tpl(dict.sheet.pattern_source, { n: p.total })}
                   </span>
-                </div>
+                </m.div>
               );
             })
           )}

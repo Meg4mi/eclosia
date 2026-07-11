@@ -4,7 +4,9 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { AnimatePresence, m } from 'motion/react';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { fade } from '@/lib/motion-tokens';
 import { useApp } from '@/components/AppShell';
 import { InkRing } from '@/components/dial/InkRing';
 import { DialOverlay } from '@/components/dial/DialOverlay';
@@ -15,7 +17,8 @@ import { CatalogSheet } from '@/components/sheet/CatalogSheet';
 import { Nav } from '@/components/nav/Nav';
 import { Onboarding } from '@/components/onboarding/Onboarding';
 import { db } from '@/lib/db';
-import { todayISO, parseISO } from '@/lib/dates';
+import { parseISO } from '@/lib/dates';
+import { useToday } from '@/lib/hooks/useToday';
 import {
   closedCycles,
   dayOf,
@@ -44,7 +47,7 @@ const DISMISSED = {
 
 export default function TodayPage() {
   const { settings, dict, locale, reduced } = useApp();
-  const today = todayISO();
+  const today = useToday();
 
   const cycles = useLiveQuery(() => db.cycles.toArray(), [], undefined);
   const log = useLiveQuery(() => db.logs.get(today), [today], undefined);
@@ -87,8 +90,9 @@ export default function TodayPage() {
         cycles ?? [],
         logs ?? [],
         settings.avgPeriodLength,
+        L,
       ),
-    [currentPhase?.key, cycles, logs, settings.avgPeriodLength],
+    [currentPhase?.key, cycles, logs, settings.avgPeriodLength, L],
   );
 
   // chargement initial d'IndexedDB (<50 ms) : la coquille reste stable, rien ne clignote
@@ -179,16 +183,28 @@ export default function TodayPage() {
       </div>
 
       <div className={styles.prediction}>
-        {discovery ? (
-          dict.today.discovery_prediction
-        ) : (
-          <>
-            {predBefore}
-            <em className={styles.predictionEm}>{windowText}</em>
-            {predAfter}
-            <span className={styles.conf}>{confText}</span>
-          </>
-        )}
+        {/* la fenêtre qui se resserre après un log arrive en fondu */}
+        <AnimatePresence mode="wait" initial={false}>
+          <m.span
+            key={discovery ? 'discovery' : `${windowText}·${confText}`}
+            style={{ display: 'block' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={fade}
+          >
+            {discovery ? (
+              dict.today.discovery_prediction
+            ) : (
+              <>
+                {predBefore}
+                <em className={styles.predictionEm}>{windowText}</em>
+                {predAfter}
+                <span className={styles.conf}>{confText}</span>
+              </>
+            )}
+          </m.span>
+        </AnimatePresence>
       </div>
 
       {showAtypical && (

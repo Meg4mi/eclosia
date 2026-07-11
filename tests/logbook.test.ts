@@ -28,6 +28,13 @@ describe('setFlow — ouverture et extension de cycles', () => {
     expect(cycles[0]?.endDate).toBe('2026-06-03');
   });
 
+  it('signale le rebase de cadran : nouveau cycle alors qu’un cycle courait', async () => {
+    expect((await setFlow('2026-06-01', 2)).newCycleStarted).toBe(false); // premier cycle : J1 attendu
+    expect((await setFlow('2026-06-03', 1)).newCycleStarted).toBe(false); // extension des règles
+    expect((await setFlow('2026-06-29', 2)).newCycleStarted).toBe(true); // rebase → l'UI propose d'annuler
+    expect((await setFlow('2026-06-29', 3)).newCycleStarted).toBe(false); // simple changement d'intensité
+  });
+
   it('flow > 10 j après le dernier start : nouveau cycle + clôture du précédent', async () => {
     await setFlow('2026-06-01', 2);
     await setFlow('2026-06-29', 3);
@@ -110,6 +117,26 @@ describe('mergeImport — fusion sans écrasement', () => {
     const log = await db.logs.get('2026-06-01');
     expect(log?.flow).toBe(2);
     expect(log?.symptoms).toEqual([]);
+  });
+
+  it('appareil vierge : les réglages importés s’appliquent ; sinon le local gagne', async () => {
+    await mergeImport({
+      cycles: [{ id: 'i1', startDate: '2026-05-01' }],
+      logs: [],
+      settings: { locale: 'en', avgPeriodLength: 6 },
+    });
+    let settings = await db.settings.get('singleton');
+    expect(settings?.locale).toBe('en');
+    expect(settings?.avgPeriodLength).toBe(6);
+
+    // second import sur données existantes : les réglages locaux sont conservés
+    await mergeImport({
+      cycles: [{ id: 'i2', startDate: '2026-06-01' }],
+      logs: [],
+      settings: { locale: 'fr', avgPeriodLength: 3 },
+    });
+    settings = await db.settings.get('singleton');
+    expect(settings?.locale).toBe('en');
   });
 
   it('ajoute cycles et logs absents, déduplique par startDate, re-chaîne les longueurs', async () => {

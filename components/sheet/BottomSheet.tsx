@@ -59,8 +59,31 @@ export function BottomSheet({ open, onClose, accent, children }: BottomSheetProp
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
+    // le focus entre dans la feuille, y reste (Tab cyclique), et revient
+    // à l'élément déclencheur à la fermeture
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    el?.focus({ preventScroll: true });
+    const FOCUSABLE = 'button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])';
+
     const onKeyDown = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') onCloseRef.current();
+      if (e.key === 'Escape') {
+        onCloseRef.current();
+        return;
+      }
+      if (e.key !== 'Tab' || !el) return;
+      const focusables = [...el.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(
+        (f) => f.offsetParent !== null,
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0] as HTMLElement;
+      const last = focusables[focusables.length - 1] as HTMLElement;
+      if (e.shiftKey && (document.activeElement === first || document.activeElement === el)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     addEventListener('keydown', onKeyDown);
 
@@ -122,6 +145,7 @@ export function BottomSheet({ open, onClose, accent, children }: BottomSheetProp
       el?.removeEventListener('touchmove', onTouchMove);
       el?.removeEventListener('touchend', onTouchEnd);
       el?.removeEventListener('touchcancel', onTouchEnd);
+      previouslyFocused?.focus({ preventScroll: true });
     };
   }, [open, y]);
 
@@ -164,6 +188,7 @@ export function BottomSheet({ open, onClose, accent, children }: BottomSheetProp
             }}
             role="dialog"
             aria-modal="true"
+            tabIndex={-1}
           >
             <div
               className={styles.grabZone}

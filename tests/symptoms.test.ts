@@ -42,6 +42,20 @@ describe('symptomsForPhase', () => {
     expect(chips).toHaveLength(3);
   });
 
+  it('les logs du cycle en cours comptent aussi (sur sa longueur estimée)', () => {
+    const cycles = [cycle('2026-01-01', 28), cycle('2026-01-29', 28), cycle('2026-02-26')];
+    const logs: DailyLog[] = [
+      // 1 occurrence en cycles clos
+      log(addDays('2026-01-01', 1), ['headache']),
+      log(addDays('2026-01-29', 1), ['dizziness']),
+      // 2 occurrences dans le cycle EN COURS (J2, J3 — menstruelle)
+      log(addDays('2026-02-26', 1), ['back_pain']),
+      log(addDays('2026-02-26', 2), ['back_pain']),
+    ];
+    const chips = symptomsForPhase('menst', cycles, logs, 5, 28);
+    expect(chips[0]).toBe('back_pain');
+  });
+
   it('complète avec les défauts si moins de 3 symptômes observés', () => {
     const cycles = [cycle('2026-01-01', 28), cycle('2026-01-29', 28), cycle('2026-02-26')];
     const logs = [log('2026-01-02', ['headache']), log('2026-01-30', ['headache'])];

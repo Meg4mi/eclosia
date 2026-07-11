@@ -23,6 +23,8 @@ export interface Settings {
   reducedMotion: 'system' | 'on' | 'off';
   onboardedAt?: string;
   avgPeriodLength: number; // défaut 5, recalculé
+  pinHash?: string; // verrou local — hash PBKDF2, jamais le code
+  pinSalt?: string;
 }
 
 export type PhaseKey = 'menst' | 'foll' | 'ovul' | 'lute';

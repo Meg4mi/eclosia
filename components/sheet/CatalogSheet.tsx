@@ -7,6 +7,7 @@ import { SYMPTOM_IDS } from '@/lib/symptoms';
 import { toggleSymptom } from '@/lib/logbook';
 import type { DailyLog } from '@/lib/types';
 import { SymptomChip } from '@/components/log/chips';
+import { NoteField } from '@/components/log/NoteField';
 import { BottomSheet } from './BottomSheet';
 import styles from './sheet.module.css';
 
@@ -35,6 +36,7 @@ export function CatalogSheet({ open, date, log, onClose }: CatalogSheetProps) {
           />
         ))}
       </div>
+      <NoteField date={date} log={log} />
     </BottomSheet>
   );
 }
