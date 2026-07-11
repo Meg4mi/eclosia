@@ -1,0 +1,130 @@
+/* Bottom sheet — styles du prototype ; le transform est piloté par Motion. */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 7, 11, 0.6);
+  z-index: 8;
+}
+
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9;
+  background: var(--sheet-bg);
+  border-radius: 28px 28px 0 0;
+  padding: 14px 28px calc(env(safe-area-inset-bottom) + 30px);
+  max-height: 78dvh;
+  overflow-y: auto;
+  touch-action: none;
+}
+
+.grab {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--hair);
+  margin: 0 auto 20px;
+}
+
+.eyebrow {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--sa, var(--accent));
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 40px;
+  margin: 2px 0 0;
+  font-variation-settings: 'opsz' 144;
+  letter-spacing: -0.01em;
+}
+
+.range {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 13.5px;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+
+.desc {
+  font-size: 16px;
+  line-height: 1.6;
+  opacity: 0.92;
+  margin-bottom: 18px;
+}
+
+.fact {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(241, 232, 226, 0.07);
+  font-size: 15px;
+}
+
+.factK {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.factV {
+  text-align: right;
+}
+
+.next {
+  font-style: italic;
+  font-size: 15px;
+  color: var(--muted);
+  margin: 16px 0 20px;
+  line-height: 1.55;
+}
+
+.ptTitle {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.pattern {
+  border-left: 2px solid var(--sa, var(--accent));
+  padding: 2px 0 2px 14px;
+  margin-bottom: 12px;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.pattern em {
+  font-style: italic;
+  color: #fff;
+}
+
+.patternSrc {
+  display: block;
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.waiting {
+  font-style: italic;
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.chipGrid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 6px;
+}

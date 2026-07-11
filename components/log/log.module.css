@@ -1,0 +1,91 @@
+/* Ligne de saisie — styles transposés du prototype, valeurs identiques. */
+
+.log {
+  position: relative;
+  z-index: 1;
+  margin: 22px auto calc(env(safe-area-inset-bottom) + 28px);
+  width: min(92vw, 410px);
+  border-top: 1px solid var(--hair);
+  padding-top: 16px;
+}
+
+.logHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.saved {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.savedShow {
+  opacity: 0.9;
+}
+
+.logRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  border: none;
+  background: rgba(241, 232, 226, 0.06);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 400;
+  padding: 10px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.35s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.chipOn {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: #fff;
+}
+
+.chip:active {
+  transform: scale(0.96);
+}
+
+.drops {
+  display: flex;
+  gap: 2px;
+}
+
+.drop {
+  width: 7px;
+  height: 9px;
+  border-radius: 50% / 60% 60% 40% 40%;
+  background: var(--hair);
+  transform: rotate(180deg);
+}
+
+.dropFilled {
+  background: var(--c-menst);
+}
+
+.more {
+  composes: chip;
+  color: var(--muted);
+  font-style: italic;
+}

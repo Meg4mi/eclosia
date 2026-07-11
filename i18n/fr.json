@@ -88,6 +88,7 @@
     "ovulation_hint": "ovulation probable J{ov1}–J{ov2}",
     "patterns_title": "Tes patterns",
     "patterns_waiting": "Encore {n} {cycles} et je pourrai te montrer tes patterns personnels.",
+    "patterns_none": "Rien de net dans cette phase pour l'instant — je continue d'observer.",
     "pattern_source": "vu sur tes {n} derniers cycles"
   },
   "patterns": {

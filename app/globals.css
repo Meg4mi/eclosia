@@ -1,0 +1,62 @@
+/* Tokens et base — transposition exacte de phase-encre-v2.html (§6 du brief). */
+
+:root {
+  --bg: #120d14;
+  --ink: #f1e8e2;
+  --muted: #8d7f88;
+  --hair: rgba(241, 232, 226, 0.12);
+  --c-menst: #e2543f;
+  --c-foll: #a9c27a;
+  --c-ovul: #f0b153;
+  --c-lute: #a678c9;
+  --accent: var(--c-ovul);
+  --sheet-bg: #1b141d;
+  --font-display: var(--font-fraunces), serif;
+  --font-text: var(--font-newsreader), serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-weight: 300;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* teinte ambiante qui suit la phase courante, transition 1,5 s */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(110% 80% at 50% 15%, var(--tint, rgba(240, 177, 83, 0.07)), transparent 62%);
+  transition: background 1.5s ease;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+input {
+  font: inherit;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+}

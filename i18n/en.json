@@ -88,6 +88,7 @@
     "ovulation_hint": "ovulation likely D{ov1}–D{ov2}",
     "patterns_title": "Your patterns",
     "patterns_waiting": "{n} more {cycles} and I'll be able to show you your personal patterns.",
+    "patterns_none": "Nothing clear in this phase yet — I keep watching.",
     "pattern_source": "seen across your last {n} cycles"
   },
   "patterns": {
