@@ -30,7 +30,7 @@ import {
   phases,
   predict,
 } from '@/lib/engine';
-import { neutralColors, ribbonColors } from '@/lib/ink';
+import { INK_COLORS, neutralColors, ribbonColors } from '@/lib/ink';
 import { patterns as computePatterns } from '@/lib/patterns';
 import { symptomsForPhase } from '@/lib/symptoms';
 import { useAccent } from '@/lib/hooks/useAccent';
@@ -75,7 +75,7 @@ export default function TodayPage() {
   const late = isLate(prediction, today);
 
   const colors = useMemo(
-    () => (discovery ? neutralColors(L) : ribbonColors(L, ranges, PHASE_COLORS)),
+    () => (discovery ? neutralColors(L) : ribbonColors(L, ranges, INK_COLORS)),
     [discovery, L, ranges],
   );
 

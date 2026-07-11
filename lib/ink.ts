@@ -9,6 +9,20 @@ import { phaseOfDay } from './engine';
 
 export type RGB = [number, number, number];
 
+/**
+ * Pigments du ruban. Le filament éclaircit chaque couleur de ×1,28 avec
+ * écrêtage : le canal dominant du rouge (#e2543f) sature à 255 pendant que
+ * vert et bleu montent — le rendu virait structurellement au corail. L'encre
+ * menstruelle part donc plus profonde pour rendre un vrai rouge à l'écran ;
+ * l'accent UI (labels, chips, feuille) reste --c-menst.
+ */
+export const INK_COLORS: Record<PhaseKey, string> = {
+  menst: '#b23122',
+  foll: '#a9c27a',
+  ovul: '#f0b153',
+  lute: '#a678c9',
+};
+
 export const hexToRgb = (hex: string): RGB => {
   const h = hex.replace('#', '');
   return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)) as RGB;

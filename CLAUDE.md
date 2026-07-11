@@ -68,6 +68,7 @@ Aucune revendication contraceptive ou médicale · pas de compte, cloud sync, fr
 - Wordmark « Phase » → `APP_NAME` ; tagline « encre vivante · précision d'instrument » supprimée partout.
 - Label « lutéale » ajouté sur le cadran (le prototype l'omettait) — prototype de référence mis à jour en conséquence.
 - Lissage du ruban : 2 passes .22/.56/.22 au lieu de 3 passes .28/.44/.28 (le rouge menstruel était délavé sur 5 jours) — prototype de référence mis à jour à l'identique, frontières toujours en dégradé.
+- Encre menstruelle du ruban : #b23122 (`INK_COLORS` dans lib/ink.ts) au lieu du token #e2543f — le filament éclaircit ×1,28 avec écrêtage, ce qui virait le rouge au corail ; l'accent UI reste --c-menst. Prototype aligné.
 - `domMax` au lieu de `domAnimation` (le drag l'exige).
 - En reduced-motion, un resize redessine une frame statique (bug silencieux du prototype, corrigé).
 
