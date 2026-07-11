@@ -151,8 +151,6 @@ export default function TodayPage() {
         <div className={styles.wordmark}>{APP_NAME}</div>
         <div className={styles.date}>{formatFullDate(parseISO(today), locale)}</div>
       </header>
-      <div className={styles.sub}>{dict.common.tagline}</div>
-
       <div className={dialStyles.dialWrap}>
         <InkRing
           colors={colors}

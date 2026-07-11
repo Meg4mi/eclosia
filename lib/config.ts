@@ -4,7 +4,7 @@
  */
 export const APP_NAME = 'Éclose';
 export const APP_DOMAIN = 'eclose.app';
-export const APP_TAGLINE = "encre vivante · précision d'instrument";
+export const APP_DESCRIPTION = 'Ton cycle, sur ton appareil.';
 export const THEME_COLOR = '#120d14';
 
 export const DEFAULT_LOCALE = 'fr' as const;

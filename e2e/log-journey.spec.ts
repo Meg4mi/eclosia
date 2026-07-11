@@ -13,7 +13,7 @@ test('onboarding une question, saisie en un geste, données persistées', async 
   await page.getByRole('button', { name: 'commencer' }).click();
 
   // — cadran : jour du cycle affiché, phrase contextuelle, prédiction honnête
-  await expect(page.getByText('encre vivante')).toBeVisible();
+  await expect(page.getByText("aujourd'hui, en un geste")).toBeVisible();
   await expect(page.locator('canvas')).toBeVisible();
   await expect(page.getByText(/Prochaines règles|prédiction/)).toBeVisible();
 

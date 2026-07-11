@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Fraunces, Newsreader } from 'next/font/google';
-import { APP_NAME, APP_TAGLINE, THEME_COLOR } from '@/lib/config';
+import { APP_NAME, APP_DESCRIPTION, THEME_COLOR } from '@/lib/config';
 import { AppShell } from '@/components/AppShell';
 import { SwRegister } from '@/components/SwRegister';
 import './globals.css';
@@ -24,7 +24,7 @@ const newsreader = Newsreader({
 
 export const metadata: Metadata = {
   title: APP_NAME,
-  description: APP_TAGLINE,
+  description: APP_DESCRIPTION,
   applicationName: APP_NAME,
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: APP_NAME },
 };

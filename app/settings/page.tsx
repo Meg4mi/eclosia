@@ -234,6 +234,7 @@ export default function SettingsPage() {
               value={pass}
               onChange={(e) => setPass(e.target.value)}
               autoFocus
+              autoComplete="new-password"
             />
             <input
               className={styles.input}
@@ -241,6 +242,10 @@ export default function SettingsPage() {
               placeholder={dict.settings.passphrase_confirm}
               value={pass2}
               onChange={(e) => setPass2(e.target.value)}
+              autoComplete="new-password"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') void doExport();
+              }}
             />
             <p className={styles.feedback}>{dict.settings.passphrase_hint}</p>
             <div className={styles.sheetActions}>
@@ -271,7 +276,11 @@ export default function SettingsPage() {
                   value={pass}
                   onChange={(e) => setPass(e.target.value)}
                   autoFocus
+                  autoComplete="current-password"
                   style={{ marginTop: 14 }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') void doDecryptPreview();
+                  }}
                 />
                 <div className={styles.sheetActions}>
                   <button
