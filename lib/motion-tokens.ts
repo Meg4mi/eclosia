@@ -12,7 +12,3 @@ export const sheetTransition: Transition = { duration: 0.48, ease: [0.32, 0.72, 
 
 /** Fondu unique (backdrop, apparitions discrètes) — .35s comme le prototype. */
 export const fade: Transition = { duration: 0.35, ease: 'easeOut' };
-
-/** Micro-interaction des chips : tap déjà couvert par le CSS (:active scale .96),
- * l'apparition passe par ce ressort discret. */
-export const chipIn: Transition = { type: 'spring', stiffness: 300, damping: 30 };
