@@ -181,7 +181,10 @@ const PERSONAL={
 const cnv=document.getElementById('ring'), ctx=cnv.getContext('2d');
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const h2r=h=>{h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16))};
-let cols=[];for(let d=1;d<=L;d++)cols.push(h2r(phaseOf(d).color));
+/* encre du ruban : le ×1.28 du filament écrête le rouge en corail — le
+   pigment menstruel part plus profond pour rendre un vrai rouge */
+const INK={menst:'#b23122'};
+let cols=[];for(let d=1;d<=L;d++)cols.push(h2r(INK[phaseOf(d).key]||phaseOf(d).color));
 for(let p=0;p<2;p++)cols=cols.map((c,i)=>{const a=cols[(i-1+L)%L],b=cols[(i+1)%L];
   return c.map((x,k)=>a[k]*.22+x*.56+b[k]*.22)});
 const opOf=d=>{const u=L-SD-1;return d>u?Math.max(.28,1-(d-u)/(L-u)*.75):1};
