@@ -85,6 +85,15 @@
   padding: 13px 2px;
 }
 
+.version {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--muted);
+  opacity: 0.7;
+  padding: 0 2px 13px;
+}
+
 .input {
   width: 100%;
   background: rgba(241, 232, 226, 0.06);

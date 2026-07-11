@@ -157,6 +157,7 @@
     "erase_done": "everything is erased",
     "about": "about",
     "about_text": "{app} lives entirely on your device: no account, no server, no trackers. Verifiable in your browser's dev tools — zero network requests after load.",
+    "version": "version {v} · {c} · {d}",
     "disclaimer_title": "note",
     "disclaimer": "{app} is not a medical device and cannot be used for contraception. Predictions are estimates based on your history."
   },

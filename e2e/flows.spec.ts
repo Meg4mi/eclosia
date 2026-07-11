@@ -39,4 +39,7 @@ test('corriger un jour dans l’historique, persistance, langue', async ({ page 
   await expect(page.getByRole('link', { name: 'today' })).toBeVisible();
   await page.getByRole('button', { name: 'français' }).click();
   await expect(page.getByRole('link', { name: "aujourd'hui" })).toBeVisible();
+
+  // — la version du build est affichée dans « à propos »
+  await expect(page.getByText(/version \d+\.\d+\.\d+ · [0-9a-f]{7} · \d{4}-\d{2}-\d{2}/)).toBeVisible();
 });

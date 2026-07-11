@@ -13,3 +13,9 @@ export const DEFAULT_CYCLE_LENGTH = 28;
 
 /** Extension du fichier d'export chiffré. */
 export const EXPORT_EXTENSION = '.eclose';
+
+/** Version figée au build (next.config.ts) — permet de vérifier d'un coup
+ * d'œil quel build tourne, notamment face au cache du service worker. */
+export const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? '0.0.0';
+export const APP_COMMIT = process.env.NEXT_PUBLIC_APP_COMMIT ?? 'dev';
+export const APP_BUILT_AT = process.env.NEXT_PUBLIC_APP_BUILT_AT ?? '';
