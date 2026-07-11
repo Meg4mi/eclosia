@@ -7,7 +7,7 @@
  */
 
 import { AnimatePresence, m } from 'motion/react';
-import { fade, sheetSpring } from '@/lib/motion-tokens';
+import { fade, sheetTransition } from '@/lib/motion-tokens';
 import styles from './sheet.module.css';
 
 export interface BottomSheetProps {
@@ -38,7 +38,7 @@ export function BottomSheet({ open, onClose, accent, children }: BottomSheetProp
             initial={{ y: '105%' }}
             animate={{ y: 0 }}
             exit={{ y: '105%' }}
-            transition={sheetSpring}
+            transition={sheetTransition}
             drag="y"
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={{ top: 0, bottom: 0.6 }}

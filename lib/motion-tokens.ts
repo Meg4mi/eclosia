@@ -6,8 +6,9 @@
 
 import type { Transition } from 'motion/react';
 
-/** Équivalent spring du cubic-bezier(.32,.72,.28,1) 480 ms du prototype. */
-export const sheetSpring: Transition = { type: 'spring', stiffness: 240, damping: 32, mass: 0.9 };
+/** LA courbe de sheet — celle du prototype, à l'identique :
+ * cubic-bezier(.32,.72,.28,1) sur 480 ms. Le drag-to-dismiss Motion s'y ajoute. */
+export const sheetTransition: Transition = { duration: 0.48, ease: [0.32, 0.72, 0.28, 1] };
 
 /** Fondu unique (backdrop, apparitions discrètes) — .35s comme le prototype. */
 export const fade: Transition = { duration: 0.35, ease: 'easeOut' };

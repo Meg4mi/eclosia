@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test",
+    "parity": "node scripts/parity-check.mjs",
     "gen-icons": "node scripts/gen-icons.mjs"
   },
   "dependencies": {

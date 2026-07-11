@@ -35,12 +35,21 @@ export function InkRing({ colors, L, SD, todayDay, reduced, fadeWindow }: InkRin
     let raf = 0;
     let disposed = false;
 
-    // La nappe floue est dessinée non filtrée dans un offscreen puis composée
-    // avec UN seul blur par frame : 240 blurs/frame tueraient les 60 fps sur
-    // mobile milieu de gamme (contingence prévue au §6 du brief).
-    const off = document.createElement('canvas');
-    const offCtx = off.getContext('2d');
-    if (!offCtx) return;
+    // La nappe floue est rendue AVEC le blur par trait du prototype (rendu
+    // identique au pixel près), mais dans un offscreen rafraîchi à cadence
+    // adaptative (~15 fps, contingence §6) : 240 traits filtrés par frame
+    // écrouleraient les 60 fps. Le filament net, l'aiguille et la goutte
+    // restent à 60 fps sur le canvas principal.
+    const nappe = document.createElement('canvas');
+    const nappeCtx = nappe.getContext('2d');
+    if (!nappeCtx) return;
+    let nappeTT = Number.NaN; // phase d'ondulation du dernier rendu de nappe
+    let nappeInterval = 66; // ms — 15 fps, élargi si l'appareil est lent
+    let lastNappeAt = -Infinity;
+    // le coût réel du blur est payé à la rasterisation (différée) : on jauge
+    // la lenteur de l'appareil sur le delta de frame qui SUIT un rendu de nappe
+    let nappeJustRendered = false;
+    let lastFrameT = 0;
 
     const sizeCanvas = (): void => {
       const rect = cnv.getBoundingClientRect();
@@ -48,9 +57,10 @@ export function InkRing({ colors, L, SD, todayDay, reduced, fadeWindow }: InkRin
       cnv.width = S * devicePixelRatio;
       cnv.height = S * devicePixelRatio;
       ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-      off.width = cnv.width;
-      off.height = cnv.height;
-      offCtx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+      nappe.width = cnv.width;
+      nappe.height = cnv.height;
+      nappeCtx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+      nappeTT = Number.NaN; // le contenu offscreen est perdu au resize
     };
 
     const render = (t: number): void => {
@@ -63,18 +73,19 @@ export function InkRing({ colors, L, SD, todayDay, reduced, fadeWindow }: InkRin
       const N = 240; // résolution du ruban
       const tt = reduced ? 0 : t * 0.00022;
 
-      // deux passes : nappe floue (offscreen + blur unique) puis filament net
-      offCtx.clearRect(0, 0, S, S);
-      for (const pass of [0, 1]) {
-        const target = pass === 0 ? offCtx : ctx;
+      // deux passes du prototype : nappe floue (offscreen, blur par trait,
+      // rafraîchie à ~15 fps) puis filament net à 60 fps
+      const drawPass = (target: CanvasRenderingContext2D, pass: 0 | 1, passTT: number): void => {
         for (let i = 0; i < N; i++) {
           const day = (i / N) * L;
           const a1 = angleOf(day, L);
           const a2 = angleOf(day + L / N + 0.004, L);
           // ondulation organique : rayon et épaisseur respirent lentement
-          const und = Math.sin(a1 * 3 + tt * 2) * S * 0.012 + Math.sin(a1 * 5 - tt * 1.3) * S * 0.007;
+          const und =
+            Math.sin(a1 * 3 + passTT * 2) * S * 0.012 + Math.sin(a1 * 5 - passTT * 1.3) * S * 0.007;
           const r = R + (pass === 0 ? und * 1.4 : und);
-          const w = (pass === 0 ? S * 0.075 : S * 0.02) * (1 + 0.22 * Math.sin(a1 * 4 + tt * 1.7));
+          const w =
+            (pass === 0 ? S * 0.075 : S * 0.02) * (1 + 0.22 * Math.sin(a1 * 4 + passTT * 1.7));
           const ci = Math.min(L - 1, Math.floor(day));
           const c = cols[ci] ?? ([141, 127, 136] as RGB);
           const o = (fadeWindow ? opOf(ci + 1, L, SD) : 1) * (pass === 0 ? 0.5 : 0.95);
@@ -86,13 +97,27 @@ export function InkRing({ colors, L, SD, todayDay, reduced, fadeWindow }: InkRin
           target.lineCap = 'round';
           target.stroke();
         }
-        if (pass === 0) {
-          ctx.save();
-          ctx.filter = `blur(${S * 0.045}px)`;
-          ctx.drawImage(off, 0, 0, S, S);
-          ctx.restore();
-        }
+      };
+
+      if (nappeJustRendered) {
+        // appareil lent : espacer les rendus de nappe pour ne jamais affamer
+        // l'event loop (l'ondulation ralentit, le filament reste fluide)
+        nappeInterval = Math.max(66, (t - lastFrameT) * 6);
+        nappeJustRendered = false;
       }
+      if (Number.isNaN(nappeTT) || (!reduced && t - lastNappeAt >= nappeInterval)) {
+        nappeCtx.clearRect(0, 0, S, S);
+        nappeCtx.save();
+        nappeCtx.filter = `blur(${S * 0.045}px)`;
+        drawPass(nappeCtx, 0, tt);
+        nappeCtx.restore();
+        nappeTT = tt;
+        lastNappeAt = t;
+        nappeJustRendered = true;
+      }
+      ctx.drawImage(nappe, 0, 0, S, S);
+      drawPass(ctx, 1, tt);
+      lastFrameT = t;
 
       if (todayDay !== null) {
         // aiguille hairline + goutte « aujourd'hui » qui respire
@@ -128,7 +153,11 @@ export function InkRing({ colors, L, SD, todayDay, reduced, fadeWindow }: InkRin
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(render);
     };
-    kickRef.current = start;
+    // un changement de données doit invalider la nappe pré-rendue
+    kickRef.current = () => {
+      nappeTT = Number.NaN;
+      start();
+    };
 
     sizeCanvas();
     start();
