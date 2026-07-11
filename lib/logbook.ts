@@ -134,30 +134,36 @@ export const setFlow = async (date: string, flow: Flow): Promise<SetFlowResult> 
   });
 };
 
-/** Note libre du jour — vide = retirée. */
+/** Note libre du jour — vide = retirée.
+ * Lecture + écriture dans UNE transaction : deux écritures rapprochées
+ * (ex. note tapée juste après un symptôme coché) ne s'écrasent jamais. */
 export const setNote = async (date: string, note: string): Promise<void> => {
   requestPersistence();
-  const existing = await db.logs.get(date);
-  await db.logs.put({
-    date,
-    flow: existing?.flow ?? 0,
-    symptoms: existing?.symptoms ?? [],
-    note: note.trim() === '' ? undefined : note,
+  await db.transaction('rw', db.logs, async () => {
+    const existing = await db.logs.get(date);
+    await db.logs.put({
+      date,
+      flow: existing?.flow ?? 0,
+      symptoms: existing?.symptoms ?? [],
+      note: note.trim() === '' ? undefined : note,
+    });
   });
 };
 
 export const toggleSymptom = async (date: string, symptomId: string): Promise<void> => {
   requestPersistence();
-  const existing = await db.logs.get(date);
-  const symptoms = existing?.symptoms ?? [];
-  const nextSymptoms = symptoms.includes(symptomId)
-    ? symptoms.filter((s) => s !== symptomId)
-    : [...symptoms, symptomId];
-  await db.logs.put({
-    date,
-    flow: existing?.flow ?? 0,
-    symptoms: nextSymptoms,
-    note: existing?.note,
+  await db.transaction('rw', db.logs, async () => {
+    const existing = await db.logs.get(date);
+    const symptoms = existing?.symptoms ?? [];
+    const nextSymptoms = symptoms.includes(symptomId)
+      ? symptoms.filter((s) => s !== symptomId)
+      : [...symptoms, symptomId];
+    await db.logs.put({
+      date,
+      flow: existing?.flow ?? 0,
+      symptoms: nextSymptoms,
+      note: existing?.note,
+    });
   });
 };
 
