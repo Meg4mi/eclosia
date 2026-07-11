@@ -1,6 +1,8 @@
 {
   "common": {
     "close": "fermer",
+    "update_ready": "nouvelle version prête",
+    "update_action": "recharger",
     "cancel": "annuler",
     "confirm": "confirmer",
     "back": "retour",

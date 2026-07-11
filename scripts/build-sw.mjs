@@ -41,11 +41,16 @@ const sw = `/* Service worker généré au build — precache-all, cache-first. 
 const CACHE = 'eclose-${version}';
 const ASSETS = ${JSON.stringify([...urls], null, 0)};
 
-// pas de skipWaiting : le nouveau SW attend la fermeture des anciens onglets,
-// sinon une page déjà chargée peut perdre ses chunks (noms hashés) quand
-// l'ancien cache est purgé en pleine session
+// pas de skipWaiting automatique : le nouveau SW attend la fermeture des
+// anciens onglets, sinon une page déjà chargée peut perdre ses chunks hashés
+// à la purge du cache. L'activation immédiate n'arrive QUE sur geste
+// utilisateur (« recharger » dans l'app), suivie d'un reload synchronisé.
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
+});
+
+self.addEventListener('message', (e) => {
+  if (e.data === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', (e) => {
