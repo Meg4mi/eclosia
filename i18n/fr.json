@@ -62,6 +62,8 @@
   "today": {
     "log_title": "aujourd'hui, en un geste",
     "saved": "c'est noté",
+    "new_cycle": "nouveau cycle, J1",
+    "undo": "annuler",
     "flow_chip": "règles",
     "more_symptoms": "toutes les pastilles",
     "late": "Ton cycle dépasse ta fenêtre habituelle — ça arrive, on observe.",

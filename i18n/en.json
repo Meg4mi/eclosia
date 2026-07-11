@@ -62,6 +62,8 @@
   "today": {
     "log_title": "today, in one gesture",
     "saved": "noted",
+    "new_cycle": "new cycle, D1",
+    "undo": "undo",
     "flow_chip": "period",
     "more_symptoms": "all symptoms",
     "late": "Your cycle is running past its usual window — it happens, we're watching.",

@@ -72,10 +72,13 @@ const lastFlowDay = async (cycle: Cycle): Promise<string | undefined> => {
   return flowDays[flowDays.length - 1];
 };
 
-const applyFlowToCycles = async (date: string): Promise<void> => {
+/** @returns true si un nouveau cycle a été ouvert alors qu'un cycle courait déjà
+ * (le cadran rebase alors sur J1 — l'UI doit le dire et proposer d'annuler). */
+const applyFlowToCycles = async (date: string): Promise<boolean> => {
   const cycles = await sortedCycles();
   const prev = [...cycles].reverse().find((c) => c.startDate <= date);
   const next = cycles.find((c) => c.startDate > date);
+  let rebased = false;
 
   if (prev && diffDays(prev.startDate, date) <= EXTEND_MAX_DAYS) {
     // règles courantes : on étend
@@ -87,9 +90,11 @@ const applyFlowToCycles = async (date: string): Promise<void> => {
     await db.cycles.update(next.id, { startDate: date });
   } else {
     await db.cycles.add({ id: ulid(), startDate: date, endDate: date });
+    rebased = prev !== undefined && next === undefined;
   }
   await rechainLengths();
   await recomputeAvgPeriod();
+  return rebased;
 };
 
 const retractFlowFromCycles = async (date: string): Promise<void> => {
@@ -108,19 +113,26 @@ const retractFlowFromCycles = async (date: string): Promise<void> => {
   await recomputeAvgPeriod();
 };
 
+export interface SetFlowResult {
+  /** Un nouveau cycle vient de s'ouvrir à cette date (le cadran rebase sur J1). */
+  newCycleStarted: boolean;
+}
+
 /** Écrit le flow d'un jour et met les cycles en cohérence. */
-export const setFlow = async (date: string, flow: Flow): Promise<void> => {
+export const setFlow = async (date: string, flow: Flow): Promise<SetFlowResult> => {
   requestPersistence();
-  await db.transaction('rw', db.cycles, db.logs, db.settings, async () => {
+  return db.transaction('rw', db.cycles, db.logs, db.settings, async () => {
     const existing = await db.logs.get(date);
     const hadFlow = (existing?.flow ?? 0) > 0;
     await db.logs.put({ date, flow, symptoms: existing?.symptoms ?? [], note: existing?.note });
-    if (flow > 0 && !hadFlow) await applyFlowToCycles(date);
+    let newCycleStarted = false;
+    if (flow > 0 && !hadFlow) newCycleStarted = await applyFlowToCycles(date);
     if (flow === 0 && hadFlow) await retractFlowFromCycles(date);
     if (flow > 0 && hadFlow) {
       // intensité modifiée : l'étendue des règles peut changer (ex. endDate)
       await applyFlowToCycles(date);
     }
+    return { newCycleStarted };
   });
 };
 
