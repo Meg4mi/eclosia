@@ -1,0 +1,170 @@
+{
+  "common": {
+    "tagline": "living ink · instrument precision",
+    "close": "close",
+    "cancel": "cancel",
+    "confirm": "confirm",
+    "back": "back",
+    "day": "D",
+    "cycles_count": "{n} cycles",
+    "days_count": "{n} days"
+  },
+  "nav": {
+    "today": "today",
+    "history": "history",
+    "settings": "settings"
+  },
+  "phases": {
+    "menst": {
+      "name": "menstrual",
+      "ctx": "Energy often runs low — slowing down is normal.",
+      "desc": "The lining sheds: this is your period. The body is working, even at rest.",
+      "facts": [
+        ["energy", "often low D1–D2"],
+        ["sleep", "extra need"],
+        ["mood", "heightened sensitivity"]
+      ],
+      "next": "Next: the follicular phase — energy climbs back."
+    },
+    "foll": {
+      "name": "follicular",
+      "ctx": "Energy rises, so does focus.",
+      "desc": "Estrogen climbs, a follicle matures. Often the lightest stretch of the cycle.",
+      "facts": [
+        ["energy", "steadily rising"],
+        ["sleep", "generally good"],
+        ["focus", "at its best"]
+      ],
+      "next": "Next: the ovulatory window — the cycle's peak."
+    },
+    "ovul": {
+      "name": "ovulatory",
+      "ctx": "High energy · ovulation likely around D{ov1}–D{ov2}.",
+      "desc": "Estrogen peaks, then the egg is released. A short window where everything culminates.",
+      "facts": [
+        ["energy", "at its peak"],
+        ["libido", "often highest"],
+        ["temperature", "slight rise after"]
+      ],
+      "next": "Next: the luteal phase — energy eases down."
+    },
+    "lute": {
+      "name": "luteal",
+      "ctx": "PMS may be near — protect your sleep.",
+      "desc": "Progesterone takes over. Late in this phase, PMS can appear: anticipating helps.",
+      "facts": [
+        ["energy", "winding down"],
+        ["sleep", "more fragile late phase"],
+        ["mood", "PMS possible D-4 to D-1"]
+      ],
+      "next": "Next: your period returns — {window}."
+    }
+  },
+  "today": {
+    "log_title": "today, in one gesture",
+    "saved": "noted",
+    "flow_chip": "period",
+    "more_symptoms": "all symptoms",
+    "late": "Your cycle is running past its usual window — it happens, we're watching.",
+    "discovery_phase": "discovery",
+    "discovery_ctx": "Log your first period and I'll learn your rhythm.",
+    "discovery_prediction": "No prediction yet — I'm discovering your cycle with you."
+  },
+  "prediction": {
+    "line": "Next period: {window}",
+    "window": "likely between {start} and {end}",
+    "confidence": "{level} confidence · based on {n} {cycles}",
+    "confidence_one": "{level} confidence · based on your first cycle",
+    "level_low": "low",
+    "level_medium": "medium",
+    "level_high": "high",
+    "cycle_singular": "cycle",
+    "cycle_plural": "cycles",
+    "uncert_label": "period window",
+    "long_or_short": "Your cycles fall outside the usual range (21–40 days). If it keeps happening, mentioning it to a doctor can help — no urgency."
+  },
+  "sheet": {
+    "eyebrow": "phase",
+    "ovulation_hint": "ovulation likely D{ov1}–D{ov2}",
+    "patterns_title": "Your patterns",
+    "patterns_waiting": "{n} more {cycles} and I'll be able to show you your personal patterns.",
+    "pattern_source": "seen across your last {n} cycles"
+  },
+  "patterns": {
+    "from_start": "“{symptom}” comes back around <em>D{day}</em>, {k} cycles out of {n}.",
+    "before_period": "“{symptom}” comes back at <em>D-{day} before your period</em>, {k} cycles out of {n}."
+  },
+  "onboarding": {
+    "question": "When did your last period start?",
+    "hint": "One question only. Everything stays on your device — nothing ever leaves it.",
+    "unknown": "I don't remember",
+    "start": "begin",
+    "weekdays": ["mo", "tu", "we", "th", "fr", "sa", "su"]
+  },
+  "history": {
+    "title": "history",
+    "empty": "Your closed cycles will appear here, ink after ink.",
+    "cycle_length": "{n} days",
+    "current": "current cycle",
+    "edit_hint": "tap a day to correct it",
+    "day_sheet_title": "correct this day"
+  },
+  "settings": {
+    "title": "settings",
+    "backup": "backup",
+    "export": "export my data",
+    "export_desc": "An encrypted file, readable only with your secret phrase.",
+    "import": "import a file",
+    "import_desc": "Restore your data from a {ext} file.",
+    "passphrase": "secret phrase",
+    "passphrase_hint": "at least 8 characters — it never leaves this screen",
+    "passphrase_confirm": "once more",
+    "passphrase_mismatch": "the two phrases don't match",
+    "export_ready": "file ready — keep it safe",
+    "import_preview": "{cycles} cycles, {logs} days of logs",
+    "import_merge_note": "Your current data is kept; if a date exists on both sides, your local log wins.",
+    "import_confirm": "merge",
+    "import_done": "imported",
+    "import_error": "couldn't read this file — wrong secret phrase or invalid file",
+    "backup_nudge": "Two cycles of ink already — an encrypted export would keep them safe.",
+    "language": "language",
+    "motion": "animations",
+    "motion_system": "follow system",
+    "motion_on": "on",
+    "motion_off": "reduced",
+    "danger": "erase",
+    "erase": "erase everything",
+    "erase_desc": "Deletes cycles, logs and settings from this device. Permanent.",
+    "erase_confirm_1": "erase, really?",
+    "erase_confirm_2": "last confirmation — everything disappears",
+    "erase_done": "everything is erased",
+    "about": "about",
+    "about_text": "{app} lives entirely on your device: no account, no server, no trackers. Verifiable in your browser's dev tools — zero network requests after load.",
+    "disclaimer_title": "note",
+    "disclaimer": "{app} is not a medical device and cannot be used for contraception. Predictions are estimates based on your history."
+  },
+  "symptoms": {
+    "cramps": "cramps",
+    "fatigue": "fatigue",
+    "low_mood": "low mood",
+    "high_energy": "high energy",
+    "good_sleep": "good sleep",
+    "motivation": "motivation",
+    "libido": "libido",
+    "ovulation_pain": "ovulation pain",
+    "restless_sleep": "restless sleep",
+    "irritability": "irritability",
+    "sweet_cravings": "sweet cravings",
+    "headache": "headache",
+    "bloating": "bloating",
+    "tender_breasts": "tender breasts",
+    "acne": "reactive skin",
+    "back_pain": "back pain",
+    "anxiety": "anxiety",
+    "focus": "focus",
+    "digestion": "rough digestion",
+    "dizziness": "dizziness",
+    "insomnia": "insomnia",
+    "calm": "calm"
+  }
+}
