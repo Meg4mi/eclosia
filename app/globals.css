@@ -51,6 +51,13 @@ body::before {
 button {
   font: inherit;
   color: inherit;
+  touch-action: manipulation; /* pas de délai ni de zoom double-tap sur mobile */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+a {
+  touch-action: manipulation;
 }
 
 input {

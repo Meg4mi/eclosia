@@ -24,7 +24,7 @@ test('aucune requête externe, du boot à la navigation complète', async ({ pag
 
   // parcours complet : onboarding → cadran → navigation → réglages
   await page.getByRole('button', { name: 'je ne sais plus' }).click();
-  await expect(page.getByText('encre vivante')).toBeVisible();
+  await expect(page.getByText("aujourd'hui, en un geste")).toBeVisible();
   await page.getByRole('link', { name: 'historique' }).click();
   await page.waitForLoadState('networkidle');
   await page.getByRole('link', { name: 'réglages' }).click();

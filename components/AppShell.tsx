@@ -1,7 +1,8 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { LazyMotion, MotionConfig, domAnimation } from 'motion/react';
+// domMax (et non domAnimation) : les gestes drag du bottom sheet en dépendent
+import { LazyMotion, MotionConfig, domMax } from 'motion/react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, DEFAULT_SETTINGS } from '@/lib/db';
 import { getDict, type Dict, type Locale } from '@/i18n';
@@ -52,7 +53,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <AppContext.Provider value={{ settings: effective, dict: getDict(locale), locale, reduced }}>
-      <LazyMotion features={domAnimation} strict>
+      <LazyMotion features={domMax} strict>
         <MotionConfig reducedMotion={reduced ? 'always' : 'never'}>{children}</MotionConfig>
       </LazyMotion>
     </AppContext.Provider>

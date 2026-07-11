@@ -66,7 +66,6 @@ export function Onboarding() {
   return (
     <div className={styles.screen}>
       <div className={styles.wordmark}>{APP_NAME}</div>
-      <div className={styles.tagline}>{dict.common.tagline}</div>
 
       <h1 className={styles.question}>{dict.onboarding.question}</h1>
       <p className={styles.hint}>{dict.onboarding.hint}</p>

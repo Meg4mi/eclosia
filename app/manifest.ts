@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { APP_NAME, APP_TAGLINE, THEME_COLOR } from '@/lib/config';
+import { APP_NAME, APP_DESCRIPTION, THEME_COLOR } from '@/lib/config';
 
 export const dynamic = 'force-static';
 
@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: APP_NAME,
     short_name: APP_NAME,
-    description: APP_TAGLINE,
+    description: APP_DESCRIPTION,
     start_url: '/',
     display: 'standalone',
     background_color: THEME_COLOR,

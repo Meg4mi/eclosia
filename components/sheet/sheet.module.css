@@ -18,7 +18,7 @@
   padding: 14px 28px calc(env(safe-area-inset-bottom) + 30px);
   max-height: 78dvh;
   overflow-y: auto;
-  touch-action: none;
+  overscroll-behavior: contain;
 }
 
 .grab {
@@ -27,6 +27,17 @@
   border-radius: 2px;
   background: var(--hair);
   margin: 0 auto 20px;
+}
+
+/* zone tactile généreuse de la poignée — invisible, ne change pas la mise en page */
+.grabZone {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  touch-action: none;
+  cursor: grab;
 }
 
 .eyebrow {
