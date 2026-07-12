@@ -21,28 +21,56 @@ export function SwRegister() {
     if (!('serviceWorker' in navigator)) return;
 
     let disposed = false;
+    let onVisible: (() => void) | null = null;
+    let interval: ReturnType<typeof setInterval> | null = null;
+
+    // un worker déjà « installed » et en attente, contrôleur actif présent :
+    // nouvelle version prête. Remontée idempotente, appelée depuis plusieurs
+    // signaux (Safari ne déclenche pas `updatefound` de façon fiable).
+    const surfaceWaiting = (reg: ServiceWorkerRegistration): void => {
+      if (!disposed && reg.waiting && navigator.serviceWorker.controller) setWaiting(reg.waiting);
+    };
 
     void navigator.serviceWorker.register('/sw.js').then((reg) => {
       if (disposed) return;
-      if (reg.waiting) setWaiting(reg.waiting);
+      surfaceWaiting(reg);
       reg.addEventListener('updatefound', () => {
         const fresh = reg.installing;
-        fresh?.addEventListener('statechange', () => {
-          // « installed » avec un contrôleur actif = nouvelle version en attente
-          if (fresh.state === 'installed' && navigator.serviceWorker.controller) {
-            setWaiting(fresh);
-          }
+        // course possible : le worker peut déjà être passé « waiting »
+        if (!fresh) {
+          surfaceWaiting(reg);
+          return;
+        }
+        fresh.addEventListener('statechange', () => {
+          if (fresh.state === 'installed' && navigator.serviceWorker.controller) setWaiting(fresh);
         });
       });
-      // revenir au premier plan déclenche une vérification de mise à jour
-      const onVisible = (): void => {
-        if (document.visibilityState === 'visible') void reg.update().catch(() => undefined);
+
+      // Vérifications de mise à jour redondantes : les checks implicites du
+      // navigateur ne sont pas fiables (surtout iOS/Safari). On force `update()`
+      // au montage, au retour au premier plan et périodiquement — chaque check
+      // re-scrute `reg.waiting` au cas où le worker serait déjà passé en attente
+      // sans que `updatefound` ait été capté.
+      const check = (): void => {
+        void reg
+          .update()
+          .then(() => surfaceWaiting(reg))
+          .catch(() => undefined);
+      };
+      check();
+      onVisible = () => {
+        if (document.visibilityState === 'visible') check();
       };
       document.addEventListener('visibilitychange', onVisible);
+      interval = setInterval(() => {
+        if (document.visibilityState === 'visible') check();
+      }, 60_000);
     });
 
     return () => {
       disposed = true;
+      if (onVisible) document.removeEventListener('visibilitychange', onVisible);
+      if (interval) clearInterval(interval);
     };
   }, []);
 
