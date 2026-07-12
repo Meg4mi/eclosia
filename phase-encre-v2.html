@@ -182,8 +182,10 @@ const cnv=document.getElementById('ring'), ctx=cnv.getContext('2d');
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const h2r=h=>{h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16))};
 /* encre du ruban : le ×1.28 du filament écrête le rouge en corail — le
-   pigment menstruel part plus profond pour rendre un vrai rouge */
-const INK={menst:'#b23122'};
+   pigment menstruel est un rouge saturé (vert/bleu bas) qui reste rouge après
+   éclaircissement ET dont la nappe floue rayonne autant que les autres phases
+   (un #b23122 trop sombre donnait un halo terne, menstruel « en retrait ») */
+const INK={menst:'#db2f24'};
 let cols=[];for(let d=1;d<=L;d++)cols.push(h2r(INK[phaseOf(d).key]||phaseOf(d).color));
 for(let p=0;p<2;p++)cols=cols.map((c,i)=>{const a=cols[(i-1+L)%L],b=cols[(i+1)%L];
   return c.map((x,k)=>a[k]*.22+x*.56+b[k]*.22)});
