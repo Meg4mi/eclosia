@@ -64,4 +64,4 @@ Hébergement statique quelconque ; Vercel recommandé :
 
 ## Note
 
-Éclose n'est pas un dispositif médical et ne peut pas servir de contraception. Les prédictions sont des estimations basées sur l'historique personnel.
+Éclose n'est pas un dispositif médical et ne peut pas servir de contraception. Les prédictions sont des estimations basées sur l'historique personnel. ;)
