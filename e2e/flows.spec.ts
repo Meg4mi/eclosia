@@ -12,7 +12,7 @@ test('corriger un jour dans l’historique, persistance, langue', async ({ page 
   // — historique : cycle en cours visible, correction du jour J1
   await page.getByRole('link', { name: 'historique' }).click();
   await page.getByText('cycle en cours').click();
-  await page.getByRole('button', { name: '1', exact: true }).click();
+  await page.getByRole('button', { name: todayNum, exact: true }).click();
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
   await dialog.getByRole('button', { name: 'maux de tête' }).click();
@@ -23,7 +23,7 @@ test('corriger un jour dans l’historique, persistance, langue', async ({ page 
   // — persistance après rechargement
   await page.reload();
   await page.getByText('cycle en cours').click();
-  await page.getByRole('button', { name: '1', exact: true }).click();
+  await page.getByRole('button', { name: todayNum, exact: true }).click();
   await expect(dialog.getByRole('button', { name: 'maux de tête' })).toHaveAttribute(
     'aria-pressed',
     'true',

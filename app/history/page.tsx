@@ -125,7 +125,7 @@ export default function HistoryPage() {
                   : styles.dayDot;
             return (
               <button key={iso} className={cls} onClick={() => setEditDate(iso)}>
-                {dayOf(iso, cycle.startDate)}
+                {parseISO(iso).getUTCDate()}
               </button>
             );
           })}
