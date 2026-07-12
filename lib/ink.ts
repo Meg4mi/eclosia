@@ -13,11 +13,17 @@ export type RGB = [number, number, number];
  * Pigments du ruban. Le filament éclaircit chaque couleur de ×1,28 avec
  * écrêtage : le canal dominant du rouge (#e2543f) sature à 255 pendant que
  * vert et bleu montent — le rendu virait structurellement au corail. L'encre
- * menstruelle part donc plus profonde pour rendre un vrai rouge à l'écran ;
- * l'accent UI (labels, chips, feuille) reste --c-menst.
+ * menstruelle part donc d'un rouge saturé (vert/bleu bas) pour rester rouge
+ * après éclaircissement. Écueil résolu : un pigment trop SOMBRE (#b23122)
+ * rendait bien du rouge sur le filament net, mais sa nappe floue (halo à 0,5
+ * d'opacité, non éclairci) restait terne face aux halos lumineux du vert, du
+ * violet et de l'orange — le menstruel se lisait « en retrait », presque
+ * absent. #db2f24 rend un halo aussi présent que les autres phases sans virer
+ * au corail (vert/bleu maintenus bas). L'accent UI (labels, chips, feuille)
+ * reste --c-menst.
  */
 export const INK_COLORS: Record<PhaseKey, string> = {
-  menst: '#b23122',
+  menst: '#db2f24',
   foll: '#a9c27a',
   ovul: '#f0b153',
   lute: '#a678c9',
