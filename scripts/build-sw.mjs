@@ -45,8 +45,43 @@ const ASSETS = ${JSON.stringify([...urls], null, 0)};
 // anciens onglets, sinon une page déjà chargée peut perdre ses chunks hashés
 // à la purge du cache. L'activation immédiate n'arrive QUE sur geste
 // utilisateur (« recharger » dans l'app), suivie d'un reload synchronisé.
+//
+// Install résiliente (JAMAIS un addAll qui échoue en bloc) : un seul asset qui
+// répond en redirection ou en erreur ne doit pas faire échouer TOUT l'install,
+// sinon le nouveau SW est jeté, n'atteint jamais « waiting », le toast de mise
+// à jour ne s'affiche pas et l'appareil reste figé sur l'ancien cache
+// indéfiniment. Deux pièges couverts :
+//  - un asset servi en redirection (ex. clean-URLs de l'hébergeur) : cache.put
+//    REJETTE une réponse marquée « redirected » sur WebKit/Safari (là où
+//    Chromium tolère — d'où un bug invisible aux e2e). On reconstruit alors
+//    une réponse propre.
+//  - un asset absent (404) ou une erreur réseau : on l'ignore au lieu de tout
+//    faire échouer (cache-first : il sera récupéré au besoin).
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
+  e.waitUntil(
+    caches.open(CACHE).then((c) =>
+      Promise.all(
+        ASSETS.map(async (u) => {
+          try {
+            const res = await fetch(u, { cache: 'reload' });
+            if (!res.ok) return;
+            await c.put(
+              u,
+              res.redirected
+                ? new Response(await res.blob(), {
+                    status: 200,
+                    statusText: 'OK',
+                    headers: res.headers,
+                  })
+                : res
+            );
+          } catch (_) {
+            /* asset injoignable : ne jamais bloquer l'install entière */
+          }
+        })
+      )
+    )
+  );
 });
 
 self.addEventListener('message', (e) => {
