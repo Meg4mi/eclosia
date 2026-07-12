@@ -46,7 +46,13 @@ const recomputeAvgPeriod = async (): Promise<void> => {
     .filter((c) => c.endDate)
     .slice(-6)
     .map((c) => diffDays(c.startDate, c.endDate as string) + 1)
-    .filter((n) => n >= 1 && n <= 10);
+    // un seul jour connu (endDate === startDate) n'est pas une durée de règles :
+    // c'est un cycle qui vient de s'ouvrir (ou des règles à peine commencées).
+    // Le compter comme « 1 jour » écrasait avgPeriodLength à 1 dès qu'on ouvrait
+    // un nouveau cycle — et, faute d'autre durée observée, le garde ci-dessous
+    // empêchait tout retour en arrière (la bande menstruelle rouge disparaissait
+    // du cadran sans jamais revenir, même après annulation). On attend 2 jours.
+    .filter((n) => n >= 2 && n <= 10);
   // aucune durée observée : on ne touche pas au réglage (défaut ou importé)
   if (lengths.length === 0) return;
   const avg = Math.round(lengths.reduce((s, x) => s + x, 0) / lengths.length);

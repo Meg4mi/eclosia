@@ -75,6 +75,19 @@ describe('setFlow — ouverture et extension de cycles', () => {
     const settings = await db.settings.get('singleton');
     expect(settings?.avgPeriodLength).toBe(4);
   });
+
+  it('un jour de règles isolé ne rétrécit pas avgPeriodLength (bande rouge du cadran)', async () => {
+    // cycle ouvert à l'onboarding, sans flow loggé : réglage par défaut
+    await startFirstCycle('2026-06-19');
+    const before = (await db.settings.get('singleton'))?.avgPeriodLength;
+    // « nouveau cycle » loin dans le futur : un seul jour connu ne doit PAS
+    // écraser la durée des règles à 1 (sinon la bande menstruelle disparaît)
+    expect((await setFlow('2026-07-12', 2)).newCycleStarted).toBe(true);
+    expect((await db.settings.get('singleton'))?.avgPeriodLength).toBe(before);
+    // et l'annulation restitue exactement l'état de départ
+    await setFlow('2026-07-12', 0);
+    expect((await db.settings.get('singleton'))?.avgPeriodLength).toBe(before);
+  });
 });
 
 describe('toggleSymptom', () => {
