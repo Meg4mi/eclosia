@@ -29,6 +29,16 @@ export const metadata: Metadata = {
   applicationName: APP_NAME,
   keywords: [...APP_KEYWORDS],
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: APP_NAME },
+  // Favicon d'onglet : réutilise les icônes PNG statiques existantes (aucun asset
+  // distant, aucune requête réseau au runtime, §2). Sans ce champ, le navigateur
+  // requête /favicon.ico, ne trouve rien et n'affiche aucune favicon.
+  icons: {
+    icon: [
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [{ url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
+  },
   alternates: { canonical: '/' },
   robots: {
     index: true,
