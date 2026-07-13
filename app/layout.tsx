@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Fraunces, Newsreader } from 'next/font/google';
 import { APP_NAME, APP_DESCRIPTION, THEME_COLOR, APP_URL, APP_KEYWORDS } from '@/lib/config';
-import { AppShell } from '@/components/AppShell';
 import './globals.css';
 
 // Fonts self-hostées via next/font : aucune requête réseau au runtime (§2).
@@ -63,9 +62,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${fraunces.variable} ${newsreader.variable}`}>
-      <body>
-        <AppShell>{children}</AppShell>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

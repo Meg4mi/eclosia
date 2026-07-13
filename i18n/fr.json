@@ -186,5 +186,44 @@
     "dizziness": "vertiges",
     "insomnia": "insomnie",
     "calm": "sérénité"
+  },
+  "discover": {
+    "title": "Découvrir",
+    "meta_description": "{app} — un suivi de cycle calme, entièrement sur ton appareil. Pas de compte, pas de cloud, pas de traceurs. Fonctionne hors-ligne.",
+    "hero_title": "Ton cycle, sur ton appareil",
+    "hero_body": "{app} est un suivi de cycle calme et privé. Tes données restent chez toi — rien ne part jamais ailleurs.",
+    "privacy_title": "Tout reste chez toi",
+    "privacy_body": "{app} vit entièrement sur ton appareil : pas de compte, pas de serveur, pas de traceurs. Aucune requête réseau après le chargement — vérifiable dans les outils de développement. Tu peux exporter tes données dans un fichier chiffré et les réimporter quand tu veux.",
+    "how_title": "Comment ça marche",
+    "how_dial": "Un cadran vivant montre où tu en es dans ton cycle, en un coup d'œil.",
+    "how_log": "La saisie tient en un geste : flux, symptômes, note du jour.",
+    "how_predict": "Les prédictions viennent de ton propre historique — honnêtes, jamais alarmistes, avec un niveau de confiance affiché.",
+    "not_title": "Ce que {app} ne fait pas",
+    "not_medical": "{app} n'est pas un dispositif médical et ne peut pas servir de contraception.",
+    "not_pregnancy": "Pas de suivi de grossesse, pas d'astrologie, pas de promesses.",
+    "not_ads": "Pas de publicité, pas de revente de données, pas de SDK tiers.",
+    "install_title": "Installer {app}",
+    "install_body": "Ajoute {app} à ton écran d'accueil depuis ton navigateur. L'app fonctionne hors-ligne, comme une application installée.",
+    "open_app": "Ouvrir {app}",
+    "lang_switch": "English",
+    "faq_title": "Questions fréquentes",
+    "faq": [
+      {
+        "q": "Mes données partent-elles sur un serveur ?",
+        "a": "Non. Tout est stocké localement sur ton appareil. {app} ne fait aucune requête réseau après le chargement."
+      },
+      {
+        "q": "Ai-je besoin d'un compte ?",
+        "a": "Non. Aucune inscription, aucun e-mail, aucun mot de passe. Tu ouvres l'app et tu l'utilises."
+      },
+      {
+        "q": "Est-ce que ça fonctionne hors-ligne ?",
+        "a": "Oui. {app} est une application web installable qui fonctionne sans connexion."
+      },
+      {
+        "q": "{app} peut-il servir de moyen de contraception ?",
+        "a": "Non. {app} n'est pas un dispositif médical. Les prédictions sont des estimations basées sur ton historique."
+      }
+    ]
   }
 }
