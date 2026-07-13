@@ -4,8 +4,22 @@
  */
 export const APP_NAME = 'Éclose';
 export const APP_DOMAIN = 'eclose.app';
+export const APP_URL = `https://${APP_DOMAIN}`;
 export const APP_DESCRIPTION = 'Ton cycle, sur ton appareil.';
 export const THEME_COLOR = '#120d14';
+
+/** Mots-clés statiques pour le référencement (métadonnées de build, jamais
+ * rendus dans l'UI). Registre calme, jamais médical ni contraceptif (§non-objectifs). */
+export const APP_KEYWORDS = [
+  'suivi de cycle',
+  'cycle menstruel',
+  'règles',
+  'confidentialité',
+  'hors-ligne',
+  'sur l’appareil',
+  'sans compte',
+  'PWA',
+] as const;
 
 export const DEFAULT_LOCALE = 'fr' as const;
 export const DEFAULT_PERIOD_LENGTH = 5;

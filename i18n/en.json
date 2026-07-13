@@ -186,5 +186,44 @@
     "dizziness": "dizziness",
     "insomnia": "insomnia",
     "calm": "calm"
+  },
+  "discover": {
+    "title": "Discover",
+    "meta_description": "{app} — a calm cycle tracker that lives entirely on your device. No account, no cloud, no trackers. Works offline.",
+    "hero_title": "Your cycle, on your device",
+    "hero_body": "{app} is a calm, private cycle tracker. Your data stays with you — nothing ever leaves your device.",
+    "privacy_title": "Everything stays with you",
+    "privacy_body": "{app} lives entirely on your device: no account, no server, no trackers. No network requests after load — verifiable in your developer tools. You can export your data to an encrypted file and import it back whenever you want.",
+    "how_title": "How it works",
+    "how_dial": "A living dial shows where you are in your cycle, at a glance.",
+    "how_log": "Logging takes a single gesture: flow, symptoms, a note for the day.",
+    "how_predict": "Predictions come from your own history — honest, never alarming, with a confidence level shown.",
+    "not_title": "What {app} does not do",
+    "not_medical": "{app} is not a medical device and cannot be used for contraception.",
+    "not_pregnancy": "No pregnancy tracking, no astrology, no promises.",
+    "not_ads": "No advertising, no data reselling, no third-party SDKs.",
+    "install_title": "Install {app}",
+    "install_body": "Add {app} to your home screen from your browser. The app works offline, like an installed application.",
+    "open_app": "Open {app}",
+    "lang_switch": "Français",
+    "faq_title": "Frequently asked questions",
+    "faq": [
+      {
+        "q": "Does my data go to a server?",
+        "a": "No. Everything is stored locally on your device. {app} makes no network requests after load."
+      },
+      {
+        "q": "Do I need an account?",
+        "a": "No. No sign-up, no email, no password. You open the app and use it."
+      },
+      {
+        "q": "Does it work offline?",
+        "a": "Yes. {app} is an installable web app that works without a connection."
+      },
+      {
+        "q": "Can {app} be used as contraception?",
+        "a": "No. {app} is not a medical device. Predictions are estimates based on your history."
+      }
+    ]
   }
 }

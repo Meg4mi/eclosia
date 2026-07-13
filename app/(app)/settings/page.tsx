@@ -3,6 +3,7 @@
 /** Réglages (v1) : export/import chiffré, langue, motion, effacement, disclaimer. */
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useApp } from '@/components/AppShell';
@@ -273,6 +274,11 @@ export default function SettingsPage() {
         <section className={styles.section}>
           <div className={styles.sectionTitle}>{dict.settings.about}</div>
           <p className={styles.para}>{tpl(dict.settings.about_text, { app: APP_NAME })}</p>
+          <p className={styles.para}>
+            <Link href={settings.locale === 'fr' ? '/decouvrir' : '/discover'}>
+              {dict.discover.title}
+            </Link>
+          </p>
           <p className={styles.version}>
             {tpl(dict.settings.version, { v: APP_VERSION, c: APP_COMMIT, d: APP_BUILT_AT })}
           </p>
