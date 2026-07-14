@@ -132,6 +132,21 @@
   opacity: 0.88;
 }
 
+.sourceLink {
+  align-self: flex-start;
+  color: var(--ink);
+  font-size: 1.05rem;
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 1px;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+.sourceLink:hover {
+  opacity: 1;
+}
+
 .footer {
   display: flex;
   align-items: center;

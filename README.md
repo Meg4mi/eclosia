@@ -62,6 +62,18 @@ Hébergement statique quelconque ; Vercel recommandé :
 - Output directory : `out`
 - `vercel.json` fournit le `Cache-Control: no-cache` sur `sw.js` et le manifest
 
+## Contribuer
+
+Les contributions sont bienvenues, tant qu'elles respectent la confidentialité radicale et le registre calme de l'app. Le détail (chaîne qualité, architecture, non-objectifs) est dans [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+## Soutenir le projet
+
+Éclose est gratuit, sans publicité et sans revente de données — par conception. Si l'app t'est utile et que tu veux qu'elle le reste, tu peux soutenir son développement sur [Liberapay](https://liberapay.com/eclose). Aucun soutien n'est nécessaire pour utiliser l'app pleinement.
+
+## Licence
+
+[AGPL-3.0](LICENSE). Éclose est un logiciel libre : tu peux l'étudier, le modifier et le redistribuer. La clause « réseau » de l'AGPL garantit que tout service dérivé, même déployé en ligne, doit lui aussi rester open source — c'est ce qui protège les promesses de confidentialité du projet contre un fork qui les trahirait.
+
 ## Note
 
 Éclose n'est pas un dispositif médical et ne peut pas servir de contraception. Les prédictions sont des estimations basées sur l'historique personnel. ;)

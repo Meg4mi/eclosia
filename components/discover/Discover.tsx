@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getDict, tpl, type Locale } from '@/i18n';
-import { APP_NAME, APP_URL } from '@/lib/config';
+import { APP_NAME, APP_URL, REPO_URL } from '@/lib/config';
 import styles from './discover.module.css';
 
 // Page de contenu prérendue en HTML statique (Server Component, aucun hook
@@ -79,6 +79,19 @@ export function Discover({ locale }: { locale: Locale }) {
       <section className={styles.section}>
         <h2 className={styles.h2}>{tpl(d.install_title, app)}</h2>
         <p className={styles.body}>{tpl(d.install_body, app)}</p>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.h2}>{d.source_title}</h2>
+        <p className={styles.body}>{tpl(d.source_body, app)}</p>
+        <a
+          href={REPO_URL}
+          className={styles.sourceLink}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {d.source_link}
+        </a>
       </section>
 
       <section className={styles.section}>
