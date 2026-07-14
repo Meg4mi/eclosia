@@ -68,7 +68,7 @@ Les contributions sont bienvenues, tant qu'elles respectent la confidentialité 
 
 ## Soutenir le projet
 
-Éclose est gratuit, sans publicité et sans revente de données — par conception. Si l'app t'est utile et que tu veux qu'elle le reste, tu peux soutenir son développement sur [Liberapay](https://liberapay.com/eclose). Aucun soutien n'est nécessaire pour utiliser l'app pleinement.
+Éclose est gratuit, sans publicité et sans revente de données — par conception. Si l'app t'est utile et que tu veux qu'elle le reste, tu peux soutenir son développement sur [Liberapay](https://liberapay.com/Meg4mi). Aucun soutien n'est nécessaire pour utiliser l'app pleinement.
 
 ## Licence
 
