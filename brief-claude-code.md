@@ -1,61 +1,61 @@
-# Brief Claude Code — Éclose
-**App de suivi de cycle menstruel. Nom : Éclose** (domaine : eclose.app — variable unique `APP_NAME`, ne jamais coder le nom en dur ailleurs que dans la config ; l'accent apparaît dans l'UI et la marque, jamais dans les identifiants techniques)
+# Claude Code Brief — Éclose
+**Menstrual cycle tracking app. Name: Éclose** (domain: eclose.app — single `APP_NAME` variable, never hard-code the name anywhere other than the config; the accent appears in the UI and the brand, never in the technical identifiers)
 
 ---
 
 ## 1. Vision
 
-PWA de suivi menstruel qui combine ce qu'aucune app du marché ne combine : la confidentialité radicale d'Euki, le sérieux scientifique de Clue, et une direction artistique « encre vivante × instrument de précision » unique dans la catégorie.
+A menstrual tracking PWA that combines what no app on the market combines: the radical privacy of Euki, the scientific rigor of Clue, and a "living ink × precision instrument" art direction unique in the category.
 
-**Trois piliers non négociables :**
+**Three non-negotiable pillars:**
 
-1. **Local-first radical.** Aucune donnée ne quitte l'appareil. Pas de compte, pas de backend, pas d'analytics, zéro requête réseau après le premier chargement (vérifiable dans les DevTools — c'est un argument marketing). IndexedDB est la source de vérité.
-2. **Une interaction par jour.** Le geste central tient en 5 secondes : un chip « règles » (intensité en 3 gouttes) + 3 pastilles de symptômes adaptées à la phase courante. Onboarding = une seule question. Le logging complet est optionnel, jamais culpabilisant.
-3. **Prédiction honnête.** Jamais de date sèche. Toujours une fenêtre (« probablement entre le 24 et le 27 juillet ») avec niveau de confiance affiché, qui se resserre avec l'historique.
+1. **Radical local-first.** No data leaves the device. No account, no backend, no analytics, zero network requests after the first load (verifiable in the DevTools — it's a marketing argument). IndexedDB is the source of truth.
+2. **One interaction per day.** The core gesture takes 5 seconds: a "period" chip (intensity in 3 drops) + 3 symptom pills adapted to the current phase. Onboarding = a single question. Full logging is optional, never guilt-tripping.
+3. **Honest prediction.** Never a hard date. Always a window ("probably between July 24 and 27") with a displayed confidence level, which tightens as history builds up.
 
-**Non-objectifs (ne jamais implémenter, même sur demande future) :**
-- Aucune revendication contraceptive ni positionnement médical (terrain réglementaire de Natural Cycles). Disclaimer discret dans les réglages.
-- Pas de compte, pas de cloud sync en v1, pas de freemium, pas de pub, pas de SDK tiers (le scandale Flo/Meta est notre contre-exemple fondateur).
-- Pas de suivi de grossesse en v1.
-- Pas de contenu astrologie.
-
----
-
-## 2. Stack & contraintes techniques
-
-- **Next.js 16 (16.2.x stable) App Router + React 19 + TypeScript strict** (`strict: true`, pas de `any`), Turbopack par défaut, patterns fonctionnels, pas de classes. Démarrer avec `next@latest` et utiliser `next upgrade` pour les mises à jour ; ne jamais figer sur une majeure en fin de support.
-- **Animations : Motion** (ex framer-motion, package `motion`, import `motion/react`) — en mode **léger obligatoire** : `LazyMotion` + `domAnimation` chargés une fois au layout, composants `m.*` uniquement (jamais `motion.*`, pour garder le bundle minimal). Périmètre autorisé : bottom sheet (spring + drag-to-dismiss, remplace le handler touch artisanal du prototype), micro-interactions des chips (tap scale, apparition), transitions d'écrans, onboarding, `AnimatePresence` sur les patterns. **Périmètre interdit : le ruban d'encre** — le canvas rAF du prototype reste tel quel, Motion ne touche jamais au rendu du cadran. Toute animation Motion passe par `useReducedMotion()`.
-- **PWA complète** : `manifest.json` (standalone, theme-color `#120d14`, icônes maskable), service worker en precache-all (l'app est 100 % statique), `next-pwa` ou SW manuel — proposer et faire valider avant d'implémenter.
-- **Déploiement Vercel**, output statique. **Aucune API route, aucun appel réseau runtime.** Les fonts Google (Fraunces, Newsreader) doivent être self-hostées via `next/font` (sinon requêtes réseau → brise la promesse).
-- **Persistance : Dexie.js** sur IndexedDB. Demander `navigator.storage.persist()` au premier log.
-- **Rendu du cadran** : canvas 2D (ruban d'encre) + overlay SVG (graduations, labels, zones tactiles). Pas de Three.js, pas de WebGL — le prototype prouve que canvas 2D suffit.
-- Pas de librairie UI, pas de Tailwind : CSS modules ou vanilla-extract, tokens en CSS custom properties (voir §6).
-- Conventional commits. Plan d'implémentation soumis pour approbation avant chaque phase de code.
+**Non-goals (never implement, even on future request):**
+- No contraceptive claim or medical positioning (Natural Cycles' regulatory terrain). Discreet disclaimer in the settings.
+- No account, no cloud sync in v1, no freemium, no ads, no third-party SDK (the Flo/Meta scandal is our founding counter-example).
+- No pregnancy tracking in v1.
+- No astrology content.
 
 ---
 
-## 3. Source de vérité visuelle
+## 2. Stack & technical constraints
 
-Le fichier `phase-encre-v2.html` (fourni à côté de ce brief) est **la référence exacte** du look and feel : couleurs, typographie, animation du ruban, graduations, aiguille hairline, feuille de phase, chips. Le portage React doit être visuellement indistinguable du prototype avant toute évolution. Le canvas se transpose dans un `useEffect` avec cleanup du rAF ; l'overlay SVG passe en JSX.
+- **Next.js 16 (16.2.x stable) App Router + React 19 + strict TypeScript** (`strict: true`, no `any`), Turbopack by default, functional patterns, no classes. Start with `next@latest` and use `next upgrade` for updates; never pin to a major version at end of support.
+- **Animations: Motion** (formerly framer-motion, `motion` package, import `motion/react`) — in **mandatory lightweight mode**: `LazyMotion` + `domAnimation` loaded once in the layout, `m.*` components only (never `motion.*`, to keep the bundle minimal). Allowed scope: bottom sheet (spring + drag-to-dismiss, replaces the prototype's hand-made touch handler), chip micro-interactions (tap scale, appearance), screen transitions, onboarding, `AnimatePresence` on the patterns. **Forbidden scope: the ink ribbon** — the prototype's rAF canvas stays as is, Motion never touches the dial rendering. Every Motion animation goes through `useReducedMotion()`.
+- **Full PWA**: `manifest.json` (standalone, theme-color `#120d14`, maskable icons), precache-all service worker (the app is 100% static), `next-pwa` or a manual SW — propose and get it validated before implementing.
+- **Vercel deployment**, static output. **No API route, no runtime network call.** Google fonts (Fraunces, Newsreader) must be self-hosted via `next/font` (otherwise network requests → breaks the promise).
+- **Persistence: Dexie.js** on IndexedDB. Request `navigator.storage.persist()` on the first log.
+- **Dial rendering**: 2D canvas (ink ribbon) + SVG overlay (graduations, labels, touch zones). No Three.js, no WebGL — the prototype proves that 2D canvas is enough.
+- No UI library, no Tailwind: CSS modules or vanilla-extract, tokens as CSS custom properties (see §6).
+- Conventional commits. Implementation plan submitted for approval before each code phase.
 
 ---
 
-## 4. Modèle de données (Dexie)
+## 3. Visual source of truth
+
+The `phase-encre-v2.html` file (provided alongside this brief) is **the exact reference** for the look and feel: colors, typography, ribbon animation, graduations, hairline needle, phase sheet, chips. The React port must be visually indistinguishable from the prototype before any evolution. The canvas transposes into a `useEffect` with rAF cleanup; the SVG overlay becomes JSX.
+
+---
+
+## 4. Data model (Dexie)
 
 ```ts
 // db.ts
 interface Cycle {
   id: string;            // ulid
-  startDate: string;     // ISO date (jour 1 des règles)
-  endDate?: string;      // dernier jour de règles (optionnel)
-  lengthDays?: number;   // calculé à la clôture (start suivant - start)
+  startDate: string;     // ISO date (day 1 of the period)
+  endDate?: string;      // last day of the period (optional)
+  lengthDays?: number;   // computed at close (next start - start)
 }
 
 interface DailyLog {
-  date: string;          // ISO date, clé primaire
-  flow: 0 | 1 | 2 | 3;   // aucune / légère / moyenne / abondante
-  symptoms: string[];    // ids de symptômes (voir catalogue §7)
-  note?: string;         // champ libre optionnel (v1.1)
+  date: string;          // ISO date, primary key
+  flow: 0 | 1 | 2 | 3;   // none / light / medium / heavy
+  symptoms: string[];    // symptom ids (see catalog §7)
+  note?: string;         // optional free field (v1.1)
 }
 
 interface Settings {
@@ -64,30 +64,30 @@ interface Settings {
   locale: 'fr' | 'en';
   reducedMotion: 'system' | 'on' | 'off';
   onboardedAt?: string;
-  avgPeriodLength: number; // défaut 5, recalculé
+  avgPeriodLength: number; // default 5, recomputed
 }
 ```
 
-Règles métier :
-- Un `flow > 0` loggé sur un jour non couvert par un cycle ouvre un nouveau cycle si le dernier start date de plus de 10 jours ; sinon il étend les règles courantes.
-- La clôture d'un cycle (nouveau start) calcule `lengthDays` du précédent.
-- Toute écriture est optimiste, sans spinner : l'UI ne doit jamais attendre IndexedDB.
+Business rules:
+- A `flow > 0` logged on a day not covered by a cycle opens a new cycle if the last start date is more than 10 days old; otherwise it extends the current period.
+- Closing a cycle (a new start) computes the `lengthDays` of the previous one.
+- Every write is optimistic, no spinner: the UI must never wait on IndexedDB.
 
 ---
 
-## 5. Moteur de cycle (lib/engine.ts — pur, testé)
+## 5. Cycle engine (lib/engine.ts — pure, tested)
 
-Fonctions pures, sans dépendance au DOM, couvertes par Vitest :
+Pure functions, no DOM dependency, covered by Vitest:
 
 - `predict(cycles: Cycle[]): Prediction` → `{ meanLength, sd, windowStart, windowEnd, confidence }`.
-  - `meanLength` = moyenne des 6 derniers cycles clos (ou tous si < 6).
-  - Fenêtre = `[lastStart + mean − sd, lastStart + mean + sd]` (sd min 1 jour).
-  - `confidence`: 'faible' (< 2 cycles), 'moyenne' (2–3), 'élevée' (≥ 4 et sd ≤ 2), 'moyenne' sinon. Afficher aussi « basé sur N cycles ».
-- `phases(prediction, periodLength): PhaseRange[]` → menstruelle J1–P, folliculaire P+1 → ov−3, ovulatoire ov−2 → ov+1 (ov = L−14), lutéale ov+2 → L. Frontières affichées en dégradé (lissage couleur 3 passes, cf. prototype), jamais en coupure nette.
-- `dayOf(date, lastStart): number` → jour du cycle courant.
-- `patterns(logs, cycles): Pattern[]` → moteur d'insights, voir §8.
+  - `meanLength` = average of the last 6 closed cycles (or all if < 6).
+  - Window = `[lastStart + mean − sd, lastStart + mean + sd]` (sd min 1 day).
+  - `confidence`: 'low' (< 2 cycles), 'medium' (2–3), 'high' (≥ 4 and sd ≤ 2), 'medium' otherwise. Also show "based on N cycles".
+- `phases(prediction, periodLength): PhaseRange[]` → menstrual D1–P, follicular P+1 → ov−3, ovulatory ov−2 → ov+1 (ov = L−14), luteal ov+2 → L. Boundaries displayed as gradients (3-pass color smoothing, cf. prototype), never as a sharp cut.
+- `dayOf(date, lastStart): number` → day of the current cycle.
+- `patterns(logs, cycles): Pattern[]` → insight engine, see §8.
 
-Cas limites à gérer explicitement : 0 cycle (mode découverte, cadran neutre 28 j), 1 cycle (prédiction 'faible' basée dessus), cycle en retard (jour courant > windowEnd → message calme « ton cycle dépasse ta fenêtre habituelle », jamais alarmiste), cycles < 21 j ou > 40 j (suggérer doucement d'en parler à un médecin, une fois, sans répéter).
+Edge cases to handle explicitly: 0 cycles (discovery mode, neutral 28-day dial), 1 cycle (prediction 'low' based on it), late cycle (current day > windowEnd → calm message "your cycle is past your usual window", never alarmist), cycles < 21 days or > 40 days (gently suggest talking to a doctor, once, without repeating).
 
 ---
 
@@ -99,73 +99,73 @@ Cas limites à gérer explicitement : 0 cycle (mode découverte, cadran neutre 2
 --c-menst:#e2543f; --c-foll:#a9c27a; --c-ovul:#f0b153; --c-lute:#a678c9;
 ```
 
-- **Display** : Fraunces (poids 200 pour le grand « J16 », opsz 144). **Texte** : Newsreader, l'italique porte tout le registre éditorial. Pas de troisième famille.
-- Teinte ambiante (`--tint`) et accent suivent la phase courante ; transition 1,5 s.
-- `prefers-reduced-motion` : ruban statique (t=0), pas de rAF en boucle, pulsations désactivées — déjà implémenté dans le prototype, à conserver ; côté Motion, `useReducedMotion()` bascule les springs en transitions instantanées.
-- Grammaire d'animation : les springs Motion doivent rester dans le registre « organique calme » du prototype — stiffness basse, damping élevé, jamais de bounce marqué. Une seule courbe de sheet, une seule durée de fade, réutilisées partout (définies dans un `motion-tokens.ts`).
-- Performance : rAF unique, canvas dimensionné en devicePixelRatio, viser 60 fps sur mobile milieu de gamme ; si le blur canvas coûte trop cher sur Android, pré-rendre la nappe floue dans un offscreen canvas mis à jour à 15 fps.
+- **Display**: Fraunces (weight 200 for the large "D16", opsz 144). **Text**: Newsreader, the italic carries the whole editorial register. No third family.
+- Ambient tint (`--tint`) and accent follow the current phase; 1.5s transition.
+- `prefers-reduced-motion`: static ribbon (t=0), no looping rAF, pulsations disabled — already implemented in the prototype, to be kept; on the Motion side, `useReducedMotion()` switches the springs to instant transitions.
+- Animation grammar: the Motion springs must stay in the prototype's "calm organic" register — low stiffness, high damping, never a pronounced bounce. A single sheet curve, a single fade duration, reused everywhere (defined in a `motion-tokens.ts`).
+- Performance: a single rAF, canvas sized in devicePixelRatio, aim for 60 fps on a mid-range mobile; if the canvas blur costs too much on Android, pre-render the blurred layer in an offscreen canvas updated at 15 fps.
 
 ---
 
-## 7. Écrans & interactions
+## 7. Screens & interactions
 
-**Onboarding (première ouverture)** — un seul écran, une seule question : « Quand ont commencé tes dernières règles ? » (date picker + « je ne sais plus » → mode découverte). Rien d'autre. Pas de prénom, pas d'objectifs, pas de questionnaire.
+**Onboarding (first open)** — a single screen, a single question: "When did your last period start?" (date picker + "I don't remember" → discovery mode). Nothing else. No first name, no goals, no questionnaire.
 
-**Aujourd'hui (écran principal)** — le cadran : ruban d'encre animé, graduations hairline (1/jour, majeure /7, labels J1·J8·J15·J22), fenêtre d'incertitude cotée en pointillés sur la graduation, aiguille hairline vers la goutte « aujourd'hui » qui respire. Centre : jour + phase + phrase contextuelle. Sous le cadran : prédiction honnête, puis la ligne de saisie (chip règles à 3 gouttes + 3 chips symptômes).
+**Today (main screen)** — the dial: animated ink ribbon, hairline graduations (1/day, major /7, labels D1·D8·D15·D22), the uncertainty window marked with dotted lines on the graduation, hairline needle pointing to the "today" drop that breathes. Center: day + phase + contextual sentence. Below the dial: the honest prediction, then the input line (3-drop period chip + 3 symptom chips).
 
-Chips adaptatives : catalogue global d'une vingtaine de symptômes avec ids stables ; défauts par phase (menst : douleurs/fatigue/humeur basse ; foll : énergie haute/bon sommeil/motivation ; ovul : énergie haute/libido/douleur ovulation ; lut : sommeil agité/irritabilité/envies sucrées). Dès 2 cycles de données, remplacer les défauts par les 3 symptômes que l'utilisatrice logge réellement le plus dans cette phase. Un bouton « + » ouvre le catalogue complet.
+Adaptive chips: a global catalog of about twenty symptoms with stable ids; defaults per phase (menst: pain/fatigue/low mood; foll: high energy/good sleep/motivation; ovul: high energy/libido/ovulation pain; lut: restless sleep/irritability/sugar cravings). From 2 cycles of data, replace the defaults with the 3 symptoms the user actually logs the most in that phase. A "+" button opens the full catalog.
 
-**Feuille de phase (tap sur un arc)** — bottom sheet : description, faits typiques (énergie/sommeil/humeur…), « ensuite », section **Tes patterns**. Swipe down pour fermer. L'accent global glisse vers la couleur de la phase consultée.
+**Phase sheet (tap on an arc)** — bottom sheet: description, typical facts (energy/sleep/mood…), "next", **Your patterns** section. Swipe down to close. The global accent slides toward the color of the consulted phase.
 
-**Historique (v1)** — liste verticale minimaliste des cycles clos (dates, longueur, mini-arc), accès aux logs d'un jour passé pour correction.
+**History (v1)** — a minimalist vertical list of closed cycles (dates, length, mini-arc), access to a past day's logs for correction.
 
-**Réglages (v1)** — export/import chiffré (§9), langue, motion, effacement total (double confirmation), disclaimer non-médical, à propos.
+**Settings (v1)** — encrypted export/import (§9), language, motion, full erasure (double confirmation), non-medical disclaimer, about.
 
-Navigation : 3 destinations max (Aujourd'hui / Historique / Réglages), barre discrète ou geste — proposer avant d'implémenter.
-
----
-
-## 8. Moteur de patterns
-
-Objectif : transformer les logs en une ou deux phrases par phase, du type « Ton sommeil se dégrade à J-3 des règles, 3 cycles sur 4 ».
-
-Algorithme v1, volontairement simple et explicable :
-- Pour chaque symptôme et chaque position relative (J1…Jn depuis le début, et J-1…J-7 avant les règles suivantes), compter la récurrence inter-cycles.
-- Un pattern est retenu si présent dans ≥ 60 % des cycles clos (min 3 cycles) sur une fenêtre de ± 1 jour.
-- Formulation : toujours sourcée (« vu sur tes N derniers cycles »), jamais causale, jamais prescriptive. Max 2 patterns par phase, triés par récurrence.
-- Aucun pattern avant 3 cycles : afficher « Encore N cycles et je pourrai te montrer tes patterns personnels ».
+Navigation: 3 destinations max (Today / History / Settings), discreet bar or gesture — propose before implementing.
 
 ---
 
-## 9. Export / import chiffré
+## 8. Pattern engine
 
-- Export : JSON complet (cycles + logs + settings) chiffré **AES-GCM via Web Crypto**, clé dérivée d'une passphrase (PBKDF2, ≥ 300k itérations, salt aléatoire embarqué). Fichier `.eclose` téléchargé localement.
-- Import : même chemin inverse, avec préviu (« 14 cycles, 380 jours de logs ») avant écrasement, et fusion plutôt qu'écrasement si des données existent (les logs importés ne remplacent jamais un log local plus récent sur la même date).
-- C'est le seul mécanisme de sauvegarde en v1 ; le proposer doucement après le 2ᵉ cycle clos.
+Goal: turn logs into one or two sentences per phase, like "Your sleep degrades at D-3 before your period, 3 cycles out of 4".
+
+v1 algorithm, deliberately simple and explainable:
+- For each symptom and each relative position (D1…Dn from the start, and D-1…D-7 before the next period), count the cross-cycle recurrence.
+- A pattern is kept if present in ≥ 60% of closed cycles (min 3 cycles) over a ± 1 day window.
+- Wording: always sourced ("seen over your last N cycles"), never causal, never prescriptive. Max 2 patterns per phase, sorted by recurrence.
+- No pattern before 3 cycles: show "N more cycles and I'll be able to show you your personal patterns".
+
+---
+
+## 9. Encrypted export / import
+
+- Export: full JSON (cycles + logs + settings) encrypted with **AES-GCM via Web Crypto**, key derived from a passphrase (PBKDF2, ≥ 300k iterations, embedded random salt). `.eclose` file downloaded locally.
+- Import: the same path in reverse, with a preview ("14 cycles, 380 days of logs") before overwriting, and merge rather than overwrite if data exists (imported logs never replace a more recent local log on the same date).
+- It is the only backup mechanism in v1; offer it gently after the 2nd closed cycle.
 
 ---
 
 ## 10. i18n & copy
 
-- FR d'abord, structure i18n dès le départ (dictionnaires JSON, pas de texte en dur), EN en v1.1.
-- Registre : éditorial, calme, tutoiement, jamais culpabilisant, jamais alarmiste, jamais « girly ». L'italique Newsreader porte les phrases contextuelles. Les phrases du prototype sont la référence de ton.
+- FR first, i18n structure from the start (JSON dictionaries, no hard-coded text), EN in v1.1.
+- Register: editorial, calm, informal tone, never guilt-tripping, never alarmist, never "girly". The Newsreader italic carries the contextual sentences. The prototype's sentences are the tone reference.
 
 ---
 
-## 11. Jalons
+## 11. Milestones
 
-- **M1 — Cœur** : portage fidèle du prototype (cadran, saisie, feuille de phase), Dexie, onboarding 1 question, moteur de prédiction testé. Critère : utilisable au quotidien par une première utilisatrice réelle.
-- **M2 — Mémoire** : historique, chips adaptatives, moteur de patterns, gestion des cas limites (retard, cycles irréguliers).
-- **M3 — PWA & confiance** : manifest + SW + installabilité iOS/Android, export/import chiffré, page réglages, audit « zéro requête réseau » automatisé (test Playwright qui échoue si une requête part après le boot).
+- **M1 — Core**: faithful port of the prototype (dial, input, phase sheet), Dexie, 1-question onboarding, tested prediction engine. Criterion: usable daily by a first real user.
+- **M2 — Memory**: history, adaptive chips, pattern engine, edge-case handling (lateness, irregular cycles).
+- **M3 — PWA & trust**: manifest + SW + iOS/Android installability, encrypted export/import, settings page, automated "zero network request" audit (a Playwright test that fails if a request goes out after boot).
 
-À la fin de chaque jalon : démo + revue avant de continuer. Aucun démarrage de M+1 sans validation.
+At the end of each milestone: demo + review before continuing. No start of M+1 without validation.
 
 ---
 
-## 12. Règles de collaboration
+## 12. Collaboration rules
 
-- Plan d'implémentation détaillé soumis **avant** tout code, à chaque jalon.
-- TypeScript strict, patterns fonctionnels, conventional commits.
-- Toute déviation visuelle par rapport à `phase-encre-v2.html` doit être signalée et justifiée.
-- Tests : Vitest sur `lib/engine.ts` et `lib/patterns.ts` (100 % des fonctions pures), Playwright pour l'audit réseau et le smoke test du parcours saisie.
-- Économie de tokens : ne pas relire les fichiers inchangés, s'appuyer sur ce brief comme contexte de référence.
+- Detailed implementation plan submitted **before** any code, at each milestone.
+- Strict TypeScript, functional patterns, conventional commits.
+- Any visual deviation from `phase-encre-v2.html` must be flagged and justified.
+- Tests: Vitest on `lib/engine.ts` and `lib/patterns.ts` (100% of the pure functions), Playwright for the network audit and the smoke test of the input flow.
+- Token economy: don't re-read unchanged files, rely on this brief as the reference context.
