@@ -159,6 +159,9 @@
     "erase_done": "everything is erased",
     "about": "about",
     "about_text": "{app} lives entirely on your device: no account, no server, no trackers. Verifiable in your browser's dev tools — zero network requests after load.",
+    "support": "support",
+    "support_text": "{app} is free, open-source software with no ads. If the app is useful to you, you can support its development — entirely optional, never required.",
+    "support_link": "Make a donation",
     "version": "version {v} · {c} · {d}",
     "disclaimer_title": "note",
     "disclaimer": "{app} is not a medical device and cannot be used for contraception. Predictions are estimates based on your history."

@@ -159,6 +159,9 @@
     "erase_done": "tout est effacé",
     "about": "à propos",
     "about_text": "{app} vit entièrement sur ton appareil : pas de compte, pas de serveur, pas de traceurs. Vérifiable dans les outils de développement — aucune requête réseau après le chargement.",
+    "support": "soutenir",
+    "support_text": "{app} est un logiciel libre, gratuit et sans publicité. Si l'app t'est utile, tu peux soutenir son développement — c'est libre, jamais nécessaire.",
+    "support_link": "Faire un don",
     "version": "version {v} · {c} · {d}",
     "disclaimer_title": "note",
     "disclaimer": "{app} n'est pas un dispositif médical et ne peut pas servir de contraception. Les prédictions sont des estimations basées sur ton historique."

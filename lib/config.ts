@@ -12,6 +12,10 @@ export const THEME_COLOR = '#120d14';
  * jamais requêté au runtime, ouvert dans le navigateur sur geste utilisateur. */
 export const REPO_URL = 'https://github.com/Meg4mi/eclosia';
 
+/** Page de soutien (dons Liberapay). Lien externe uniquement, jamais requêté au
+ * runtime. Remplacer « eclose » par l'identifiant Liberapay réel une fois créé. */
+export const SUPPORT_URL = 'https://liberapay.com/eclose';
+
 /** Mots-clés statiques pour le référencement (métadonnées de build, jamais
  * rendus dans l'UI). Registre calme, jamais médical ni contraceptif (§non-objectifs). */
 export const APP_KEYWORDS = [
