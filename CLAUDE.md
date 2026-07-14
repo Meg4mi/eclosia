@@ -2,7 +2,7 @@
 
 ## Project status
 
-**The brief (`brief-claude-code.md`) is fully implemented** (milestones M1, M2 and M3: dial, input, phase sheet, prediction engine, onboarding, history, adaptive chips, pattern engine, settings, encrypted export/import, PWA, automated audits). **There is no longer any point in reading it**: it is kept as a historical archive. **The code and this file are authoritative.** In case of a contradiction between the brief and the code, the code is right — the discrepancies are decisions taken and validated along the way (see "Accepted discrepancies").
+**The original brief is fully implemented** (milestones M1, M2 and M3: dial, input, phase sheet, prediction engine, onboarding, history, adaptive chips, pattern engine, settings, encrypted export/import, PWA, automated audits). **The code and this file are authoritative** — the "Accepted discrepancies" section records the decisions taken and validated along the way where the implementation diverged from the initial plan.
 
 `phase-encre-v2.html` is NOT dead code: it is the **visual parity reference** used by `npm run parity`. Do not delete it. Any visual change to the dial must be applied to both (app + prototype) so that the guard stays exact.
 
@@ -29,7 +29,7 @@ In this remote environment, Chromium is at `/opt/pw-browsers/chromium` (auto-det
 - **Motion never touches the ink ribbon** (the rAF canvas of `InkRing.tsx`). Motion scope: sheets, chips, onboarding, transitions. `LazyMotion` with **`domMax`** — not `domAnimation`, which does not include drag gestures (historical bug, do not "re-optimize" it).
 - **A single leaf animation curve** (`lib/motion-tokens.ts`): `cubic-bezier(.32,.72,.28,1)` 480 ms, the one from the prototype. "Calm organic" register, never a pronounced bounce.
 - **Optimistic writes**: the UI never waits on IndexedDB, no spinner.
-- **Conventional commits, in French.**
+- **Conventional commits, in English.**
 
 ## Non-goals (never implement, even on request)
 

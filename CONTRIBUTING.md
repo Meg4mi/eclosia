@@ -58,7 +58,7 @@ npm run parity     # pixel parity guard of the dial vs prototype (> 0.5% = failu
 - **Strict TypeScript**, functional patterns, no classes, no `any`.
 - The name "Éclose" is written in a single place: `lib/config.ts`. Technical
   identifiers stay without the accent (`eclose`).
-- **Conventional commits, in French** (`feat:`, `fix:`, `docs:`, `refactor:`…).
+- **Conventional commits, in English** (`feat:`, `fix:`, `docs:`, `refactor:`…).
 
 ## Reporting a bug or proposing an idea
 
