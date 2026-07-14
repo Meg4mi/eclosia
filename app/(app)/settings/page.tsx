@@ -15,7 +15,14 @@ import { eraseAll, mergeImport } from '@/lib/logbook';
 import { decryptExport, encryptExport, type ExportData } from '@/lib/crypto';
 import { createPinRecord, isValidPin, verifyPin } from '@/lib/pin';
 import { UNLOCK_KEY } from '@/components/lock/LockScreen';
-import { APP_BUILT_AT, APP_COMMIT, APP_NAME, APP_VERSION, EXPORT_EXTENSION } from '@/lib/config';
+import {
+  APP_BUILT_AT,
+  APP_COMMIT,
+  APP_NAME,
+  APP_VERSION,
+  EXPORT_EXTENSION,
+  SUPPORT_URL,
+} from '@/lib/config';
 import { todayISO } from '@/lib/dates';
 import { tpl } from '@/i18n';
 import type { Locale } from '@/i18n';
@@ -281,6 +288,16 @@ export default function SettingsPage() {
           </p>
           <p className={styles.version}>
             {tpl(dict.settings.version, { v: APP_VERSION, c: APP_COMMIT, d: APP_BUILT_AT })}
+          </p>
+        </section>
+
+        <section className={styles.section}>
+          <div className={styles.sectionTitle}>{dict.settings.support}</div>
+          <p className={styles.para}>{tpl(dict.settings.support_text, { app: APP_NAME })}</p>
+          <p className={styles.para}>
+            <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer">
+              {dict.settings.support_link}
+            </a>
           </p>
         </section>
       </div>

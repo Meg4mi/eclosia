@@ -8,6 +8,14 @@ export const APP_URL = `https://${APP_DOMAIN}`;
 export const APP_DESCRIPTION = 'Ton cycle, sur ton appareil.';
 export const THEME_COLOR = '#120d14';
 
+/** Code source public (logiciel libre, AGPL-3.0). Lien externe uniquement —
+ * jamais requêté au runtime, ouvert dans le navigateur sur geste utilisateur. */
+export const REPO_URL = 'https://github.com/Meg4mi/eclosia';
+
+/** Page de soutien (dons Liberapay). Lien externe uniquement, jamais requêté au
+ * runtime, ouvert dans le navigateur sur geste utilisateur. */
+export const SUPPORT_URL = 'https://liberapay.com/Meg4mi';
+
 /** Mots-clés statiques pour le référencement (métadonnées de build, jamais
  * rendus dans l'UI). Registre calme, jamais médical ni contraceptif (§non-objectifs). */
 export const APP_KEYWORDS = [
