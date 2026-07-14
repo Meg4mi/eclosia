@@ -1,79 +1,79 @@
 # Éclose
 
-Suivi de cycle menstruel. **Ton cycle, sur ton appareil.**
+Menstrual cycle tracking. **Your cycle, on your device.**
 
-PWA 100 % statique et locale : aucune donnée ne quitte jamais l'appareil. Pas de compte, pas de serveur, pas d'analytics, **zéro requête réseau après le premier chargement** — vérifiable dans les DevTools (onglet Network), et vérifié par un test automatisé.
+A fully static, local PWA: no data ever leaves the device. No account, no server, no analytics, **zero network requests after the first load** — verifiable in the DevTools (Network tab), and verified by an automated test.
 
-## Trois principes
+## Three principles
 
-1. **Local-first radical.** IndexedDB est la seule source de vérité. La seule sauvegarde est un export chiffré (AES-GCM, clé dérivée d'une phrase secrète) que l'utilisatrice garde où elle veut. Un verrou local optionnel (code, jamais stocké en clair) protège l'app d'un regard indiscret.
-2. **Une interaction par jour.** Un chip « règles » (intensité en 3 gouttes) + 3 pastilles de symptômes adaptées à la phase courante. Onboarding en une seule question.
-3. **Prédiction honnête.** Jamais de date sèche : une fenêtre (« probablement entre le 24 et le 27 juillet ») avec un niveau de confiance affiché, qui se resserre avec l'historique.
+1. **Radical local-first.** IndexedDB is the only source of truth. The only backup is an encrypted export (AES-GCM, key derived from a passphrase) that you keep wherever you want. An optional local lock (a code, never stored in the clear) protects the app from prying eyes.
+2. **One interaction per day.** A "period" chip (intensity in 3 drops) + 3 symptom pills adapted to the current phase. Onboarding in a single question.
+3. **Honest prediction.** Never a hard date: a window ("probably between July 24 and 27") with a displayed confidence level, which tightens as history builds up.
 
 ## Stack
 
-- **Next.js 16** (App Router, Turbopack, `output: 'export'`) · **React 19** · **TypeScript strict**
-- **Dexie.js** sur IndexedDB (lecture réactive via `dexie-react-hooks`)
-- **Motion** (`LazyMotion` + `domMax`, composants `m.*`) pour la feuille et les micro-interactions — le ruban d'encre reste du canvas 2D pur (rAF)
-- **CSS Modules** + design tokens en custom properties, fonts **Fraunces / Newsreader** self-hostées via `next/font`
-- **Web Crypto** (AES-GCM, PBKDF2 300 000 itérations) pour l'export `.eclose`
-- PWA : manifest + service worker precache-all généré au build
+- **Next.js 16** (App Router, Turbopack, `output: 'export'`) · **React 19** · **strict TypeScript**
+- **Dexie.js** on IndexedDB (reactive reads via `dexie-react-hooks`)
+- **Motion** (`LazyMotion` + `domMax`, `m.*` components) for the sheet and micro-interactions — the ink ring stays pure 2D canvas (rAF)
+- **CSS Modules** + design tokens as custom properties, **Fraunces / Newsreader** fonts self-hosted via `next/font`
+- **Web Crypto** (AES-GCM, PBKDF2 300,000 iterations) for the `.eclose` export
+- PWA: manifest + precache-all service worker generated at build time
 
-## Démarrer
+## Getting started
 
 ```bash
 npm install
-npm run dev        # développement (http://localhost:3000)
-npm run build      # build statique dans out/ + génération du service worker
-npm start          # sert out/ en local
+npm run dev        # development (http://localhost:3000)
+npm run build      # static build in out/ + service worker generation
+npm start          # serve out/ locally
 ```
 
-## Qualité
+## Quality
 
 ```bash
-npm run lint       # typecheck strict
-npm test           # Vitest — moteur de cycle, patterns, règles métier, crypto
-npm run e2e        # Playwright — audit « zéro requête réseau » + parcours saisie
-npm run parity     # garde de parité pixel avec le prototype (après npm run build)
+npm run lint       # strict typecheck
+npm test           # Vitest — cycle engine, patterns, business rules, crypto
+npm run e2e        # Playwright — "zero network request" audit + logging flow
+npm run parity     # pixel parity guard against the prototype (after npm run build)
 ```
 
-`npm run parity` rend l'app et le prototype de référence (`phase-encre-v2.html`) dans des conditions identiques et échoue si plus de 0,5 % des pixels du cadran ou de la feuille de phase divergent. La CI GitHub Actions rejoue toute la chaîne sur chaque PR.
+`npm run parity` renders the app and the reference prototype (`phase-encre-v2.html`) under identical conditions and fails if more than 0.5% of the pixels of the dial or the phase sheet diverge. GitHub Actions CI replays the whole chain on every PR.
 
 ## Architecture
 
 ```
-app/               écrans (Aujourd'hui, Historique, Réglages) — clients, minces
-components/        cadran (canvas + SVG), saisie, feuilles, onboarding, nav
-lib/               tout ce qui se calcule : pur, sans DOM, testé
-  engine.ts        prédiction, phases, jour de cycle
-  patterns.ts      moteur d'insights (récurrences inter-cycles)
-  logbook.ts       règles métier d'écriture (cycles ↔ logs), optimiste
-  ink.ts           couleurs du ruban, géométrie du cadran
-  crypto.ts        export/import chiffré
-  db.ts            schéma Dexie
-i18n/              dictionnaires fr/en — aucun texte en dur dans le code
+app/               screens (Today, History, Settings) — client, thin
+components/        dial (canvas + SVG), input, sheets, onboarding, nav
+lib/               everything that computes: pure, DOM-free, tested
+  engine.ts        prediction, phases, cycle day
+  patterns.ts      insight engine (cross-cycle recurrences)
+  logbook.ts       write-side business rules (cycles ↔ logs), optimistic
+  ink.ts           ribbon colors, dial geometry
+  crypto.ts        encrypted export/import
+  db.ts            Dexie schema
+i18n/              fr/en dictionaries — no hard-coded text in the code
 ```
 
-## Déploiement
+## Deployment
 
-Hébergement statique quelconque ; Vercel recommandé :
+Any static hosting; Vercel recommended:
 
-- Build command : `npm run build` (indispensable — génère aussi le service worker)
-- Output directory : `out`
-- `vercel.json` fournit le `Cache-Control: no-cache` sur `sw.js` et le manifest
+- Build command: `npm run build` (essential — also generates the service worker)
+- Output directory: `out`
+- `vercel.json` provides the `Cache-Control: no-cache` on `sw.js` and the manifest
 
-## Contribuer
+## Contributing
 
-Les contributions sont bienvenues, tant qu'elles respectent la confidentialité radicale et le registre calme de l'app. Le détail (chaîne qualité, architecture, non-objectifs) est dans [`CONTRIBUTING.md`](CONTRIBUTING.md).
+Contributions are welcome, as long as they respect the app's radical privacy and calm register. The details (quality chain, architecture, non-goals) are in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-## Soutenir le projet
+## Support the project
 
-Éclose est gratuit, sans publicité et sans revente de données — par conception. Si l'app t'est utile et que tu veux qu'elle le reste, tu peux soutenir son développement sur [Liberapay](https://liberapay.com/Meg4mi). Aucun soutien n'est nécessaire pour utiliser l'app pleinement.
+Éclose is free, ad-free, and does not resell data — by design. If the app is useful to you and you want it to stay that way, you can support its development on [Liberapay](https://liberapay.com/Meg4mi). No support is required to use the app fully.
 
-## Licence
+## License
 
-[AGPL-3.0](LICENSE). Éclose est un logiciel libre : tu peux l'étudier, le modifier et le redistribuer. La clause « réseau » de l'AGPL garantit que tout service dérivé, même déployé en ligne, doit lui aussi rester open source — c'est ce qui protège les promesses de confidentialité du projet contre un fork qui les trahirait.
+[AGPL-3.0](LICENSE). Éclose is free software: you can study, modify, and redistribute it. The AGPL "network" clause guarantees that any derivative service, even one deployed online, must also stay open source — that is what protects the project's privacy promises against a fork that would betray them.
 
 ## Note
 
-Éclose n'est pas un dispositif médical et ne peut pas servir de contraception. Les prédictions sont des estimations basées sur l'historique personnel. ;)
+Éclose is not a medical device and cannot be used as contraception. Predictions are estimates based on your personal history. ;)
