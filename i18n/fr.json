@@ -74,7 +74,8 @@
     "discovery_ctx": "Logge tes premières règles et j'apprendrai ton rythme.",
     "discovery_prediction": "Pas encore de prédiction — je découvre ton cycle avec toi.",
     "phase_now": "en cours",
-    "phase_soon": "bientôt"
+    "phase_soon": "bientôt",
+    "phase_around": "vers le {date}"
   },
   "prediction": {
     "line": "Prochaines règles : {window}",

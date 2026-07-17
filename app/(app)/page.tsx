@@ -266,7 +266,9 @@ export default function TodayPage() {
                   ? dict.today.phase_now
                   : timing.start <= today
                     ? dict.today.phase_soon
-                    : formatShortDate(parseISO(timing.start), locale)}
+                    : tpl(dict.today.phase_around, {
+                        date: formatShortDate(parseISO(timing.start), locale),
+                      })}
               </span>
             </button>
           ))}

@@ -91,9 +91,9 @@
   font-family: var(--font-text);
   font-style: italic;
   font-size: 11px;
-  line-height: 1.15;
+  line-height: 1.2;
   color: var(--muted);
-  white-space: nowrap;
+  text-wrap: balance;
 }
 
 .notice {
