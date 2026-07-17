@@ -65,7 +65,6 @@ No contraceptive or medical claim · no account, cloud sync, freemium, ads, thir
 - **PWA quick-log shortcut** (`app/manifest.ts` + Today page): a manifest shortcut opens `/?log=1`. Settings load asynchronously from IndexedDB after first render, so Today retains the request (`wantsLog` state) and only opens the logging catalog once `settings.onboardedAt` is known, then clears the query string.
 - **Patterns** (`lib/patterns.ts`): recurrence ≥ 60% of the closed cycles (min 3), ± 1 day window, max 2 per phase, always sourced wording, never causal.
 - **Adaptive chips** (`lib/symptoms.ts`): defaults per phase, replaced from 2 closed cycles by the 3 symptoms actually logged the most in the phase (current cycle included, over its estimated length).
-- **Local lock** (`lib/pin.ts`): 4–8 digit code, PBKDF2 hash + salt in Settings, unlock valid per session (`sessionStorage`). No recovery — this is documented in the UI. Threat covered: prying eyes, not a tooled attack.
 - **Import** (`lib/logbook.ts` `mergeImport`): local logs/settings win, except on a blank device where the imported settings apply; a data import marks onboarding as done.
 - **Today's note**: the `note` field of DailyLog, edited in the catalog sheet and the history editor (`NoteField`, debounced write).
 

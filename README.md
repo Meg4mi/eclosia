@@ -6,7 +6,7 @@ A fully static, local PWA: no data ever leaves the device. No account, no server
 
 ## Three principles
 
-1. **Radical local-first.** IndexedDB is the only source of truth. The only backup is an encrypted export (AES-GCM, key derived from a passphrase) that you keep wherever you want. An optional local lock (a code, never stored in the clear) protects the app from prying eyes.
+1. **Radical local-first.** IndexedDB is the only source of truth. The only backup is an encrypted export (AES-GCM, key derived from a passphrase) that you keep wherever you want.
 2. **One interaction per day.** A "period" chip (intensity in 3 drops) + 3 symptom pills adapted to the current phase. Onboarding in a single question.
 3. **Honest prediction.** Never a hard date: a window ("probably between July 24 and 27") with a displayed confidence level, which tightens as history builds up. When cycles show a genuine drift, the app says so and the window follows it — never silently.
 

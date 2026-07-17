@@ -6,7 +6,7 @@
   display: flex;
   justify-content: center;
   gap: 26px;
-  padding: 10px 0 calc(env(safe-area-inset-bottom) + 14px);
+  padding: 8px 0 calc(env(safe-area-inset-bottom) + 12px);
   margin-top: auto;
 }
 

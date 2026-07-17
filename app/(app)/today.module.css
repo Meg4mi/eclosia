@@ -6,7 +6,7 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: calc(env(safe-area-inset-top) + 20px) 26px 0;
+  padding: calc(env(safe-area-inset-top) + 16px) 26px 0;
 }
 
 .wordmark {
@@ -27,12 +27,12 @@
   position: relative;
   z-index: 1;
   text-align: center;
-  margin: 8px 26px 0;
+  margin: 4px 26px 0;
   font-family: var(--font-text);
   font-size: 14.5px;
   font-style: italic;
   color: var(--muted);
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .predictionEm {
@@ -48,49 +48,52 @@
   margin-top: 2px;
 }
 
-/* les quatre phases et leur date d'arrivée, en un coup d'œil */
+/* les quatre phases et leur date d'arrivée, sur une seule ligne */
 .phasesGrid {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2px 18px;
-  margin: 12px auto 0;
-  width: min(92vw, 358px);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin: 6px auto 0;
+  width: min(94vw, 402px);
 }
 
 .phaseItem {
   background: none;
   border: none;
   cursor: pointer;
-  display: grid;
-  grid-template-columns: 9px 1fr;
-  column-gap: 9px;
-  align-items: baseline;
-  text-align: left;
-  padding: 5px 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-align: center;
+  padding: 4px 1px;
+  min-width: 0;
 }
 
 .phaseDot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   opacity: 0.85;
-  align-self: center;
 }
 
 .phaseName {
   font-family: var(--font-text);
-  font-size: 14px;
+  font-size: 12px;
+  line-height: 1.15;
   color: var(--ink);
+  white-space: nowrap;
 }
 
 .phaseDate {
-  grid-column: 2;
   font-family: var(--font-text);
   font-style: italic;
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 1.15;
   color: var(--muted);
+  white-space: nowrap;
 }
 
 .notice {
