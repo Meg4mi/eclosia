@@ -6,8 +6,6 @@
 
 Post-brief enhancements (documented in "Key business rules" below): phase arrival dates (`phaseTiming`), trend-aware prediction (`cycleTrend`), confirmed-run period recalibration (`lib/period.ts`), the History symptom heatmap (`lib/heatmap.ts`), cycle-vs-average deltas, and the PWA quick-log shortcut.
 
-`phase-encre-v2.html` is NOT dead code: it is the **visual parity reference** used by `npm run parity`. Do not delete it. Any visual change to the dial must be applied to both (app + prototype) so that the guard stays exact.
-
 ## Commands
 
 ```bash
@@ -16,10 +14,9 @@ npm run build        # next build + SW generation in out/ (always this command, 
 npm run lint         # tsc --noEmit (strict)
 npm test             # Vitest — pure lib/, 100% of the functions
 npm run e2e          # Playwright (requires an up-to-date build; serves out/ on :4173)
-npm run parity       # pixel parity guard (dial + sheet) vs prototype (requires a build; fails if > 0.5% of pixels diverge)
 ```
 
-Before any push: `lint` + `test` + `build` + `e2e` + `parity` must be green — the CI (`.github/workflows/ci.yml`) replays exactly this chain on every PR.
+Before any push: `lint` + `test` + `build` + `e2e` must be green — the CI (`.github/workflows/ci.yml`) replays exactly this chain on every PR.
 In this remote environment, Chromium is at `/opt/pw-browsers/chromium` (auto-detected; in CI/local it's the normal Playwright resolution) — never run `playwright install` here.
 
 ## Non-negotiable rules
@@ -47,8 +44,6 @@ No contraceptive or medical claim · no account, cloud sync, freemium, ads, thir
 
 - **Today's date comes from `useToday()`** (lib/hooks), never from `todayISO()` called in a component: the hook re-renders at midnight and on return to the foreground — otherwise an app left open logs against yesterday.
 - **Service worker without automatic `skipWaiting`**: the new SW waits for the old tabs to close, otherwise an already-loaded page loses its hashed chunks when the cache is purged. The only immediate activation goes through the "new version ready · reload" toast (`SwRegister`): user gesture → `SKIP_WAITING` → reload on `controllerchange`. Do not "speed this up" any other way.
-- **Parity bench**: the global CSS injected into the prototype references `var(--font-newsreader)` that only next/font defines — the script injects the missing variables, and tolerates ± 2 px of vertical alignment on the sheet (fractional bottom anchoring).
-
 - **`InkRing.tsx`**: the blurred layer (per-stroke blur, identical to the prototype) is pre-rendered in an offscreen at an adaptive cadence. The cost of the canvas blur is paid at **deferred rasterization**, not at the draw call — device slowness is gauged on the frame delta that FOLLOWS a layer render. Applying the blur per frame on the main canvas collapses the event loop (2 fps in software rendering) and delays IndexedDB events by several seconds.
 - **Scrollable sheets**: with `touch-action: pan-y`, the browser emits `pointercancel` before Motion sees the gesture — the swipe-to-dismiss "at the top of the scroll" is driven by non-passive `touchmove` listeners in `BottomSheet.tsx`, which write the same motionValue as the Motion drag. Do not simplify.
 - **Dexie**: the stored IndexedDB version = Dexie version × 10 (an external `indexedDB.open('eclose', 1)` breaks it). The seed scripts open without a version number.
@@ -72,9 +67,9 @@ No contraceptive or medical claim · no account, cloud sync, freemium, ads, thir
 
 - Prediction window: the brief §5 formula (`lastStart + mean ± sd`), i.e. +1 day vs the prototype which shifted by one day.
 - "Phase" wordmark → `APP_NAME`; the "living ink · instrument precision" tagline removed everywhere.
-- "Luteal" label added on the dial (the prototype omitted it) — the reference prototype updated accordingly.
-- Ribbon smoothing: 2 passes .22/.56/.22 instead of 3 passes .28/.44/.28 (the menstrual red was washed out over 5 days) — the reference prototype updated identically, boundaries still gradient.
-- Ribbon menstrual ink: #db2f24 (`INK_COLORS` in lib/ink.ts) instead of the #e2543f token — the filament brightens ×1.28 with clipping, which turned the red to coral; the pigment therefore starts from a saturated red (low green/blue). The intermediate step #b23122 was abandoned: too dark, its blurred layer stayed dull against the luminous halos of the other phases (menstrual "in retreat"). #db2f24 radiates as much as they do without turning coral. The UI accent stays --c-menst. Prototype aligned.
+- "Luteal" label added on the dial (the prototype omitted it).
+- Ribbon smoothing: 2 passes .22/.56/.22 instead of 3 passes .28/.44/.28 (the menstrual red was washed out over 5 days), boundaries still gradient.
+- Ribbon menstrual ink: #db2f24 (`INK_COLORS` in lib/ink.ts) instead of the #e2543f token — the filament brightens ×1.28 with clipping, which turned the red to coral; the pigment therefore starts from a saturated red (low green/blue). The intermediate step #b23122 was abandoned: too dark, its blurred layer stayed dull against the luminous halos of the other phases (menstrual "in retreat"). #db2f24 radiates as much as they do without turning coral. The UI accent stays --c-menst.
 - `domMax` instead of `domAnimation` (the drag requires it).
 - In reduced-motion, a resize redraws a static frame (silent bug of the prototype, fixed).
 

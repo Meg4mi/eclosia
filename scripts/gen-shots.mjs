@@ -5,7 +5,7 @@
  * le cadran d'aujourd'hui et une feuille de phase.
  *
  * Sortie : public/screenshots/{today,phase}.png — committées comme les icônes.
- * Le seeding IndexedDB reprend la méthode éprouvée de parity-check.mjs.
+ * Le seeding IndexedDB pose un historique factice (cycles [29,27,28,30]).
  *
  * Usage : npm run build puis `npm run gen-shots` (démarre son propre serveur
  * statique sur :4198).
@@ -42,7 +42,7 @@ const app = await ctx.newPage();
 await app.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' });
 await app.waitForTimeout(1200);
 
-// même historique que parity-check : [29,27,28,30], dernier départ à J-15
+// historique factice : [29,27,28,30], dernier départ à J-15
 await app.evaluate(async () => {
   const openReq = indexedDB.open('eclose');
   const d = await new Promise((res, rej) => {

@@ -1,7 +1,7 @@
 /**
  * Calculs du ruban d'encre et de la géométrie du cadran — purs, testés.
  * Les valeurs (lissage 3 passes, poids .28/.44/.28, opacité d'incertitude)
- * sont celles du prototype phase-encre-v2.html, à l'identique.
+ * sont celles du prototype d'origine, à l'identique.
  */
 
 import type { PhaseKey, PhaseRange } from './types';

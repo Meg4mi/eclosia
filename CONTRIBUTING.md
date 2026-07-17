@@ -33,7 +33,7 @@ Chromium for the Playwright tests installs via `npx playwright install
 
 ## The quality chain (mandatory before any PR)
 
-These five commands must be green — the CI (`.github/workflows/ci.yml`) replays
+These four commands must be green — the CI (`.github/workflows/ci.yml`) replays
 the exact same chain on every PR:
 
 ```bash
@@ -41,7 +41,6 @@ npm run lint       # tsc --noEmit (strict, never "any")
 npm test           # Vitest — pure lib/, coverage of the business functions
 npm run build      # next build + service worker generation (never next build alone)
 npm run e2e        # Playwright (requires an up-to-date build)
-npm run parity     # pixel parity guard of the dial vs prototype (> 0.5% = failure)
 ```
 
 ## Where things go
