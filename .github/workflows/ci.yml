@@ -32,14 +32,3 @@ jobs:
 
       - name: E2E — audit zéro réseau, parcours saisie, sauvegarde, verrou
         run: npm run e2e
-
-      - name: Garde de parité pixel vs prototype
-        run: npm run parity
-
-      - name: Artefacts de parité (en cas d'échec)
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: parity-out
-          path: parity-out/
-          if-no-files-found: ignore

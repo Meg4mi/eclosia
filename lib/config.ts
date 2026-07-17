@@ -5,7 +5,7 @@
 export const APP_NAME = 'Éclose';
 export const APP_DOMAIN = 'eclose.app';
 export const APP_URL = `https://${APP_DOMAIN}`;
-export const APP_DESCRIPTION = 'Ton cycle, sur ton appareil.';
+export const APP_DESCRIPTION = 'Your cycle, on your device.';
 export const THEME_COLOR = '#120d14';
 
 /** Code source public (logiciel libre, AGPL-3.0). Lien externe uniquement —
@@ -17,19 +17,20 @@ export const REPO_URL = 'https://github.com/Meg4mi/eclosia';
 export const SUPPORT_URL = 'https://liberapay.com/Meg4mi';
 
 /** Mots-clés statiques pour le référencement (métadonnées de build, jamais
- * rendus dans l'UI). Registre calme, jamais médical ni contraceptif (§non-objectifs). */
+ * rendus dans l'UI). Langue par défaut = anglais (§SEO). Registre calme,
+ * jamais médical ni contraceptif (§non-objectifs). */
 export const APP_KEYWORDS = [
-  'suivi de cycle',
-  'cycle menstruel',
-  'règles',
-  'confidentialité',
-  'hors-ligne',
-  'sur l’appareil',
-  'sans compte',
+  'cycle tracker',
+  'menstrual cycle',
+  'period',
+  'privacy',
+  'offline',
+  'on-device',
+  'no account',
   'PWA',
 ] as const;
 
-export const DEFAULT_LOCALE = 'fr' as const;
+export const DEFAULT_LOCALE = 'en' as const;
 export const DEFAULT_PERIOD_LENGTH = 5;
 export const DEFAULT_CYCLE_LENGTH = 28;
 

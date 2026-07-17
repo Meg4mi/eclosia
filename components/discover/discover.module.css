@@ -41,6 +41,32 @@
   opacity: 0.9;
 }
 
+/* Pilliers du héros : gratuit · privé · sans compte · hors-ligne. Registre
+   calme — une ligne discrète, séparateurs en point médian, aucune emphase. */
+.pillars {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.9rem;
+  margin-top: 0.25rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  color: var(--muted);
+}
+
+.pillars li {
+  position: relative;
+}
+
+.pillars li:not(:first-child)::before {
+  content: '·';
+  position: absolute;
+  left: -0.55rem;
+  color: var(--muted);
+  opacity: 0.6;
+}
+
 .section {
   display: flex;
   flex-direction: column;

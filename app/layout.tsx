@@ -21,7 +21,8 @@ const newsreader = Newsreader({
 });
 
 // SEO : métadonnées 100 % statiques, générées au build (aucune requête réseau
-// au runtime, §2). L'image OG réutilise l'icône existante — aucun asset distant.
+// au runtime, §2). La carte de partage /og.png (1200×630) est générée hors ligne
+// par scripts/gen-og.mjs et committée — aucun asset distant.
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: { default: APP_NAME, template: `%s · ${APP_NAME}` },
@@ -47,18 +48,18 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'fr_FR',
+    locale: 'en_GB',
     url: '/',
     siteName: APP_NAME,
     title: APP_NAME,
     description: APP_DESCRIPTION,
-    images: [{ url: '/icons/icon-512.png', width: 512, height: 512, alt: APP_NAME }],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: APP_NAME }],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: APP_NAME,
     description: APP_DESCRIPTION,
-    images: ['/icons/icon-512.png'],
+    images: ['/og.png'],
   },
 };
 
@@ -71,7 +72,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${fraunces.variable} ${newsreader.variable}`}>
+    <html lang="en" className={`${fraunces.variable} ${newsreader.variable}`}>
       <body>{children}</body>
     </html>
   );

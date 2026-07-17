@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description,
   alternates: {
     canonical: '/discover',
-    languages: { fr: '/decouvrir', en: '/discover', 'x-default': '/decouvrir' },
+    languages: { fr: '/decouvrir', en: '/discover', 'x-default': '/discover' },
   },
   openGraph: {
     type: 'website',
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     siteName: APP_NAME,
     title: `${d.title} · ${APP_NAME}`,
     description,
-    images: [{ url: '/icons/icon-512.png', width: 512, height: 512, alt: APP_NAME }],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: APP_NAME }],
   },
 };
 

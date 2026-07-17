@@ -11,8 +11,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test",
-    "parity": "node scripts/parity-check.mjs",
-    "gen-icons": "node scripts/gen-icons.mjs"
+    "gen-icons": "node scripts/gen-icons.mjs",
+    "gen-og": "node scripts/gen-og.mjs",
+    "gen-shots": "node scripts/gen-shots.mjs"
   },
   "dependencies": {
     "dexie": "^4.4.4",

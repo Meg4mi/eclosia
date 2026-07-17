@@ -109,13 +109,16 @@
   },
   "manifest": {
     "shortcut_log": "Log today",
-    "shortcut_log_desc": "Period, symptoms, note — in one gesture"
+    "shortcut_log_desc": "Period, symptoms, note — in one gesture",
+    "screenshot_today": "The living dial of your cycle",
+    "screenshot_phase": "Your phase, in detail"
   },
   "onboarding": {
     "question": "When did your last period start?",
     "hint": "One question only. Everything stays on your device — nothing ever leaves it.",
     "unknown": "I don't remember",
     "start": "begin",
+    "pitch": "Free · private · no account",
     "weekdays": ["mo", "tu", "we", "th", "fr", "sa", "su"]
   },
   "history": {
@@ -198,6 +201,7 @@
     "meta_description": "{app} — a calm cycle tracker that lives entirely on your device. No account, no cloud, no trackers. Works offline.",
     "hero_title": "Your cycle, on your device",
     "hero_body": "{app} is a calm, private cycle tracker. Your data stays with you — nothing ever leaves your device.",
+    "pillars": ["Free", "Private", "No account", "Offline"],
     "privacy_title": "Everything stays with you",
     "privacy_body": "{app} lives entirely on your device: no account, no server, no trackers. No network requests after load — verifiable in your developer tools. You can export your data to an encrypted file and import it back whenever you want.",
     "how_title": "How it works",
@@ -232,6 +236,10 @@
       {
         "q": "Can {app} be used as contraception?",
         "a": "No. {app} is not a medical device. Predictions are estimates based on your history."
+      },
+      {
+        "q": "Is it free?",
+        "a": "Yes. {app} is free — no cost, no subscription, no ads. It's also free software: the code is open for anyone to inspect. If it's useful to you, supporting its development is welcome, but never required."
       }
     ]
   }

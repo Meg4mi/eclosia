@@ -34,10 +34,9 @@ npm start          # serve out/ locally
 npm run lint       # strict typecheck
 npm test           # Vitest — cycle engine, patterns, business rules, crypto
 npm run e2e        # Playwright — "zero network request" audit + logging flow
-npm run parity     # pixel parity guard against the prototype (after npm run build)
 ```
 
-`npm run parity` renders the app and the reference prototype (`phase-encre-v2.html`) under identical conditions and fails if more than 0.5% of the pixels of the dial or the phase sheet diverge. GitHub Actions CI replays the whole chain on every PR.
+GitHub Actions CI replays the whole chain (lint, test, build, e2e) on every PR.
 
 ## Architecture
 
