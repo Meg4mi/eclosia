@@ -72,7 +72,10 @@
     "late": "Ton cycle dépasse ta fenêtre habituelle — ça arrive, on observe.",
     "discovery_phase": "découverte",
     "discovery_ctx": "Logge tes premières règles et j'apprendrai ton rythme.",
-    "discovery_prediction": "Pas encore de prédiction — je découvre ton cycle avec toi."
+    "discovery_prediction": "Pas encore de prédiction — je découvre ton cycle avec toi.",
+    "phase_now": "en cours",
+    "phase_soon": "bientôt",
+    "phase_around": "vers le {date}"
   },
   "prediction": {
     "line": "Prochaines règles : {window}",
@@ -116,7 +119,9 @@
     "cycle_length": "{n} jours",
     "current": "cycle en cours",
     "edit_hint": "toucher un jour pour corriger",
-    "day_sheet_title": "corriger ce jour"
+    "day_sheet_title": "corriger ce jour",
+    "heatmap_title": "tes symptômes, au fil du cycle",
+    "heatmap_source": "sur tes {n} derniers cycles clos"
   },
   "settings": {
     "title": "réglages",

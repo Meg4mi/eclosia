@@ -48,6 +48,51 @@
   margin-top: 2px;
 }
 
+/* les quatre phases et leur date d'arrivée, en un coup d'œil */
+.phasesGrid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 18px;
+  margin: 12px auto 0;
+  width: min(92vw, 358px);
+}
+
+.phaseItem {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 9px 1fr;
+  column-gap: 9px;
+  align-items: baseline;
+  text-align: left;
+  padding: 5px 2px;
+}
+
+.phaseDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  opacity: 0.85;
+  align-self: center;
+}
+
+.phaseName {
+  font-family: var(--font-text);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.phaseDate {
+  grid-column: 2;
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--muted);
+}
+
 .notice {
   position: relative;
   z-index: 1;

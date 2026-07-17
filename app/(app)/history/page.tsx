@@ -15,7 +15,8 @@ import { PHASE_COLORS } from '@/components/sheet/PhaseSheet';
 import { db } from '@/lib/db';
 import { addDays, parseISO } from '@/lib/dates';
 import { useToday } from '@/lib/hooks/useToday';
-import { dayOf, phases, predict } from '@/lib/engine';
+import { dayOf, phaseOfDay, phases, predict } from '@/lib/engine';
+import { heatmap } from '@/lib/heatmap';
 import { arcPath } from '@/lib/ink';
 import { SYMPTOM_IDS } from '@/lib/symptoms';
 import { setFlow, toggleSymptom } from '@/lib/logbook';
@@ -73,6 +74,9 @@ export default function HistoryPage() {
   }, [logs]);
 
   if (cycles === undefined || logs === undefined) return null;
+
+  const hm = heatmap(logs, cycles);
+  const hmRanges = hm ? phases(hm.days, settings.avgPeriodLength) : null;
 
   const sorted = [...cycles].sort((a, b) => b.startDate.localeCompare(a.startDate));
   const current = sorted.find((c) => c.lengthDays == null && c.startDate <= today);
@@ -155,6 +159,41 @@ export default function HistoryPage() {
               </p>
             );
           })()}
+
+        {hm && hmRanges && (
+          <section className={styles.heatmap} aria-label={dict.history.heatmap_title}>
+            <h2 className={styles.hmTitle}>{dict.history.heatmap_title}</h2>
+            {hm.rows.map((row) => (
+              <div key={row.symptomId} className={styles.hmRow}>
+                <span className={styles.hmLabel}>{symptomLabels[row.symptomId] ?? row.symptomId}</span>
+                <span className={styles.hmCells}>
+                  {row.counts.map((c, i) => (
+                    <span
+                      key={i}
+                      className={styles.hmCell}
+                      title={`${dict.common.day}${i + 1} · ${c}/${hm.cycles}`}
+                      style={
+                        c > 0
+                          ? {
+                              background: `color-mix(in srgb, ${PHASE_COLORS[phaseOfDay(hmRanges, i + 1).key]} ${Math.round(18 + 64 * (c / hm.max))}%, transparent)`,
+                            }
+                          : undefined
+                      }
+                    />
+                  ))}
+                </span>
+              </div>
+            ))}
+            <div className={styles.hmAxis}>
+              <span />
+              <span className={styles.hmAxisLabels}>
+                <span>{dict.common.day}1</span>
+                <span>{`${dict.common.day}${hm.days}`}</span>
+              </span>
+            </div>
+            <p className={styles.hmSource}>{tpl(dict.history.heatmap_source, { n: hm.cycles })}</p>
+          </section>
+        )}
 
         {current &&
           renderCycle(

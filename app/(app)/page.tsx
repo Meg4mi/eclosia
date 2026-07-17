@@ -36,7 +36,7 @@ import { patterns as computePatterns } from '@/lib/patterns';
 import { symptomsForPhase } from '@/lib/symptoms';
 import { useAccent } from '@/lib/hooks/useAccent';
 import { APP_NAME } from '@/lib/config';
-import { formatDate, formatFullDate, tpl } from '@/i18n';
+import { formatDate, formatFullDate, formatShortDate, tpl } from '@/i18n';
 import type { PhaseKey } from '@/lib/types';
 import dialStyles from '@/components/dial/dial.module.css';
 import styles from './today.module.css';
@@ -85,6 +85,18 @@ export default function TodayPage() {
     sheetPhase && prediction.lastStart
       ? phaseTiming(ranges, sheetPhase, prediction.lastStart, L, today)
       : null;
+
+  // les quatre phases avec leur date d'arrivée, en ordre chronologique depuis aujourd'hui
+  const lastStart = prediction.lastStart;
+  const phaseStrip = useMemo(
+    () =>
+      lastStart
+        ? ranges
+            .map((r) => ({ range: r, timing: phaseTiming(ranges, r, lastStart, L, today) }))
+            .sort((a, b) => a.timing.start.localeCompare(b.timing.start))
+        : null,
+    [ranges, lastStart, L, today],
+  );
   const accentKey = openPhase ?? currentPhase?.key ?? null;
   useAccent(accentKey ? PHASE_COLORS[accentKey] : null);
 
@@ -213,6 +225,34 @@ export default function TodayPage() {
           </m.span>
         </AnimatePresence>
       </div>
+
+      {phaseStrip && (
+        <div className={styles.phasesGrid}>
+          {phaseStrip.map(({ range, timing }) => (
+            <button
+              key={range.key}
+              className={styles.phaseItem}
+              onClick={() => setOpenPhase(range.key)}
+            >
+              <span
+                className={styles.phaseDot}
+                style={{ background: PHASE_COLORS[range.key] }}
+                aria-hidden="true"
+              />
+              <span className={styles.phaseName}>{phaseNames[range.key]}</span>
+              <span className={styles.phaseDate}>
+                {timing.status === 'current'
+                  ? dict.today.phase_now
+                  : timing.start <= today
+                    ? dict.today.phase_soon
+                    : tpl(dict.today.phase_around, {
+                        date: formatShortDate(parseISO(timing.start), locale),
+                      })}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {showAtypical && (
         <div className={styles.notice}>

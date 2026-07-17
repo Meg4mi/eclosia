@@ -72,7 +72,10 @@
     "late": "Your cycle is running past its usual window — it happens, we're watching.",
     "discovery_phase": "discovery",
     "discovery_ctx": "Log your first period and I'll learn your rhythm.",
-    "discovery_prediction": "No prediction yet — I'm discovering your cycle with you."
+    "discovery_prediction": "No prediction yet — I'm discovering your cycle with you.",
+    "phase_now": "happening now",
+    "phase_soon": "soon",
+    "phase_around": "around {date}"
   },
   "prediction": {
     "line": "Next period: {window}",
@@ -116,7 +119,9 @@
     "cycle_length": "{n} days",
     "current": "current cycle",
     "edit_hint": "tap a day to correct it",
-    "day_sheet_title": "correct this day"
+    "day_sheet_title": "correct this day",
+    "heatmap_title": "your symptoms, across the cycle",
+    "heatmap_source": "across your last {n} closed cycles"
   },
   "settings": {
     "title": "settings",
