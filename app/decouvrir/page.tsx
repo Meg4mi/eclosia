@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description,
   alternates: {
     canonical: '/decouvrir',
-    languages: { fr: '/decouvrir', en: '/discover', 'x-default': '/decouvrir' },
+    languages: { fr: '/decouvrir', en: '/discover', 'x-default': '/discover' },
   },
   openGraph: {
     type: 'website',

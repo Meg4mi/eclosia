@@ -23,13 +23,14 @@ test('aucune requête externe, du boot à la navigation complète', async ({ pag
   booted = true;
 
   // parcours complet : onboarding → cadran → navigation → réglages
-  await page.getByRole('button', { name: 'je ne sais plus' }).click();
-  await expect(page.getByText("aujourd'hui, en un geste")).toBeVisible();
-  await page.getByRole('link', { name: 'historique' }).click();
+  // (langue par défaut = anglais, §SEO)
+  await page.getByRole('button', { name: "I don't remember" }).click();
+  await expect(page.getByText('today, in one gesture')).toBeVisible();
+  await page.getByRole('link', { name: 'history' }).click();
   await page.waitForLoadState('networkidle');
-  await page.getByRole('link', { name: 'réglages' }).click();
+  await page.getByRole('link', { name: 'settings' }).click();
   await page.waitForLoadState('networkidle');
-  await page.getByRole('link', { name: "aujourd'hui" }).click();
+  await page.getByRole('link', { name: 'today' }).click();
   await page.waitForLoadState('networkidle');
 
   expect(external, `requêtes externes détectées : ${external.join(', ')}`).toEqual([]);

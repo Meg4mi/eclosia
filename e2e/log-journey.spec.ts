@@ -7,20 +7,20 @@ test('onboarding une question, saisie en un geste, données persistées', async 
 
   // — onboarding : une seule question, date picker custom.
   // On choisit aujourd'hui → J1, phase menstruelle → chips par défaut stables.
-  await expect(page.getByText('Quand ont commencé tes dernières règles ?')).toBeVisible();
+  await expect(page.getByText('When did your last period start?')).toBeVisible();
   const todayNum = String(new Date().getDate());
   await page.getByRole('button', { name: todayNum, exact: true }).click();
-  await page.getByRole('button', { name: 'commencer' }).click();
+  await page.getByRole('button', { name: 'begin' }).click();
 
   // — cadran : jour du cycle affiché, phrase contextuelle, prédiction honnête
-  await expect(page.getByText("aujourd'hui, en un geste")).toBeVisible();
+  await expect(page.getByText('today, in one gesture')).toBeVisible();
   await expect(page.locator('canvas')).toBeVisible();
-  await expect(page.getByText(/Prochaines règles|prédiction/)).toBeVisible();
+  await expect(page.getByText(/Next period|prediction/i)).toBeVisible();
 
-  // — saisie : chip règles, deux taps → intensité 2, « c'est noté »
-  const flowChip = page.getByRole('button', { name: /règles/ });
+  // — saisie : chip règles, deux taps → intensité 2, « noted »
+  const flowChip = page.getByRole('button', { name: /period/i });
   await flowChip.click();
-  await expect(page.getByText("c'est noté")).toBeVisible();
+  await expect(page.getByText('noted')).toBeVisible();
   await flowChip.click();
   await expect(flowChip).toHaveAttribute('aria-pressed', 'true');
 
@@ -30,13 +30,13 @@ test('onboarding une question, saisie en un geste, données persistées', async 
   // — feuille de phase au clavier (zone tactile SVG focusable), fermeture backdrop
   await page.locator('svg [role="button"]').first().press('Enter');
   await expect(page.getByRole('dialog')).toBeVisible();
-  await expect(page.getByText('Tes patterns', { exact: true })).toBeVisible();
+  await expect(page.getByText('Your patterns', { exact: true })).toBeVisible();
   await page.mouse.click(10, 10);
   await expect(page.getByRole('dialog')).not.toBeVisible();
 
   // — persistance : rechargement, tout est encore là (IndexedDB)
   await page.reload();
-  const flowAfter = page.getByRole('button', { name: /règles/ });
+  const flowAfter = page.getByRole('button', { name: /period/i });
   await expect(flowAfter).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByRole('button', { name: 'fatigue' })).toHaveAttribute(
     'aria-pressed',

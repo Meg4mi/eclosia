@@ -66,7 +66,7 @@ await app.evaluate(async () => {
   tx.objectStore('settings').put({
     id: 'singleton',
     appName: 'Éclose',
-    locale: 'fr',
+    locale: 'en',
     reducedMotion: 'system',
     avgPeriodLength: 5,
     onboardedAt: 'now',
@@ -79,7 +79,7 @@ await app.evaluate(async () => {
 });
 
 await app.reload({ waitUntil: 'networkidle' });
-await app.getByRole('button', { name: /règles/ }).waitFor();
+await app.getByRole('button', { name: /period/i }).waitFor();
 await app.evaluate(() => document.fonts.ready);
 await app.waitForTimeout(1500);
 await app.screenshot({ path: path.join(OUT, 'today.png') });

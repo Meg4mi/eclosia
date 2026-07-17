@@ -12,40 +12,40 @@ test('export chiffré, effacement, import : les données reviennent', async ({ p
   // — données : onboarding aujourd'hui + un symptôme
   const todayNum = String(new Date().getDate());
   await page.getByRole('button', { name: todayNum, exact: true }).click();
-  await page.getByRole('button', { name: 'commencer' }).click();
+  await page.getByRole('button', { name: 'begin' }).click();
   await page.getByRole('button', { name: 'fatigue' }).click();
 
   // — export
-  await page.getByRole('link', { name: 'réglages' }).click();
-  await page.getByRole('button', { name: /exporter mes données/ }).click();
-  await page.getByPlaceholder('phrase secrète', { exact: true }).fill('phrase de test e2e');
-  await page.getByPlaceholder('encore une fois').fill('phrase de test e2e');
+  await page.getByRole('link', { name: 'settings' }).click();
+  await page.getByRole('button', { name: /export my data/ }).click();
+  await page.getByPlaceholder('secret phrase', { exact: true }).fill('phrase de test e2e');
+  await page.getByPlaceholder('once more').fill('phrase de test e2e');
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('dialog').getByRole('button', { name: 'exporter mes données' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'export my data' }).click();
   const download = await downloadPromise;
   const filePath = await download.path();
   await page.keyboard.press('Escape');
 
   // — effacement total (double confirmation)
-  await page.getByRole('button', { name: 'tout effacer' }).click();
-  await page.getByRole('button', { name: 'effacer, vraiment ?' }).click();
-  await page.getByRole('button', { name: /dernière confirmation/ }).click();
-  await expect(page.getByText('Quand ont commencé tes dernières règles ?')).toBeVisible();
+  await page.getByRole('button', { name: 'erase everything' }).click();
+  await page.getByRole('button', { name: 'erase, really?' }).click();
+  await page.getByRole('button', { name: /last confirmation/ }).click();
+  await expect(page.getByText('When did your last period start?')).toBeVisible();
 
   // — import : préviu puis fusion
   await page.goto('/settings');
   const chooser = page.waitForEvent('filechooser');
-  await page.getByRole('button', { name: /importer un fichier/ }).click();
+  await page.getByRole('button', { name: /import a file/ }).click();
   await (await chooser).setFiles(filePath);
-  await page.getByPlaceholder('phrase secrète').fill('phrase de test e2e');
-  await page.getByRole('dialog').getByRole('button', { name: 'confirmer' }).click();
-  await expect(page.getByText(/1 cycles, 1 jours de logs/)).toBeVisible();
-  await page.getByRole('button', { name: 'fusionner' }).click();
-  await expect(page.getByText("c'est importé")).toBeVisible();
+  await page.getByPlaceholder('secret phrase').fill('phrase de test e2e');
+  await page.getByRole('dialog').getByRole('button', { name: 'confirm' }).click();
+  await expect(page.getByText(/1 cycles, 1 days of logs/)).toBeVisible();
+  await page.getByRole('button', { name: 'merge' }).click();
+  await expect(page.getByText('imported')).toBeVisible();
   await page.keyboard.press('Escape'); // fermer la feuille avant de naviguer
 
   // — tout est revenu : cadran à J1, symptôme coché
-  await page.getByRole('link', { name: "aujourd'hui" }).click();
+  await page.getByRole('link', { name: 'today' }).click();
   await expect(page.getByRole('button', { name: 'fatigue' })).toHaveAttribute(
     'aria-pressed',
     'true',

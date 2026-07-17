@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'fr_FR',
+    locale: 'en_GB',
     url: '/',
     siteName: APP_NAME,
     title: APP_NAME,
@@ -72,7 +72,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${fraunces.variable} ${newsreader.variable}`}>
+    <html lang="en" className={`${fraunces.variable} ${newsreader.variable}`}>
       <body>{children}</body>
     </html>
   );

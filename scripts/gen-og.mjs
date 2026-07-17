@@ -8,7 +8,8 @@
  * générée au build, jamais requêtée au runtime). Relancer via `npm run gen-og`.
  *
  * Le nom, la signature et les piliers sont lus depuis les sources uniques
- * (lib/config.ts, i18n/fr.json) plutôt que réécrits en dur (§ nom unique). La
+ * (lib/config.ts, i18n/en.json — langue par défaut §SEO) plutôt que réécrits
+ * en dur (§ nom unique). La
  * police reste une serif système : les fonts de marque (next/font) sont des
  * artefacts de build hors de portée d'un script autonome, et les récupérer
  * violerait la règle « zéro réseau ». Léger décalage typographique assumé sur
@@ -31,8 +32,8 @@ const pick = (key) => {
 const APP_NAME = pick('APP_NAME');
 const APP_DESCRIPTION = pick('APP_DESCRIPTION');
 
-const fr = JSON.parse(readFileSync(path.join(ROOT, 'i18n/fr.json'), 'utf8'));
-const pillars = fr.discover.pillars.join('  ·  ');
+const en = JSON.parse(readFileSync(path.join(ROOT, 'i18n/en.json'), 'utf8'));
+const pillars = en.discover.pillars.join('  ·  ');
 
 const OUT = path.resolve(ROOT, 'public');
 mkdirSync(OUT, { recursive: true });
