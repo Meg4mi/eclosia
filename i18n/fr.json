@@ -72,7 +72,10 @@
     "late": "Ton cycle dépasse ta fenêtre habituelle — ça arrive, on observe.",
     "discovery_phase": "découverte",
     "discovery_ctx": "Logge tes premières règles et j'apprendrai ton rythme.",
-    "discovery_prediction": "Pas encore de prédiction — je découvre ton cycle avec toi."
+    "discovery_prediction": "Pas encore de prédiction — je découvre ton cycle avec toi.",
+    "phase_now": "en cours",
+    "phase_soon": "bientôt",
+    "phase_around": "vers le {date}"
   },
   "prediction": {
     "line": "Prochaines règles : {window}",
@@ -85,11 +88,16 @@
     "cycle_singular": "cycle",
     "cycle_plural": "cycles",
     "uncert_label": "fenêtre règles",
-    "long_or_short": "Tes cycles sortent des durées habituelles (21–40 jours). Si ça se répète, en parler à un·e médecin peut aider — sans urgence."
+    "long_or_short": "Tes cycles sortent des durées habituelles (21–40 jours). Si ça se répète, en parler à un·e médecin peut aider — sans urgence.",
+    "trend_longer": "Tes cycles s'allongent doucement ces derniers mois — la prédiction suit le mouvement.",
+    "trend_shorter": "Tes cycles raccourcissent doucement ces derniers mois — la prédiction suit le mouvement."
   },
   "sheet": {
     "eyebrow": "phase",
     "ovulation_hint": "ovulation probable J{ov1}–J{ov2}",
+    "timing_current": "en cours — depuis le {start}",
+    "timing_upcoming": "à venir — autour du {start}",
+    "timing_next": "au prochain cycle — autour du {start}",
     "patterns_title": "Tes patterns",
     "patterns_waiting": "Encore {n} {cycles} et je pourrai te montrer tes patterns personnels.",
     "patterns_none": "Rien de net dans cette phase pour l'instant — je continue d'observer.",
@@ -98,6 +106,10 @@
   "patterns": {
     "from_start": "« {symptom} » revient autour de <em>J{day}</em>, {k} cycles sur {n}.",
     "before_period": "« {symptom} » revient à <em>J-{day} des règles</em>, {k} cycles sur {n}."
+  },
+  "manifest": {
+    "shortcut_log": "Logger aujourd'hui",
+    "shortcut_log_desc": "Règles, symptômes, note — en un geste"
   },
   "onboarding": {
     "question": "Quand ont commencé tes dernières règles ?",
@@ -113,7 +125,11 @@
     "cycle_length": "{n} jours",
     "current": "cycle en cours",
     "edit_hint": "toucher un jour pour corriger",
-    "day_sheet_title": "corriger ce jour"
+    "day_sheet_title": "corriger ce jour",
+    "heatmap_title": "tes symptômes, au fil du cycle",
+    "heatmap_source": "sur tes {n} derniers cycles clos",
+    "longer_than_avg": "{n} j de plus que ta moyenne",
+    "shorter_than_avg": "{n} j de moins que ta moyenne"
   },
   "settings": {
     "title": "réglages",
@@ -138,19 +154,6 @@
     "motion_system": "comme le système",
     "motion_on": "activées",
     "motion_off": "réduites",
-    "lock": "verrou",
-    "lock_set": "définir un code",
-    "lock_set_desc": "L'app demandera ce code à chaque ouverture.",
-    "lock_disable": "retirer le code",
-    "lock_disable_desc": "L'app s'ouvrira sans code.",
-    "lock_code": "code (4 chiffres ou plus)",
-    "lock_code_confirm": "encore une fois",
-    "lock_mismatch": "les deux codes ne correspondent pas",
-    "lock_wrong": "ce n'est pas le bon code",
-    "lock_done": "c'est verrouillé",
-    "lock_removed": "code retiré",
-    "lock_warning": "Aucune récupération possible : si tu l'oublies, il faudra tout effacer. Garde un export chiffré.",
-    "lock_enter": "ton code",
     "danger": "effacement",
     "erase": "tout effacer",
     "erase_desc": "Supprime cycles, logs et réglages de cet appareil. Définitif.",

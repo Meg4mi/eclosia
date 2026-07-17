@@ -9,6 +9,7 @@
 import { ulid } from 'ulid';
 import { db, DEFAULT_SETTINGS } from './db';
 import { addDays, diffDays } from './dates';
+import { observedPeriodLength } from './period';
 import type { Cycle, DailyLog, Flow } from './types';
 
 const EXTEND_MAX_DAYS = 10;
@@ -39,26 +40,19 @@ const rechainLengths = async (): Promise<void> => {
   }
 };
 
-/** Moyenne des durées de règles observées (endDate − startDate + 1), 6 derniers cycles. */
+/** Durée de règles observée — médiane des durées confirmées (lib/period.ts) :
+ * une durée ne compte que si un log ultérieur du même cycle prouve que la
+ * saisie a continué après le flow (une saisie abandonnée à J2 ne doit pas
+ * faire passer des règles écourtées pour la vérité). */
 const recomputeAvgPeriod = async (): Promise<void> => {
   const cycles = await sortedCycles();
-  const lengths = cycles
-    .filter((c) => c.endDate)
-    .slice(-6)
-    .map((c) => diffDays(c.startDate, c.endDate as string) + 1)
-    // un seul jour connu (endDate === startDate) n'est pas une durée de règles :
-    // c'est un cycle qui vient de s'ouvrir (ou des règles à peine commencées).
-    // Le compter comme « 1 jour » écrasait avgPeriodLength à 1 dès qu'on ouvrait
-    // un nouveau cycle — et, faute d'autre durée observée, le garde ci-dessous
-    // empêchait tout retour en arrière (la bande menstruelle rouge disparaissait
-    // du cadran sans jamais revenir, même après annulation). On attend 2 jours.
-    .filter((n) => n >= 2 && n <= 10);
-  // aucune durée observée : on ne touche pas au réglage (défaut ou importé)
-  if (lengths.length === 0) return;
-  const avg = Math.round(lengths.reduce((s, x) => s + x, 0) / lengths.length);
+  const logs = await db.logs.toArray();
+  const observed = observedPeriodLength(cycles, logs);
+  // aucune durée confirmée : on ne touche pas au réglage (défaut ou importé)
+  if (observed === null) return;
   const settings = await db.settings.get('singleton');
-  if (settings && settings.avgPeriodLength !== avg) {
-    await db.settings.update('singleton', { avgPeriodLength: avg });
+  if (settings && settings.avgPeriodLength !== observed) {
+    await db.settings.update('singleton', { avgPeriodLength: observed });
   }
 };
 

@@ -70,10 +70,14 @@ describe('setFlow — ouverture et extension de cycles', () => {
     expect(log?.flow).toBe(0);
   });
 
-  it('recalcule avgPeriodLength depuis les règles observées', async () => {
-    for (let i = 0; i < 4; i++) await setFlow(addDays('2026-06-01', i), 2);
-    const settings = await db.settings.get('singleton');
-    expect(settings?.avgPeriodLength).toBe(4);
+  it('recalcule avgPeriodLength depuis les règles observées, une fois la fin confirmée', async () => {
+    for (let i = 0; i < 4; i++) await setFlow(addDays('2026-06-01', i), 2); // règles J1–J4
+    // pas encore de log après le dernier jour de flow : une saisie peut-être
+    // interrompue ne doit pas passer pour une durée de règles
+    expect((await db.settings.get('singleton'))?.avgPeriodLength).toBe(5);
+    await toggleSymptom('2026-06-06', 'fatigue'); // la saisie continue : règles finies
+    await setFlow('2026-06-29', 2); // nouveau cycle → recalcul
+    expect((await db.settings.get('singleton'))?.avgPeriodLength).toBe(4);
   });
 
   it('un jour de règles isolé ne rétrécit pas avgPeriodLength (bande rouge du cadran)', async () => {

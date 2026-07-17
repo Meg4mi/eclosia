@@ -86,6 +86,7 @@
   .sheet h2{font-family:"Fraunces",serif;font-weight:300;font-size:40px;margin:2px 0 0;
     font-variation-settings:"opsz" 144;letter-spacing:-.01em}
   .sheet .range{font-family:"Newsreader",serif;font-style:italic;font-size:13.5px;color:var(--muted);margin-bottom:18px}
+  .sheet .timing{font-family:"Newsreader",serif;font-style:italic;font-size:13.5px;color:var(--sa,var(--accent));margin:-14px 0 18px}
   .sheet .desc{font-size:16px;line-height:1.6;opacity:.92;margin-bottom:18px}
   .fact{display:flex;justify-content:space-between;gap:16px;padding:11px 0;
     border-bottom:1px solid rgba(241,232,226,.07);font-size:15px}
@@ -128,6 +129,7 @@
   <div class="eyebrow" id="sEyebrow"></div>
   <h2 id="sTitle"></h2>
   <div class="range" id="sRange"></div>
+  <div class="timing" id="sTiming"></div>
   <div class="desc" id="sDesc"></div>
   <div id="sFacts"></div>
   <div class="next" id="sNext"></div>
@@ -314,6 +316,12 @@ let tm;function flash(){saved.classList.add('show');clearTimeout(tm);tm=setTimeo
 function openSheet(p){
   sEyebrow.textContent='phase';sTitle.textContent=p.name;
   sRange.textContent=`J${p.from} – J${p.to}`+(p.key==='ovul'?` · ovulation probable J${ov-1}–J${ov}`:'');
+  const fd=n=>new Date(+hist.lastStart+n*MS).toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
+  sTiming.textContent=todayDay>=p.from&&(todayDay<=p.to||p.key==='lute')
+    ?`en cours — depuis le ${fd(p.from-1)}`
+    :todayDay<p.from
+      ?`à venir — autour du ${fd(p.from-1)}`
+      :`au prochain cycle — autour du ${fd(L+p.from-1)}`;
   sDesc.textContent=p.desc;
   sFacts.innerHTML=p.facts.map(([k,vv])=>`<div class="fact"><span class="k">${k}</span><span class="v">${vv}</span></div>`).join('');
   sNext.textContent=p.next;

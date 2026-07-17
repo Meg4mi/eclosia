@@ -15,6 +15,9 @@ export const tpl = (s: string, vars: Record<string, string | number>): string =>
 export const formatDate = (date: Date, locale: Locale): string =>
   date.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'long' });
 
+export const formatShortDate = (date: Date, locale: Locale): string =>
+  date.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'short' });
+
 export const formatFullDate = (date: Date, locale: Locale): string =>
   date.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
     weekday: 'long',

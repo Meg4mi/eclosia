@@ -2,7 +2,7 @@
 
 /** Aujourd'hui — le cadran, la prédiction honnête, la saisie en un geste. */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, m } from 'motion/react';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -21,6 +21,7 @@ import { parseISO } from '@/lib/dates';
 import { useToday } from '@/lib/hooks/useToday';
 import {
   closedCycles,
+  cycleTrend,
   dayOf,
   isAtypicalLength,
   isLate,
@@ -28,6 +29,7 @@ import {
   phaseByKey,
   phaseOfDay,
   phases,
+  phaseTiming,
   predict,
 } from '@/lib/engine';
 import { INK_COLORS, neutralColors, ribbonColors } from '@/lib/ink';
@@ -35,7 +37,7 @@ import { patterns as computePatterns } from '@/lib/patterns';
 import { symptomsForPhase } from '@/lib/symptoms';
 import { useAccent } from '@/lib/hooks/useAccent';
 import { APP_NAME } from '@/lib/config';
-import { formatDate, formatFullDate, tpl } from '@/i18n';
+import { formatDate, formatFullDate, formatShortDate, tpl } from '@/i18n';
 import type { PhaseKey } from '@/lib/types';
 import dialStyles from '@/components/dial/dial.module.css';
 import styles from './today.module.css';
@@ -43,6 +45,9 @@ import styles from './today.module.css';
 const DISMISSED = {
   atypical: 'eclose.notice.atypical',
   backup: 'eclose.notice.backup',
+  // une clé par direction : si la dérive s'inverse plus tard, l'info revient
+  trendLonger: 'eclose.notice.trend.lengthening',
+  trendShorter: 'eclose.notice.trend.shortening',
 } as const;
 
 export default function TodayPage() {
@@ -60,6 +65,20 @@ export default function TodayPage() {
   );
 
   const prediction = useMemo(() => predict(cycles ?? []), [cycles]);
+  const trend = useMemo(() => cycleTrend(cycles ?? []), [cycles]);
+
+  // raccourci PWA « Logger aujourd'hui » : /?log=1 ouvre le catalogue de saisie.
+  // Les réglages arrivent d'IndexedDB après le premier rendu : on retient la
+  // demande et on ouvre dès que l'app se sait onboardée.
+  const [wantsLog, setWantsLog] = useState(
+    () => typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('log'),
+  );
+  useEffect(() => {
+    if (!wantsLog || !settings.onboardedAt) return;
+    setCatalogOpen(true);
+    setWantsLog(false);
+    window.history.replaceState(null, '', window.location.pathname);
+  }, [wantsLog, settings.onboardedAt]);
   const discovery = (cycles ?? []).length === 0;
   const L = prediction.meanLength;
   const SD = prediction.sd;
@@ -80,6 +99,22 @@ export default function TodayPage() {
   );
 
   const sheetPhase = openPhase ? phaseByKey(ranges, openPhase) : null;
+  const sheetTiming =
+    sheetPhase && prediction.lastStart
+      ? phaseTiming(ranges, sheetPhase, prediction.lastStart, L, today)
+      : null;
+
+  // les quatre phases avec leur date d'arrivée, en ordre chronologique depuis aujourd'hui
+  const lastStart = prediction.lastStart;
+  const phaseStrip = useMemo(
+    () =>
+      lastStart
+        ? ranges
+            .map((r) => ({ range: r, timing: phaseTiming(ranges, r, lastStart, L, today) }))
+            .sort((a, b) => a.timing.start.localeCompare(b.timing.start))
+        : null,
+    [ranges, lastStart, L, today],
+  );
   const accentKey = openPhase ?? currentPhase?.key ?? null;
   useAccent(accentKey ? PHASE_COLORS[accentKey] : null);
 
@@ -141,8 +176,11 @@ export default function TodayPage() {
     lastClosed?.lengthDays != null &&
     isAtypicalLength(lastClosed.lengthDays) &&
     !dismissed.includes(DISMISSED.atypical);
+  const trendKey =
+    trend?.direction === 'lengthening' ? DISMISSED.trendLonger : DISMISSED.trendShorter;
+  const showTrend = trend !== null && !showAtypical && !dismissed.includes(trendKey);
   const showBackupNudge =
-    !showAtypical && closed.length >= 2 && !dismissed.includes(DISMISSED.backup);
+    !showAtypical && !showTrend && closed.length >= 2 && !dismissed.includes(DISMISSED.backup);
 
   const dismiss = (key: string): void => {
     localStorage.setItem(key, '1');
@@ -209,10 +247,48 @@ export default function TodayPage() {
         </AnimatePresence>
       </div>
 
+      {phaseStrip && (
+        <div className={styles.phasesGrid}>
+          {phaseStrip.map(({ range, timing }) => (
+            <button
+              key={range.key}
+              className={styles.phaseItem}
+              onClick={() => setOpenPhase(range.key)}
+            >
+              <span
+                className={styles.phaseDot}
+                style={{ background: PHASE_COLORS[range.key] }}
+                aria-hidden="true"
+              />
+              <span className={styles.phaseName}>{phaseNames[range.key]}</span>
+              <span className={styles.phaseDate}>
+                {timing.status === 'current'
+                  ? dict.today.phase_now
+                  : timing.start <= today
+                    ? dict.today.phase_soon
+                    : tpl(dict.today.phase_around, {
+                        date: formatShortDate(parseISO(timing.start), locale),
+                      })}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
       {showAtypical && (
         <div className={styles.notice}>
           {dict.prediction.long_or_short}
           <button className={styles.noticeDismiss} onClick={() => dismiss(DISMISSED.atypical)}>
+            ✕
+          </button>
+        </div>
+      )}
+      {showTrend && trend && (
+        <div className={styles.notice}>
+          {trend.direction === 'lengthening'
+            ? dict.prediction.trend_longer
+            : dict.prediction.trend_shorter}
+          <button className={styles.noticeDismiss} onClick={() => dismiss(trendKey)}>
             ✕
           </button>
         </div>
@@ -239,6 +315,7 @@ export default function TodayPage() {
 
       <PhaseSheet
         phase={sheetPhase}
+        timing={sheetTiming}
         prediction={prediction}
         patterns={allPatterns}
         closedCount={closed.length}

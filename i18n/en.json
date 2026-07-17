@@ -72,7 +72,10 @@
     "late": "Your cycle is running past its usual window — it happens, we're watching.",
     "discovery_phase": "discovery",
     "discovery_ctx": "Log your first period and I'll learn your rhythm.",
-    "discovery_prediction": "No prediction yet — I'm discovering your cycle with you."
+    "discovery_prediction": "No prediction yet — I'm discovering your cycle with you.",
+    "phase_now": "happening now",
+    "phase_soon": "soon",
+    "phase_around": "around {date}"
   },
   "prediction": {
     "line": "Next period: {window}",
@@ -85,11 +88,16 @@
     "cycle_singular": "cycle",
     "cycle_plural": "cycles",
     "uncert_label": "period window",
-    "long_or_short": "Your cycles fall outside the usual range (21–40 days). If it keeps happening, mentioning it to a doctor can help — no urgency."
+    "long_or_short": "Your cycles fall outside the usual range (21–40 days). If it keeps happening, mentioning it to a doctor can help — no urgency.",
+    "trend_longer": "Your cycles have been getting gently longer these past months — the prediction follows along.",
+    "trend_shorter": "Your cycles have been getting gently shorter these past months — the prediction follows along."
   },
   "sheet": {
     "eyebrow": "phase",
     "ovulation_hint": "ovulation likely D{ov1}–D{ov2}",
+    "timing_current": "happening now — since {start}",
+    "timing_upcoming": "coming up — around {start}",
+    "timing_next": "next cycle — around {start}",
     "patterns_title": "Your patterns",
     "patterns_waiting": "{n} more {cycles} and I'll be able to show you your personal patterns.",
     "patterns_none": "Nothing clear in this phase yet — I keep watching.",
@@ -98,6 +106,10 @@
   "patterns": {
     "from_start": "“{symptom}” comes back around <em>D{day}</em>, {k} cycles out of {n}.",
     "before_period": "“{symptom}” comes back at <em>D-{day} before your period</em>, {k} cycles out of {n}."
+  },
+  "manifest": {
+    "shortcut_log": "Log today",
+    "shortcut_log_desc": "Period, symptoms, note — in one gesture"
   },
   "onboarding": {
     "question": "When did your last period start?",
@@ -113,7 +125,11 @@
     "cycle_length": "{n} days",
     "current": "current cycle",
     "edit_hint": "tap a day to correct it",
-    "day_sheet_title": "correct this day"
+    "day_sheet_title": "correct this day",
+    "heatmap_title": "your symptoms, across the cycle",
+    "heatmap_source": "across your last {n} closed cycles",
+    "longer_than_avg": "{n} d longer than your average",
+    "shorter_than_avg": "{n} d shorter than your average"
   },
   "settings": {
     "title": "settings",
@@ -138,19 +154,6 @@
     "motion_system": "follow system",
     "motion_on": "on",
     "motion_off": "reduced",
-    "lock": "lock",
-    "lock_set": "set a code",
-    "lock_set_desc": "The app will ask for this code on every launch.",
-    "lock_disable": "remove the code",
-    "lock_disable_desc": "The app will open without a code.",
-    "lock_code": "code (4 digits or more)",
-    "lock_code_confirm": "once more",
-    "lock_mismatch": "the two codes don't match",
-    "lock_wrong": "that's not the right code",
-    "lock_done": "locked",
-    "lock_removed": "code removed",
-    "lock_warning": "No recovery possible: if you forget it, you'll have to erase everything. Keep an encrypted export.",
-    "lock_enter": "your code",
     "danger": "erase",
     "erase": "erase everything",
     "erase_desc": "Deletes cycles, logs and settings from this device. Permanent.",

@@ -1,14 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import {
+  averageCycleLength,
   closedCycles,
+  cycleTrend,
   dayOf,
   isAtypicalLength,
   isLate,
   ovulationDay,
   phaseOfDay,
   phases,
+  phaseTiming,
   predict,
 } from '@/lib/engine';
+import { addDays } from '@/lib/dates';
 import type { Cycle } from '@/lib/types';
 
 const cycle = (startDate: string, lengthDays?: number): Cycle => ({
@@ -16,6 +20,18 @@ const cycle = (startDate: string, lengthDays?: number): Cycle => ({
   startDate,
   lengthDays,
 });
+
+/** Cycles clos enchaînés depuis 2026-01-01, + un cycle courant ouvert. */
+const chained = (lengths: number[]): Cycle[] => {
+  const out: Cycle[] = [];
+  let start = '2026-01-01';
+  for (const len of lengths) {
+    out.push(cycle(start, len));
+    start = addDays(start, len);
+  }
+  out.push(cycle(start));
+  return out;
+};
 
 describe('predict', () => {
   it('mode découverte : 0 cycle → cadran neutre 28 j, confiance faible', () => {
@@ -121,6 +137,73 @@ describe('phases', () => {
     expect(phaseOfDay(r, 35).key).toBe('lute');
     expect(phaseOfDay(r, 1).key).toBe('menst');
     expect(phaseOfDay(r, 14).key).toBe('ovul');
+  });
+});
+
+describe('cycleTrend / prédiction sous tendance', () => {
+  it('dérive régulière : tendance détectée, prédiction dans le prolongement', () => {
+    const cycles = chained([26, 27, 28, 29, 30, 31]); // +1 j/cycle
+    const t = cycleTrend(cycles);
+    expect(t).toEqual({ direction: 'lengthening', perCycle: 1 });
+
+    const p = predict(cycles);
+    expect(p.meanLength).toBe(32); // suit la pente, pas la moyenne (29)
+    expect(p.sd).toBe(1); // résidus nuls → plancher 1 j
+    expect(averageCycleLength(cycles)).toBe(29); // « ta moyenne » reste la moyenne
+  });
+
+  it('raccourcissement régulier : direction shortening', () => {
+    const cycles = chained([32, 31, 30, 29]);
+    expect(cycleTrend(cycles)).toEqual({ direction: 'shortening', perCycle: -1 });
+    expect(predict(cycles).meanLength).toBe(28);
+  });
+
+  it('le bruit ne fait pas une tendance (R² insuffisant)', () => {
+    expect(cycleTrend(chained([24, 33, 26, 35]))).toBeNull();
+  });
+
+  it('pente trop faible : pas de tendance, prédiction inchangée', () => {
+    const cycles = chained([29, 27, 28, 30]);
+    expect(cycleTrend(cycles)).toBeNull();
+    expect(predict(cycles).meanLength).toBe(29);
+  });
+
+  it('cycles parfaitement réguliers ou historique court : pas de tendance', () => {
+    expect(cycleTrend(chained([28, 28, 28, 28]))).toBeNull();
+    expect(cycleTrend(chained([26, 27, 28]))).toBeNull();
+  });
+
+  it('averageCycleLength : null sans cycle clos', () => {
+    expect(averageCycleLength([cycle('2026-06-01')])).toBeNull();
+  });
+});
+
+describe('phaseTiming', () => {
+  // L=29, P=5 : menst 1–5, foll 6–12, ovul 13–16, lute 17–29 — J16 le 2026-06-16
+  const r = phases(29, 5);
+  const at = (key: 'menst' | 'foll' | 'ovul' | 'lute') =>
+    phaseTiming(r, r.find((p) => p.key === key)!, '2026-06-01', 29, '2026-06-16');
+
+  it('phase en cours : bornes du cycle courant', () => {
+    expect(at('ovul')).toEqual({ status: 'current', start: '2026-06-13', end: '2026-06-16' });
+  });
+
+  it('phase à venir dans ce cycle : ses bornes à venir', () => {
+    expect(at('lute')).toEqual({ status: 'upcoming', start: '2026-06-17', end: '2026-06-29' });
+  });
+
+  it('phase déjà passée : projetée sur le cycle suivant (lastStart + mean)', () => {
+    expect(at('menst')).toEqual({ status: 'next', start: '2026-06-30', end: '2026-07-04' });
+    expect(at('foll')).toEqual({ status: 'next', start: '2026-07-05', end: '2026-07-11' });
+  });
+
+  it('cycle en retard : la lutéale reste en cours, depuis son début réel', () => {
+    const lute = r.find((p) => p.key === 'lute')!;
+    expect(phaseTiming(r, lute, '2026-06-01', 29, '2026-07-05')).toEqual({
+      status: 'current',
+      start: '2026-06-17',
+      end: '2026-06-29',
+    });
   });
 });
 

@@ -23,8 +23,6 @@ export interface Settings {
   reducedMotion: 'system' | 'on' | 'off';
   onboardedAt?: string;
   avgPeriodLength: number; // défaut 5, recalculé
-  pinHash?: string; // verrou local — hash PBKDF2, jamais le code
-  pinSalt?: string;
 }
 
 export type PhaseKey = 'menst' | 'foll' | 'ovul' | 'lute';
@@ -45,6 +43,14 @@ export interface Prediction {
   confidence: Confidence;
   basedOn: number; // nombre de cycles clos utilisés
   lastStart: string | null; // ISO date du cycle courant, null en mode découverte
+}
+
+export type PhaseTimingStatus = 'current' | 'upcoming' | 'next';
+
+export interface PhaseTiming {
+  status: PhaseTimingStatus;
+  start: string; // ISO — début de la phase (cycle courant, ou projeté sur le suivant)
+  end: string; // ISO — fin de la phase, même ancrage
 }
 
 export interface Pattern {

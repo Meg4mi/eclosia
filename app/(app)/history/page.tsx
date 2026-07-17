@@ -15,7 +15,8 @@ import { PHASE_COLORS } from '@/components/sheet/PhaseSheet';
 import { db } from '@/lib/db';
 import { addDays, parseISO } from '@/lib/dates';
 import { useToday } from '@/lib/hooks/useToday';
-import { dayOf, phases, predict } from '@/lib/engine';
+import { averageCycleLength, cycleTrend, dayOf, phaseOfDay, phases, predict } from '@/lib/engine';
+import { heatmap } from '@/lib/heatmap';
 import { arcPath } from '@/lib/ink';
 import { SYMPTOM_IDS } from '@/lib/symptoms';
 import { setFlow, toggleSymptom } from '@/lib/logbook';
@@ -74,9 +75,24 @@ export default function HistoryPage() {
 
   if (cycles === undefined || logs === undefined) return null;
 
+  const hm = heatmap(logs, cycles);
+  const hmRanges = hm ? phases(hm.days, settings.avgPeriodLength) : null;
+
   const sorted = [...cycles].sort((a, b) => b.startDate.localeCompare(a.startDate));
   const current = sorted.find((c) => c.lengthDays == null && c.startDate <= today);
   const closed = sorted.filter((c) => c.lengthDays != null);
+
+  const avgLength = averageCycleLength(cycles);
+  const trend = cycleTrend(cycles);
+  // l'écart à la moyenne n'est dit qu'à partir de 2 j (± 1 j = jitter normal)
+  // et de 3 cycles clos (avant, « ta moyenne » ne veut pas dire grand-chose)
+  const vsAverage = (length: number): string => {
+    if (avgLength === null || closed.length < 3) return '';
+    const d = length - avgLength;
+    if (Math.abs(d) < 2) return '';
+    const template = d > 0 ? dict.history.longer_than_avg : dict.history.shorter_than_avg;
+    return ` · ${tpl(template, { n: Math.abs(d) })}`;
+  };
 
   const editLog = editDate ? logByDate.get(editDate) : undefined;
   const editFlow = editLog?.flow ?? 0;
@@ -148,13 +164,56 @@ export default function HistoryPage() {
             return (
               <p className={styles.stats}>
                 {tpl(dict.history.stats, {
-                  len: p.meanLength,
+                  // « cycle moyen » = la moyenne, même quand la prédiction suit une pente
+                  len: avgLength ?? p.meanLength,
                   p: settings.avgPeriodLength,
                   sd: p.sd,
                 })}
+                {trend && (
+                  <span className={styles.trendLine}>
+                    {trend.direction === 'lengthening'
+                      ? dict.prediction.trend_longer
+                      : dict.prediction.trend_shorter}
+                  </span>
+                )}
               </p>
             );
           })()}
+
+        {hm && hmRanges && (
+          <section className={styles.heatmap} aria-label={dict.history.heatmap_title}>
+            <h2 className={styles.hmTitle}>{dict.history.heatmap_title}</h2>
+            {hm.rows.map((row) => (
+              <div key={row.symptomId} className={styles.hmRow}>
+                <span className={styles.hmLabel}>{symptomLabels[row.symptomId] ?? row.symptomId}</span>
+                <span className={styles.hmCells}>
+                  {row.counts.map((c, i) => (
+                    <span
+                      key={i}
+                      className={styles.hmCell}
+                      title={`${dict.common.day}${i + 1} · ${c}/${hm.cycles}`}
+                      style={
+                        c > 0
+                          ? {
+                              background: `color-mix(in srgb, ${PHASE_COLORS[phaseOfDay(hmRanges, i + 1).key]} ${Math.round(18 + 64 * (c / hm.max))}%, transparent)`,
+                            }
+                          : undefined
+                      }
+                    />
+                  ))}
+                </span>
+              </div>
+            ))}
+            <div className={styles.hmAxis}>
+              <span />
+              <span className={styles.hmAxisLabels}>
+                <span>{dict.common.day}1</span>
+                <span>{`${dict.common.day}${hm.days}`}</span>
+              </span>
+            </div>
+            <p className={styles.hmSource}>{tpl(dict.history.heatmap_source, { n: hm.cycles })}</p>
+          </section>
+        )}
 
         {current &&
           renderCycle(
@@ -167,7 +226,8 @@ export default function HistoryPage() {
           renderCycle(
             c,
             c.lengthDays as number,
-            tpl(dict.history.cycle_length, { n: c.lengthDays as number }),
+            tpl(dict.history.cycle_length, { n: c.lengthDays as number }) +
+              vsAverage(c.lengthDays as number),
             i + (current ? 1 : 0),
           ),
         )}
