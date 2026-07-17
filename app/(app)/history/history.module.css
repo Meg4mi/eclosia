@@ -41,6 +41,14 @@
   border-bottom: 1px solid rgba(241, 232, 226, 0.07);
 }
 
+/* dérive douce des longueurs, sous la ligne de stats */
+.trendLine {
+  display: block;
+  margin-top: 4px;
+  opacity: 0.9;
+  line-height: 1.5;
+}
+
 /* empreinte symptômes × jour de cycle — les colonnes portent l'encre de leur phase */
 .heatmap {
   padding: 14px 2px 12px;

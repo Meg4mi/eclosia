@@ -2,7 +2,7 @@
 
 /** Aujourd'hui — le cadran, la prédiction honnête, la saisie en un geste. */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, m } from 'motion/react';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -21,6 +21,7 @@ import { parseISO } from '@/lib/dates';
 import { useToday } from '@/lib/hooks/useToday';
 import {
   closedCycles,
+  cycleTrend,
   dayOf,
   isAtypicalLength,
   isLate,
@@ -44,6 +45,9 @@ import styles from './today.module.css';
 const DISMISSED = {
   atypical: 'eclose.notice.atypical',
   backup: 'eclose.notice.backup',
+  // une clé par direction : si la dérive s'inverse plus tard, l'info revient
+  trendLonger: 'eclose.notice.trend.lengthening',
+  trendShorter: 'eclose.notice.trend.shortening',
 } as const;
 
 export default function TodayPage() {
@@ -61,6 +65,20 @@ export default function TodayPage() {
   );
 
   const prediction = useMemo(() => predict(cycles ?? []), [cycles]);
+  const trend = useMemo(() => cycleTrend(cycles ?? []), [cycles]);
+
+  // raccourci PWA « Logger aujourd'hui » : /?log=1 ouvre le catalogue de saisie.
+  // Les réglages arrivent d'IndexedDB après le premier rendu : on retient la
+  // demande et on ouvre dès que l'app se sait onboardée.
+  const [wantsLog, setWantsLog] = useState(
+    () => typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('log'),
+  );
+  useEffect(() => {
+    if (!wantsLog || !settings.onboardedAt) return;
+    setCatalogOpen(true);
+    setWantsLog(false);
+    window.history.replaceState(null, '', window.location.pathname);
+  }, [wantsLog, settings.onboardedAt]);
   const discovery = (cycles ?? []).length === 0;
   const L = prediction.meanLength;
   const SD = prediction.sd;
@@ -158,8 +176,11 @@ export default function TodayPage() {
     lastClosed?.lengthDays != null &&
     isAtypicalLength(lastClosed.lengthDays) &&
     !dismissed.includes(DISMISSED.atypical);
+  const trendKey =
+    trend?.direction === 'lengthening' ? DISMISSED.trendLonger : DISMISSED.trendShorter;
+  const showTrend = trend !== null && !showAtypical && !dismissed.includes(trendKey);
   const showBackupNudge =
-    !showAtypical && closed.length >= 2 && !dismissed.includes(DISMISSED.backup);
+    !showAtypical && !showTrend && closed.length >= 2 && !dismissed.includes(DISMISSED.backup);
 
   const dismiss = (key: string): void => {
     localStorage.setItem(key, '1');
@@ -258,6 +279,16 @@ export default function TodayPage() {
         <div className={styles.notice}>
           {dict.prediction.long_or_short}
           <button className={styles.noticeDismiss} onClick={() => dismiss(DISMISSED.atypical)}>
+            ✕
+          </button>
+        </div>
+      )}
+      {showTrend && trend && (
+        <div className={styles.notice}>
+          {trend.direction === 'lengthening'
+            ? dict.prediction.trend_longer
+            : dict.prediction.trend_shorter}
+          <button className={styles.noticeDismiss} onClick={() => dismiss(trendKey)}>
             ✕
           </button>
         </div>

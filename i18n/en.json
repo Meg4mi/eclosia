@@ -88,7 +88,9 @@
     "cycle_singular": "cycle",
     "cycle_plural": "cycles",
     "uncert_label": "period window",
-    "long_or_short": "Your cycles fall outside the usual range (21–40 days). If it keeps happening, mentioning it to a doctor can help — no urgency."
+    "long_or_short": "Your cycles fall outside the usual range (21–40 days). If it keeps happening, mentioning it to a doctor can help — no urgency.",
+    "trend_longer": "Your cycles have been getting gently longer these past months — the prediction follows along.",
+    "trend_shorter": "Your cycles have been getting gently shorter these past months — the prediction follows along."
   },
   "sheet": {
     "eyebrow": "phase",
@@ -104,6 +106,10 @@
   "patterns": {
     "from_start": "“{symptom}” comes back around <em>D{day}</em>, {k} cycles out of {n}.",
     "before_period": "“{symptom}” comes back at <em>D-{day} before your period</em>, {k} cycles out of {n}."
+  },
+  "manifest": {
+    "shortcut_log": "Log today",
+    "shortcut_log_desc": "Period, symptoms, note — in one gesture"
   },
   "onboarding": {
     "question": "When did your last period start?",
@@ -121,7 +127,9 @@
     "edit_hint": "tap a day to correct it",
     "day_sheet_title": "correct this day",
     "heatmap_title": "your symptoms, across the cycle",
-    "heatmap_source": "across your last {n} closed cycles"
+    "heatmap_source": "across your last {n} closed cycles",
+    "longer_than_avg": "{n} d longer than your average",
+    "shorter_than_avg": "{n} d shorter than your average"
   },
   "settings": {
     "title": "settings",

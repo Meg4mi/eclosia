@@ -88,7 +88,9 @@
     "cycle_singular": "cycle",
     "cycle_plural": "cycles",
     "uncert_label": "fenêtre règles",
-    "long_or_short": "Tes cycles sortent des durées habituelles (21–40 jours). Si ça se répète, en parler à un·e médecin peut aider — sans urgence."
+    "long_or_short": "Tes cycles sortent des durées habituelles (21–40 jours). Si ça se répète, en parler à un·e médecin peut aider — sans urgence.",
+    "trend_longer": "Tes cycles s'allongent doucement ces derniers mois — la prédiction suit le mouvement.",
+    "trend_shorter": "Tes cycles raccourcissent doucement ces derniers mois — la prédiction suit le mouvement."
   },
   "sheet": {
     "eyebrow": "phase",
@@ -104,6 +106,10 @@
   "patterns": {
     "from_start": "« {symptom} » revient autour de <em>J{day}</em>, {k} cycles sur {n}.",
     "before_period": "« {symptom} » revient à <em>J-{day} des règles</em>, {k} cycles sur {n}."
+  },
+  "manifest": {
+    "shortcut_log": "Logger aujourd'hui",
+    "shortcut_log_desc": "Règles, symptômes, note — en un geste"
   },
   "onboarding": {
     "question": "Quand ont commencé tes dernières règles ?",
@@ -121,7 +127,9 @@
     "edit_hint": "toucher un jour pour corriger",
     "day_sheet_title": "corriger ce jour",
     "heatmap_title": "tes symptômes, au fil du cycle",
-    "heatmap_source": "sur tes {n} derniers cycles clos"
+    "heatmap_source": "sur tes {n} derniers cycles clos",
+    "longer_than_avg": "{n} j de plus que ta moyenne",
+    "shorter_than_avg": "{n} j de moins que ta moyenne"
   },
   "settings": {
     "title": "réglages",

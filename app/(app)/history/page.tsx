@@ -15,7 +15,7 @@ import { PHASE_COLORS } from '@/components/sheet/PhaseSheet';
 import { db } from '@/lib/db';
 import { addDays, parseISO } from '@/lib/dates';
 import { useToday } from '@/lib/hooks/useToday';
-import { dayOf, phaseOfDay, phases, predict } from '@/lib/engine';
+import { averageCycleLength, cycleTrend, dayOf, phaseOfDay, phases, predict } from '@/lib/engine';
 import { heatmap } from '@/lib/heatmap';
 import { arcPath } from '@/lib/ink';
 import { SYMPTOM_IDS } from '@/lib/symptoms';
@@ -81,6 +81,18 @@ export default function HistoryPage() {
   const sorted = [...cycles].sort((a, b) => b.startDate.localeCompare(a.startDate));
   const current = sorted.find((c) => c.lengthDays == null && c.startDate <= today);
   const closed = sorted.filter((c) => c.lengthDays != null);
+
+  const avgLength = averageCycleLength(cycles);
+  const trend = cycleTrend(cycles);
+  // l'écart à la moyenne n'est dit qu'à partir de 2 j (± 1 j = jitter normal)
+  // et de 3 cycles clos (avant, « ta moyenne » ne veut pas dire grand-chose)
+  const vsAverage = (length: number): string => {
+    if (avgLength === null || closed.length < 3) return '';
+    const d = length - avgLength;
+    if (Math.abs(d) < 2) return '';
+    const template = d > 0 ? dict.history.longer_than_avg : dict.history.shorter_than_avg;
+    return ` · ${tpl(template, { n: Math.abs(d) })}`;
+  };
 
   const editLog = editDate ? logByDate.get(editDate) : undefined;
   const editFlow = editLog?.flow ?? 0;
@@ -152,10 +164,18 @@ export default function HistoryPage() {
             return (
               <p className={styles.stats}>
                 {tpl(dict.history.stats, {
-                  len: p.meanLength,
+                  // « cycle moyen » = la moyenne, même quand la prédiction suit une pente
+                  len: avgLength ?? p.meanLength,
                   p: settings.avgPeriodLength,
                   sd: p.sd,
                 })}
+                {trend && (
+                  <span className={styles.trendLine}>
+                    {trend.direction === 'lengthening'
+                      ? dict.prediction.trend_longer
+                      : dict.prediction.trend_shorter}
+                  </span>
+                )}
               </p>
             );
           })()}
@@ -206,7 +226,8 @@ export default function HistoryPage() {
           renderCycle(
             c,
             c.lengthDays as number,
-            tpl(dict.history.cycle_length, { n: c.lengthDays as number }),
+            tpl(dict.history.cycle_length, { n: c.lengthDays as number }) +
+              vsAverage(c.lengthDays as number),
             i + (current ? 1 : 0),
           ),
         )}
