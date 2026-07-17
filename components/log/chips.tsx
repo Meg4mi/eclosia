@@ -2,14 +2,14 @@
 
 import { useEffect, useRef } from 'react';
 import { m } from 'motion/react';
-import { fade } from '@/lib/motion-tokens';
 import type { Flow } from '@/lib/types';
 import styles from './log.module.css';
 
 /**
  * Chips de saisie. Pas d'animation d'entrée : elle rejouait à chaque retour
- * sur l'écran (et deux fois en dev avec le StrictMode) — vécu comme un
- * clignotement. Le prototype n'en avait pas. Restent : l'écrasement au tap
+ * sur l'écran (et deux fois en dev avec le StrictMode), et dans la feuille
+ * catalogue elle se superposait au slide-up de la feuille (lecture en
+ * clignotement). Le prototype n'en avait pas. Restent : l'écrasement au tap
  * (CSS) et la pulsation d'une goutte qui vient de se remplir.
  */
 
@@ -59,33 +59,15 @@ export function SymptomChip({
   label,
   on,
   onToggle,
-  enterDelay,
 }: {
   label: string;
   on: boolean;
   onToggle: () => void;
-  /** Ondée d'apparition (feuilles ouvertes volontairement) — les chips de la
-   * ligne de saisie n'en ont pas : l'entrée rejouerait à chaque navigation. */
-  enterDelay?: number;
 }) {
   const className = on ? `${styles.chip} ${styles.chipOn}` : styles.chip;
-  if (enterDelay === undefined) {
-    return (
-      <button className={className} onClick={onToggle} aria-pressed={on}>
-        {label}
-      </button>
-    );
-  }
   return (
-    <m.button
-      className={className}
-      onClick={onToggle}
-      aria-pressed={on}
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ ...fade, duration: 0.3, delay: enterDelay }}
-    >
+    <button className={className} onClick={onToggle} aria-pressed={on}>
       {label}
-    </m.button>
+    </button>
   );
 }

@@ -27,13 +27,12 @@ export function CatalogSheet({ open, date, log, onClose }: CatalogSheetProps) {
     <BottomSheet open={open} onClose={onClose}>
       <div className={styles.eyebrow}>{dict.today.more_symptoms}</div>
       <div className={styles.chipGrid} style={{ marginTop: 14 }}>
-        {SYMPTOM_IDS.map((id, i) => (
+        {SYMPTOM_IDS.map((id) => (
           <SymptomChip
             key={id}
             label={symptomLabels[id] ?? id}
             on={active.has(id)}
             onToggle={() => void toggleSymptom(date, id)}
-            enterDelay={0.1 + i * 0.02}
           />
         ))}
       </div>
