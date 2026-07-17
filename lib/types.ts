@@ -47,6 +47,14 @@ export interface Prediction {
   lastStart: string | null; // ISO date du cycle courant, null en mode découverte
 }
 
+export type PhaseTimingStatus = 'current' | 'upcoming' | 'next';
+
+export interface PhaseTiming {
+  status: PhaseTimingStatus;
+  start: string; // ISO — début de la phase (cycle courant, ou projeté sur le suivant)
+  end: string; // ISO — fin de la phase, même ancrage
+}
+
 export interface Pattern {
   symptomId: string;
   mode: 'fromStart' | 'beforePeriod';

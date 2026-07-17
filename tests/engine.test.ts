@@ -7,6 +7,7 @@ import {
   ovulationDay,
   phaseOfDay,
   phases,
+  phaseTiming,
   predict,
 } from '@/lib/engine';
 import type { Cycle } from '@/lib/types';
@@ -121,6 +122,35 @@ describe('phases', () => {
     expect(phaseOfDay(r, 35).key).toBe('lute');
     expect(phaseOfDay(r, 1).key).toBe('menst');
     expect(phaseOfDay(r, 14).key).toBe('ovul');
+  });
+});
+
+describe('phaseTiming', () => {
+  // L=29, P=5 : menst 1–5, foll 6–12, ovul 13–16, lute 17–29 — J16 le 2026-06-16
+  const r = phases(29, 5);
+  const at = (key: 'menst' | 'foll' | 'ovul' | 'lute') =>
+    phaseTiming(r, r.find((p) => p.key === key)!, '2026-06-01', 29, '2026-06-16');
+
+  it('phase en cours : bornes du cycle courant', () => {
+    expect(at('ovul')).toEqual({ status: 'current', start: '2026-06-13', end: '2026-06-16' });
+  });
+
+  it('phase à venir dans ce cycle : ses bornes à venir', () => {
+    expect(at('lute')).toEqual({ status: 'upcoming', start: '2026-06-17', end: '2026-06-29' });
+  });
+
+  it('phase déjà passée : projetée sur le cycle suivant (lastStart + mean)', () => {
+    expect(at('menst')).toEqual({ status: 'next', start: '2026-06-30', end: '2026-07-04' });
+    expect(at('foll')).toEqual({ status: 'next', start: '2026-07-05', end: '2026-07-11' });
+  });
+
+  it('cycle en retard : la lutéale reste en cours, depuis son début réel', () => {
+    const lute = r.find((p) => p.key === 'lute')!;
+    expect(phaseTiming(r, lute, '2026-06-01', 29, '2026-07-05')).toEqual({
+      status: 'current',
+      start: '2026-06-17',
+      end: '2026-06-29',
+    });
   });
 });
 

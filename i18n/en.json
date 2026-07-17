@@ -90,6 +90,9 @@
   "sheet": {
     "eyebrow": "phase",
     "ovulation_hint": "ovulation likely D{ov1}–D{ov2}",
+    "timing_current": "happening now — since {start}",
+    "timing_upcoming": "coming up — around {start}",
+    "timing_next": "next cycle — around {start}",
     "patterns_title": "Your patterns",
     "patterns_waiting": "{n} more {cycles} and I'll be able to show you your personal patterns.",
     "patterns_none": "Nothing clear in this phase yet — I keep watching.",

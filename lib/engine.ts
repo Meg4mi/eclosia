@@ -2,7 +2,14 @@
 
 import { DEFAULT_CYCLE_LENGTH } from './config';
 import { addDays, diffDays } from './dates';
-import type { Confidence, Cycle, PhaseKey, PhaseRange, Prediction } from './types';
+import type {
+  Confidence,
+  Cycle,
+  PhaseKey,
+  PhaseRange,
+  PhaseTiming,
+  Prediction,
+} from './types';
 
 const mean = (xs: number[]): number => xs.reduce((s, x) => s + x, 0) / xs.length;
 
@@ -85,6 +92,33 @@ export const phaseOfDay = (ranges: PhaseRange[], day: number): PhaseRange => {
 
 export const phaseByKey = (ranges: PhaseRange[], key: PhaseKey): PhaseRange =>
   ranges.find((p) => p.key === key) as PhaseRange;
+
+/**
+ * Quand cette phase est-elle atteinte ? Dates approximatives ancrées sur le cycle courant :
+ * phase en cours ou à venir → ses bornes dans ce cycle ; phase déjà passée → projection sur
+ * le cycle suivant (lastStart + meanLength). En retard, la lutéale reste « en cours ».
+ */
+export const phaseTiming = (
+  ranges: PhaseRange[],
+  range: PhaseRange,
+  lastStartISO: string,
+  meanLength: number,
+  todayISO: string,
+): PhaseTiming => {
+  const day = dayOf(todayISO, lastStartISO);
+  if (phaseOfDay(ranges, day).key === range.key || day < range.from) {
+    return {
+      status: day >= range.from ? 'current' : 'upcoming',
+      start: addDays(lastStartISO, range.from - 1),
+      end: addDays(lastStartISO, range.to - 1),
+    };
+  }
+  return {
+    status: 'next',
+    start: addDays(lastStartISO, meanLength + range.from - 1),
+    end: addDays(lastStartISO, meanLength + range.to - 1),
+  };
+};
 
 /** Cycle en retard : le jour courant dépasse la fenêtre haute. */
 export const isLate = (prediction: Prediction, todayISO: string): boolean => {

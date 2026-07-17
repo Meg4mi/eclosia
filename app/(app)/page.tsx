@@ -28,6 +28,7 @@ import {
   phaseByKey,
   phaseOfDay,
   phases,
+  phaseTiming,
   predict,
 } from '@/lib/engine';
 import { INK_COLORS, neutralColors, ribbonColors } from '@/lib/ink';
@@ -80,6 +81,10 @@ export default function TodayPage() {
   );
 
   const sheetPhase = openPhase ? phaseByKey(ranges, openPhase) : null;
+  const sheetTiming =
+    sheetPhase && prediction.lastStart
+      ? phaseTiming(ranges, sheetPhase, prediction.lastStart, L, today)
+      : null;
   const accentKey = openPhase ?? currentPhase?.key ?? null;
   useAccent(accentKey ? PHASE_COLORS[accentKey] : null);
 
@@ -239,6 +244,7 @@ export default function TodayPage() {
 
       <PhaseSheet
         phase={sheetPhase}
+        timing={sheetTiming}
         prediction={prediction}
         patterns={allPatterns}
         closedCount={closed.length}

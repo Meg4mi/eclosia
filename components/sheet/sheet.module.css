@@ -65,6 +65,15 @@
   margin-bottom: 18px;
 }
 
+/* date d'arrivée dans la phase — remonte sous la ligne J{from}–J{to} */
+.timing {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 13.5px;
+  color: var(--sa, var(--accent));
+  margin: -14px 0 18px;
+}
+
 .desc {
   font-size: 16px;
   line-height: 1.6;
