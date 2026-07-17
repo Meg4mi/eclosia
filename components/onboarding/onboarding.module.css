@@ -164,3 +164,14 @@
   border-bottom: 1px solid var(--hair);
   padding-bottom: 1px;
 }
+
+/* Positionnement discret : gratuit · privé · sans compte. Ligne calme sous les
+   actions, ne concurrence jamais la question unique. */
+.pitch {
+  margin-top: 30px;
+  font-family: var(--font-text);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  opacity: 0.75;
+}

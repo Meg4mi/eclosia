@@ -152,6 +152,10 @@ export function Onboarding() {
           {dict.onboarding.unknown}
         </button>
       </m.div>
+
+      <m.p className={styles.pitch} {...enter(5)}>
+        {dict.onboarding.pitch}
+      </m.p>
     </div>
   );
 }

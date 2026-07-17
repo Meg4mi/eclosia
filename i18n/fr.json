@@ -109,13 +109,16 @@
   },
   "manifest": {
     "shortcut_log": "Logger aujourd'hui",
-    "shortcut_log_desc": "Règles, symptômes, note — en un geste"
+    "shortcut_log_desc": "Règles, symptômes, note — en un geste",
+    "screenshot_today": "Le cadran vivant de ton cycle",
+    "screenshot_phase": "Ta phase, en détail"
   },
   "onboarding": {
     "question": "Quand ont commencé tes dernières règles ?",
     "hint": "Une seule question. Tout reste sur ton appareil — rien ne part jamais ailleurs.",
     "unknown": "je ne sais plus",
     "start": "commencer",
+    "pitch": "Gratuit · privé · sans compte",
     "weekdays": ["lu", "ma", "me", "je", "ve", "sa", "di"]
   },
   "history": {
@@ -198,6 +201,7 @@
     "meta_description": "{app} — un suivi de cycle calme, entièrement sur ton appareil. Pas de compte, pas de cloud, pas de traceurs. Fonctionne hors-ligne.",
     "hero_title": "Ton cycle, sur ton appareil",
     "hero_body": "{app} est un suivi de cycle calme et privé. Tes données restent chez toi — rien ne part jamais ailleurs.",
+    "pillars": ["Gratuit", "Privé", "Sans compte", "Hors-ligne"],
     "privacy_title": "Tout reste chez toi",
     "privacy_body": "{app} vit entièrement sur ton appareil : pas de compte, pas de serveur, pas de traceurs. Aucune requête réseau après le chargement — vérifiable dans les outils de développement. Tu peux exporter tes données dans un fichier chiffré et les réimporter quand tu veux.",
     "how_title": "Comment ça marche",
@@ -232,6 +236,10 @@
       {
         "q": "{app} peut-il servir de moyen de contraception ?",
         "a": "Non. {app} n'est pas un dispositif médical. Les prédictions sont des estimations basées sur ton historique."
+      },
+      {
+        "q": "Est-ce que c'est gratuit ?",
+        "a": "Oui. {app} est gratuit — sans coût, sans abonnement, sans publicité. C'est aussi un logiciel libre : le code est ouvert et vérifiable. Si l'app t'est utile, tu peux soutenir son développement, mais ce n'est jamais obligatoire."
       }
     ]
   }

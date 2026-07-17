@@ -48,6 +48,11 @@ export function Discover({ locale }: { locale: Locale }) {
         <p className={styles.wordmark}>{APP_NAME}</p>
         <h1 className={styles.title}>{d.hero_title}</h1>
         <p className={styles.lede}>{tpl(d.hero_body, app)}</p>
+        <ul className={styles.pillars}>
+          {d.pillars.map((pillar) => (
+            <li key={pillar}>{pillar}</li>
+          ))}
+        </ul>
         <Link href="/" className={styles.cta}>
           {tpl(d.open_app, app)}
         </Link>
