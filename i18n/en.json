@@ -90,7 +90,20 @@
     "uncert_label": "period window",
     "long_or_short": "Your cycles fall outside the usual range (21–40 days). If it keeps happening, mentioning it to a doctor can help — no urgency.",
     "trend_longer": "Your cycles have been getting gently longer these past months — the prediction follows along.",
-    "trend_shorter": "Your cycles have been getting gently shorter these past months — the prediction follows along."
+    "trend_shorter": "Your cycles have been getting gently shorter these past months — the prediction follows along.",
+    "why": "why this window?",
+    "why_eyebrow": "prediction",
+    "why_title": "next period",
+    "why_based_label": "cycles considered",
+    "why_mean_label": "average cycle",
+    "why_reg_label": "regularity",
+    "why_method": "The window starts from the first day of your current cycle, plus your average length, widened on either side by your regularity.",
+    "why_none": "No closed cycle yet: the window starts from a typical {mean}-day length while I learn yours.",
+    "why_trend_longer": "Your cycles are gently lengthening: the prediction follows that slope rather than the plain average.",
+    "why_trend_shorter": "Your cycles are gently shortening: the prediction follows that slope rather than the plain average.",
+    "why_conf_low": "Low confidence — still few closed cycles to be sure.",
+    "why_conf_medium": "Medium confidence — a few cycles known, the margin stays wide.",
+    "why_conf_high": "High confidence — your cycles are regular, the window tightens."
   },
   "sheet": {
     "eyebrow": "phase",
@@ -128,8 +141,11 @@
     "cycle_length": "{n} days",
     "current": "current cycle",
     "edit_hint": "tap a day to correct it",
+    "notes_search": "search your notes",
+    "notes_none": "no note matches",
     "day_sheet_title": "correct this day",
     "heatmap_title": "your symptoms, across the cycle",
+    "heatmap_flow": "period",
     "heatmap_source": "across your last {n} closed cycles",
     "longer_than_avg": "{n} d longer than your average",
     "shorter_than_avg": "{n} d shorter than your average"

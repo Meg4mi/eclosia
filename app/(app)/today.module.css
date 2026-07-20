@@ -48,6 +48,21 @@
   margin-top: 2px;
 }
 
+/* « pourquoi cette fenêtre ? » — ouvre la feuille d'explication de la prédiction */
+.why {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 0;
+  background: none;
+  border: none;
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--hair);
+  cursor: pointer;
+}
+
 /* les quatre phases et leur date d'arrivée, sur une seule ligne */
 .phasesGrid {
   position: relative;

@@ -64,6 +64,7 @@ export default function HistoryPage() {
   const logs = useLiveQuery(() => db.logs.toArray(), [], undefined);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [editDate, setEditDate] = useState<string | null>(null);
+  const [noteQuery, setNoteQuery] = useState('');
   // une correction peut rebaser le cycle courant : le dire, et pouvoir annuler
   const [rebasedDate, setRebasedDate] = useState<string | null>(null);
 
@@ -72,6 +73,15 @@ export default function HistoryPage() {
     for (const l of logs ?? []) map.set(l.date, l);
     return map;
   }, [logs]);
+
+  // toutes les notes, du plus récent au plus ancien — pour la recherche libre
+  const notedLogs = useMemo(
+    () =>
+      (logs ?? [])
+        .filter((l) => l.note && l.note.trim() !== '')
+        .sort((a, b) => b.date.localeCompare(a.date)),
+    [logs],
+  );
 
   if (cycles === undefined || logs === undefined) return null;
 
@@ -142,6 +152,7 @@ export default function HistoryPage() {
             return (
               <button key={iso} className={cls} onClick={() => setEditDate(iso)}>
                 {parseISO(iso).getUTCDate()}
+                {l?.note && <span className={styles.noteMark} aria-hidden="true" />}
               </button>
             );
           })}
@@ -157,6 +168,46 @@ export default function HistoryPage() {
           <h1 className={styles.title}>{dict.history.title}</h1>
           <span className={styles.hint}>{dict.history.edit_hint}</span>
         </header>
+
+        {notedLogs.length > 0 &&
+          (() => {
+            const q = noteQuery.trim().toLowerCase();
+            const results = q
+              ? notedLogs.filter((l) => (l.note as string).toLowerCase().includes(q))
+              : [];
+            return (
+              <div className={styles.noteSearch}>
+                <input
+                  className={styles.noteInput}
+                  type="search"
+                  value={noteQuery}
+                  onChange={(e) => setNoteQuery(e.target.value)}
+                  placeholder={dict.history.notes_search}
+                  aria-label={dict.history.notes_search}
+                />
+                {q &&
+                  (results.length > 0 ? (
+                    <ul className={styles.noteResults}>
+                      {results.map((l) => (
+                        <li key={l.date}>
+                          <button
+                            className={styles.noteResult}
+                            onClick={() => setEditDate(l.date)}
+                          >
+                            <span className={styles.noteResultDate}>
+                              {formatDate(parseISO(l.date), locale)}
+                            </span>
+                            <span className={styles.noteResultText}>{l.note}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className={styles.noteEmpty}>{dict.history.notes_none}</p>
+                  ))}
+              </div>
+            );
+          })()}
 
         {closed.length >= 2 &&
           (() => {
@@ -183,6 +234,25 @@ export default function HistoryPage() {
         {hm && hmRanges && (
           <section className={styles.heatmap} aria-label={dict.history.heatmap_title}>
             <h2 className={styles.hmTitle}>{dict.history.heatmap_title}</h2>
+            <div className={`${styles.hmRow} ${styles.hmFlowRow}`}>
+              <span className={styles.hmLabel}>{dict.history.heatmap_flow}</span>
+              <span className={styles.hmCells}>
+                {hm.flow.map((c, i) => (
+                  <span
+                    key={i}
+                    className={styles.hmCell}
+                    title={`${dict.common.day}${i + 1} · ${c}/${hm.cycles}`}
+                    style={
+                      c > 0
+                        ? {
+                            background: `color-mix(in srgb, ${PHASE_COLORS.menst} ${Math.round(18 + 64 * (c / hm.cycles))}%, transparent)`,
+                          }
+                        : undefined
+                    }
+                  />
+                ))}
+              </span>
+            </div>
             {hm.rows.map((row) => (
               <div key={row.symptomId} className={styles.hmRow}>
                 <span className={styles.hmLabel}>{symptomLabels[row.symptomId] ?? row.symptomId}</span>

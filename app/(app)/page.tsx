@@ -13,6 +13,7 @@ import { DialOverlay } from '@/components/dial/DialOverlay';
 import { DialCenter } from '@/components/dial/DialCenter';
 import { LogRow } from '@/components/log/LogRow';
 import { PhaseSheet, PHASE_COLORS } from '@/components/sheet/PhaseSheet';
+import { PredictionSheet } from '@/components/sheet/PredictionSheet';
 import { CatalogSheet } from '@/components/sheet/CatalogSheet';
 import { Nav } from '@/components/nav/Nav';
 import { Onboarding } from '@/components/onboarding/Onboarding';
@@ -20,6 +21,7 @@ import { db } from '@/lib/db';
 import { parseISO } from '@/lib/dates';
 import { useToday } from '@/lib/hooks/useToday';
 import {
+  averageCycleLength,
   closedCycles,
   cycleTrend,
   dayOf,
@@ -60,12 +62,14 @@ export default function TodayPage() {
 
   const [openPhase, setOpenPhase] = useState<PhaseKey | null>(null);
   const [catalogOpen, setCatalogOpen] = useState(false);
+  const [whyOpen, setWhyOpen] = useState(false);
   const [dismissed, setDismissed] = useState<string[]>(() =>
     Object.values(DISMISSED).filter((k) => typeof window !== 'undefined' && localStorage.getItem(k)),
   );
 
   const prediction = useMemo(() => predict(cycles ?? []), [cycles]);
   const trend = useMemo(() => cycleTrend(cycles ?? []), [cycles]);
+  const avgLength = useMemo(() => averageCycleLength(cycles ?? []), [cycles]);
 
   // raccourci PWA « Logger aujourd'hui » : /?log=1 ouvre le catalogue de saisie.
   // Les réglages arrivent d'IndexedDB après le premier rendu : on retient la
@@ -245,6 +249,11 @@ export default function TodayPage() {
             )}
           </m.span>
         </AnimatePresence>
+        {!discovery && (
+          <button className={styles.why} onClick={() => setWhyOpen(true)}>
+            {dict.prediction.why}
+          </button>
+        )}
       </div>
 
       {phaseStrip && (
@@ -326,6 +335,13 @@ export default function TodayPage() {
         date={today}
         log={log}
         onClose={() => setCatalogOpen(false)}
+      />
+      <PredictionSheet
+        open={whyOpen}
+        prediction={prediction}
+        trend={trend}
+        avgLength={avgLength}
+        onClose={() => setWhyOpen(false)}
       />
     </>
   );

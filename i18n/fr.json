@@ -90,7 +90,20 @@
     "uncert_label": "fenêtre règles",
     "long_or_short": "Tes cycles sortent des durées habituelles (21–40 jours). Si ça se répète, en parler à un·e médecin peut aider — sans urgence.",
     "trend_longer": "Tes cycles s'allongent doucement ces derniers mois — la prédiction suit le mouvement.",
-    "trend_shorter": "Tes cycles raccourcissent doucement ces derniers mois — la prédiction suit le mouvement."
+    "trend_shorter": "Tes cycles raccourcissent doucement ces derniers mois — la prédiction suit le mouvement.",
+    "why": "pourquoi cette fenêtre ?",
+    "why_eyebrow": "prédiction",
+    "why_title": "prochaines règles",
+    "why_based_label": "cycles pris en compte",
+    "why_mean_label": "cycle moyen",
+    "why_reg_label": "régularité",
+    "why_method": "La fenêtre part du premier jour de ton cycle courant, plus ta durée moyenne, élargie de part et d'autre par ta régularité.",
+    "why_none": "Aucun cycle clos pour l'instant : la fenêtre part d'une durée type de {mean} jours, le temps que j'apprenne la tienne.",
+    "why_trend_longer": "Tes cycles s'allongent doucement : la prédiction suit cette pente plutôt que la simple moyenne.",
+    "why_trend_shorter": "Tes cycles raccourcissent doucement : la prédiction suit cette pente plutôt que la simple moyenne.",
+    "why_conf_low": "Confiance faible — encore peu de cycles clos pour être sûre.",
+    "why_conf_medium": "Confiance moyenne — quelques cycles connus, la marge reste large.",
+    "why_conf_high": "Confiance élevée — tes cycles sont réguliers, la fenêtre se resserre."
   },
   "sheet": {
     "eyebrow": "phase",
@@ -128,8 +141,11 @@
     "cycle_length": "{n} jours",
     "current": "cycle en cours",
     "edit_hint": "toucher un jour pour corriger",
+    "notes_search": "chercher dans tes notes",
+    "notes_none": "aucune note ne correspond",
     "day_sheet_title": "corriger ce jour",
     "heatmap_title": "tes symptômes, au fil du cycle",
+    "heatmap_flow": "règles",
     "heatmap_source": "sur tes {n} derniers cycles clos",
     "longer_than_avg": "{n} j de plus que ta moyenne",
     "shorter_than_avg": "{n} j de moins que ta moyenne"

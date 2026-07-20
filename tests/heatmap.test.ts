@@ -76,6 +76,25 @@ describe('heatmap', () => {
     expect(hm?.rows[0]?.total).toBe(2);
   });
 
+  it('compte la ligne des règles par jour de cycle, indépendamment des symptômes', () => {
+    const hm = heatmap(
+      [
+        // cycle 1 : flux J1–J2
+        log('2026-03-01', [], 3),
+        log('2026-03-02', ['cramps'], 1),
+        // cycle 2 : flux J1–J2
+        log('2026-03-29', [], 3),
+        log('2026-03-30', ['cramps'], 1),
+      ],
+      TWO_CYCLES,
+    );
+    expect(hm).not.toBeNull();
+    expect(hm?.flow[0]).toBe(2); // J1 dans les deux cycles
+    expect(hm?.flow[1]).toBe(2); // J2 dans les deux cycles
+    expect(hm?.flow[2]).toBe(0); // pas de flux J3
+    expect(hm?.flow).toHaveLength(hm?.days as number);
+  });
+
   it('trie par total décroissant et plafonne le nombre de lignes', () => {
     const symptoms = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
     const logs: DailyLog[] = [];

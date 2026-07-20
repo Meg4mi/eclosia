@@ -23,7 +23,8 @@ export interface HeatmapRow {
 export interface Heatmap {
   days: number; // largeur : longueur moyenne arrondie des cycles retenus
   cycles: number; // nb de cycles clos comptés
-  max: number; // comptage max d'une case (échelle d'opacité)
+  max: number; // comptage max d'une case symptôme (échelle d'opacité)
+  flow: number[]; // index 0 = J1 ; nb de cycles où le flux > 0 ce jour-là
   rows: HeatmapRow[]; // du plus loggé au moins loggé
 }
 
@@ -37,14 +38,17 @@ export const heatmap = (logs: DailyLog[], cycles: Cycle[]): Heatmap | null => {
   );
 
   const byId = new Map<string, number[]>();
+  // ligne des règles : sur chaque jour de cycle, combien des cycles retenus
+  // portaient un flux — donne à voir la régularité de la durée des règles.
+  const flow = Array.from({ length: days }, () => 0);
   for (const log of logs) {
-    if (log.symptoms.length === 0) continue;
     const cycle = closed.find(
       (c) => log.date >= c.startDate && dayOf(log.date, c.startDate) <= (c.lengthDays as number),
     );
     if (!cycle) continue;
     const d = dayOf(log.date, cycle.startDate);
     if (d > days) continue;
+    if (log.flow > 0) flow[d - 1] = (flow[d - 1] ?? 0) + 1;
     for (const s of log.symptoms) {
       const counts = byId.get(s) ?? Array.from({ length: days }, () => 0);
       counts[d - 1] = (counts[d - 1] ?? 0) + 1;
@@ -64,5 +68,5 @@ export const heatmap = (logs: DailyLog[], cycles: Cycle[]): Heatmap | null => {
 
   if (rows.length === 0) return null;
   const max = Math.max(...rows.map((r) => Math.max(...r.counts)));
-  return { days, cycles: closed.length, max, rows };
+  return { days, cycles: closed.length, max, flow, rows };
 };
