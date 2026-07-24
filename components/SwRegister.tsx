@@ -31,41 +31,49 @@ export function SwRegister() {
       if (!disposed && reg.waiting && navigator.serviceWorker.controller) setWaiting(reg.waiting);
     };
 
-    void navigator.serviceWorker.register('/sw.js').then((reg) => {
-      if (disposed) return;
-      surfaceWaiting(reg);
-      reg.addEventListener('updatefound', () => {
-        const fresh = reg.installing;
-        // course possible : le worker peut déjà être passé « waiting »
-        if (!fresh) {
-          surfaceWaiting(reg);
-          return;
-        }
-        fresh.addEventListener('statechange', () => {
-          if (fresh.state === 'installed' && navigator.serviceWorker.controller) setWaiting(fresh);
+    void navigator.serviceWorker
+      .register('/sw.js')
+      .catch((err: unknown) => {
+        // un /sw.js absent (déploiement qui n'a pas généré le SW) échouait en
+        // silence : aucune PWA hors-ligne, rien dans la console. Jamais muet.
+        console.error('service worker registration failed — offline unavailable', err);
+        return undefined;
+      })
+      .then((reg) => {
+        if (!reg || disposed) return;
+        surfaceWaiting(reg);
+        reg.addEventListener('updatefound', () => {
+          const fresh = reg.installing;
+          // course possible : le worker peut déjà être passé « waiting »
+          if (!fresh) {
+            surfaceWaiting(reg);
+            return;
+          }
+          fresh.addEventListener('statechange', () => {
+            if (fresh.state === 'installed' && navigator.serviceWorker.controller) setWaiting(fresh);
+          });
         });
-      });
 
-      // Vérifications de mise à jour redondantes : les checks implicites du
-      // navigateur ne sont pas fiables (surtout iOS/Safari). On force `update()`
-      // au montage, au retour au premier plan et périodiquement — chaque check
-      // re-scrute `reg.waiting` au cas où le worker serait déjà passé en attente
-      // sans que `updatefound` ait été capté.
-      const check = (): void => {
-        void reg
-          .update()
-          .then(() => surfaceWaiting(reg))
-          .catch(() => undefined);
-      };
-      check();
-      onVisible = () => {
-        if (document.visibilityState === 'visible') check();
-      };
-      document.addEventListener('visibilitychange', onVisible);
-      interval = setInterval(() => {
-        if (document.visibilityState === 'visible') check();
-      }, 60_000);
-    });
+        // Vérifications de mise à jour redondantes : les checks implicites du
+        // navigateur ne sont pas fiables (surtout iOS/Safari). On force `update()`
+        // au montage, au retour au premier plan et périodiquement — chaque check
+        // re-scrute `reg.waiting` au cas où le worker serait déjà passé en attente
+        // sans que `updatefound` ait été capté.
+        const check = (): void => {
+          void reg
+            .update()
+            .then(() => surfaceWaiting(reg))
+            .catch(() => undefined);
+        };
+        check();
+        onVisible = () => {
+          if (document.visibilityState === 'visible') check();
+        };
+        document.addEventListener('visibilitychange', onVisible);
+        interval = setInterval(() => {
+          if (document.visibilityState === 'visible') check();
+        }, 60_000);
+      });
 
     return () => {
       disposed = true;

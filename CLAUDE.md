@@ -79,4 +79,4 @@ No contraceptive or medical claim · no account, cloud sync, freemium, ads, thir
 
 ## Deployment
 
-Vercel: Build Command **`npm run build`** (otherwise no service worker), Output `out`, headers managed by `vercel.json`. The app is pure static — any static host works.
+Vercel: the build is pinned **declaratively in `vercel.json`** (`framework: null`, `buildCommand: npm run build`, `outputDirectory: out`, `cleanUrls`, headers) — never rely on dashboard settings: the Next.js preset runs `next build` alone, which skips SW generation and ships a site whose `/sw.js` 404s (registration fails silently, zero offline — this happened in production). The app is pure static — any static host works.
