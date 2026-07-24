@@ -96,14 +96,29 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+// ignoreVary : les assets sont servis avec « Vary: Accept-Encoding » (l'hôte
+// statique négocie gzip/br). Sans ce drapeau, un match cache-first dépend de la
+// négociation de contenu de la requête — un Accept-Encoding qui diffère de celui
+// utilisé au précache fait rater le match, la requête part au réseau et échoue
+// hors-ligne. On sert toujours l'octet caché, indépendamment de l'encodage.
+const MATCH = { ignoreSearch: true, ignoreVary: true };
+
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return;
   e.respondWith(
-    caches.match(e.request, { ignoreSearch: true }).then((hit) => {
+    caches.match(e.request, MATCH).then((hit) => {
       if (hit) return hit;
+      // Repli navigation : servir le shell de l'app. On tente d'abord la
+      // start_url « / » (clé canonique, toujours précachée depuis le fetch('/')
+      // de l'install) puis « /index.html » — sur un hôte à clean-URLs, « / » est
+      // la seule clé fiable (/index.html y répond en redirection). Sans ce repli
+      // « / », une navigation hors-ligne vers une route non précachée casse.
       if (e.request.mode === 'navigate') {
-        return caches.match('/index.html').then((idx) => idx || fetch(e.request));
+        return caches
+          .match('/', MATCH)
+          .then((root) => root || caches.match('/index.html', MATCH))
+          .then((shell) => shell || fetch(e.request));
       }
       return fetch(e.request);
     })
