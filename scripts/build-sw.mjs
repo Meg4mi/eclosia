@@ -108,6 +108,44 @@ self.addEventListener('message', (e) => {
   if (e.data === 'SKIP_WAITING') self.skipWaiting();
 });
 
+// Auto-réparation — WebKit (iOS) peut PURGER le Cache Storage sous pression
+// disque SANS désenregistrer le service worker (storage.persist() n'est qu'un
+// vœu). L'install ne rejouant qu'au changement de version, un cache purgé
+// restait vide pour toujours : chaque lancement en ligne marchait (réseau,
+// donc invisible), chaque lancement à froid hors-ligne échouait (« pas de
+// connexion », IndexedDB pourtant intacte). À chaque navigation, si le shell
+// manque du cache, on re-précache tout (même discipline que l'install : shell
+// d'abord, le reste best-effort). Cache intact → un seul caches.match, zéro
+// requête réseau : l'audit réseau reste vert.
+let repairing = null;
+function repair() {
+  repairing ??= (async () => {
+    try {
+      const c = await caches.open(CACHE);
+      if (await c.match(SHELL, MATCH)) return;
+      const shell = await fetch(SHELL, { cache: 'reload' });
+      if (!shell.ok) return;
+      await store(c, SHELL, shell);
+      await Promise.all(
+        ASSETS.filter((u) => u !== SHELL).map(async (u) => {
+          try {
+            if (await c.match(u, MATCH)) return;
+            const res = await fetch(u, { cache: 'reload' });
+            if (res.ok) await store(c, u, res);
+          } catch (_) {
+            /* hors-ligne ou asset injoignable : on retentera à la prochaine navigation */
+          }
+        })
+      );
+    } catch (_) {
+      /* idem */
+    } finally {
+      repairing = null;
+    }
+  })();
+  return repairing;
+}
+
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) =>
@@ -126,6 +164,9 @@ const MATCH = { ignoreSearch: true, ignoreVary: true };
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return;
+  // chaque lancement de l'app passe par une navigation : point d'ancrage de
+  // l'auto-réparation (no-op quand le cache est intact)
+  if (e.request.mode === 'navigate') e.waitUntil(repair());
   e.respondWith(
     caches.match(e.request, MATCH).then((hit) => {
       if (hit) return hit;
@@ -140,7 +181,19 @@ self.addEventListener('fetch', (e) => {
           .then((root) => root || caches.match('/index.html', MATCH))
           .then((shell) => shell || fetch(e.request));
       }
-      return fetch(e.request);
+      // Écriture au retour : un raté de cache servi par le réseau est stocké
+      // (clé sans query, cohérente avec ignoreSearch) — comble les trous d'un
+      // précache partiel ou d'une purge, sans attendre la réparation complète.
+      return fetch(e.request).then((res) => {
+        if (e.request.method === 'GET' && res.ok) {
+          const copy = res.clone();
+          void caches
+            .open(CACHE)
+            .then((c) => store(c, url.origin + url.pathname, copy))
+            .catch(() => undefined);
+        }
+        return res;
+      });
     })
   );
 });
