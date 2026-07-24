@@ -155,6 +155,78 @@ test('la PWA installée s\'ouvre et s\'hydrate hors-ligne', async ({ browser }) 
   }
 });
 
+test('un Cache Storage purgé (éviction iOS) se répare au lancement en ligne suivant', async ({ browser }) => {
+  test.skip(!existsSync(path.join(OUT, 'sw.js')), 'requiert un build (out/sw.js)');
+
+  // WebKit (iOS) peut purger le Cache Storage sous pression disque SANS
+  // désenregistrer le service worker. L'install ne rejouant qu'au changement de
+  // version, un SW qui ne précache qu'à l'install laisse alors le cache vide
+  // pour toujours : chaque lancement en ligne marche (réseau), chaque lancement
+  // à froid hors-ligne affiche « pas de connexion ». Ce test rejoue l'éviction
+  // et verrouille l'auto-réparation : purge → navigation en ligne → le SW
+  // re-précache tout → l'app s'ouvre de nouveau hors-ligne.
+  const host = await startHost();
+  let context: BrowserContext | undefined;
+  try {
+    context = await browser.newContext({ baseURL: `http://localhost:${host.port}` });
+
+    // 1. Première visite : SW enregistré, précache complet.
+    const install = await context.newPage();
+    await install.goto('/');
+    await install.waitForFunction(() => !!navigator.serviceWorker.controller, null, {
+      timeout: 20_000,
+    });
+    await expect
+      .poll(
+        () =>
+          install.evaluate(async () => {
+            const [key] = await caches.keys();
+            if (!key) return 0;
+            const c = await caches.open(key);
+            return (await c.keys()).length;
+          }),
+        { timeout: 15_000 },
+      )
+      .toBeGreaterThan(50);
+
+    // 2. Éviction iOS simulée : Cache Storage rasé, enregistrement SW intact.
+    await install.evaluate(async () => {
+      const keys = await caches.keys();
+      await Promise.all(keys.map((k) => caches.delete(k)));
+    });
+    await install.close();
+
+    // 3. Relance en ligne : la navigation doit déclencher la réparation.
+    const relaunch = await context.newPage();
+    await relaunch.goto('/', { waitUntil: 'domcontentloaded', timeout: 15_000 });
+    await expect
+      .poll(
+        () =>
+          relaunch.evaluate(async () => {
+            const [key] = await caches.keys();
+            if (!key) return 0;
+            const c = await caches.open(key);
+            return (await c.keys()).length;
+          }),
+        { timeout: 15_000 },
+      )
+      .toBeGreaterThan(50);
+    await relaunch.close();
+
+    // 4. Réseau coupé pour de bon : l'app doit rouvrir hors-ligne.
+    await host.kill();
+    const app = await context.newPage();
+    await app.goto('/', { waitUntil: 'domcontentloaded', timeout: 15_000 });
+    await expect(
+      app.getByText('today, in one gesture').or(app.getByText('When did your last period start?')),
+    ).toBeVisible({ timeout: 10_000 });
+    await app.close();
+  } finally {
+    await context?.close();
+    await host.kill().catch(() => undefined);
+  }
+});
+
 test('un install dont le shell « / » échoue ne prend jamais le contrôle', async ({ browser }) => {
   test.skip(!existsSync(path.join(OUT, 'sw.js')), 'requiert un build (out/sw.js)');
 
