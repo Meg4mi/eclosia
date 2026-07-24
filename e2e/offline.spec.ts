@@ -42,10 +42,19 @@ const resolveFile = (urlPath: string): string | null => {
   return null;
 };
 
-const startHost = async (): Promise<{ server: Server; port: number; kill: () => Promise<void> }> => {
+const startHost = async (
+  opts: { failShell?: boolean } = {},
+): Promise<{ server: Server; port: number; kill: () => Promise<void> }> => {
   const sockets = new Set<Socket>();
   const server = createServer((req, res) => {
     const urlPath = decodeURIComponent((req.url ?? '/').split('?')[0] ?? '/');
+    // Shell « / » volontairement cassé : simule un install où le shell est
+    // injoignable, tout le reste étant servi normalement.
+    if (opts.failShell && urlPath === '/') {
+      res.writeHead(500);
+      res.end();
+      return;
+    }
     let file = resolveFile(urlPath);
     if (!file && (req.headers.accept ?? '').includes('text/html')) file = path.join(OUT, '404.html');
     if (!file || !existsSync(file)) {
@@ -140,6 +149,61 @@ test('la PWA installée s\'ouvre et s\'hydrate hors-ligne', async ({ browser }) 
     await expect(sub.locator('body')).not.toBeEmpty();
     await sub.close();
     await app.close();
+  } finally {
+    await context?.close();
+    await host.kill().catch(() => undefined);
+  }
+});
+
+test('un install dont le shell « / » échoue ne prend jamais le contrôle', async ({ browser }) => {
+  test.skip(!existsSync(path.join(OUT, 'sw.js')), 'requiert un build (out/sw.js)');
+
+  // Le shell (start_url « / ») est le seul asset dont l'absence casse l'ouverture
+  // hors-ligne. S'il est laissé best-effort, un install où « / » échoue RÉUSSIT
+  // quand même : le nouveau SW s'active et « activate » supprime l'ancien cache
+  // (encore complet) — l'appareil garde IndexedDB mais la PWA « ne s'ouvre plus »
+  // hors-ligne. Ce test verrouille le fail-closed : shell injoignable → install
+  // rejetée → worker « redundant », jamais « activated », aucun contrôleur.
+  const host = await startHost({ failShell: true });
+  let context: BrowserContext | undefined;
+  try {
+    context = await browser.newContext({ baseURL: `http://localhost:${host.port}` });
+    const page = await context.newPage();
+    // On charge une route servie (pas « / », qui répond 500) puis on enregistre
+    // le SW : son install va tenter de précacher « / » d'abord — et échouer.
+    await page.goto('/history', { waitUntil: 'domcontentloaded', timeout: 15_000 });
+
+    const outcome = await page.evaluate(
+      () =>
+        new Promise<string>((resolve) => {
+          const track = (w: ServiceWorker | null): void => {
+            if (!w) return;
+            const settle = (): void => {
+              if (w.state === 'activated') resolve('activated');
+              if (w.state === 'redundant') resolve('redundant');
+            };
+            w.addEventListener('statechange', settle);
+            settle();
+          };
+          void navigator.serviceWorker.register('/sw.js').then((reg) => {
+            const current = reg.installing ?? reg.waiting ?? reg.active;
+            // aucun worker survivant = install déjà échouée
+            if (!current) {
+              resolve('redundant');
+              return;
+            }
+            track(current);
+            reg.addEventListener('updatefound', () => track(reg.installing));
+          });
+          setTimeout(() => resolve('timeout'), 12_000);
+        }),
+    );
+
+    // Install échouée sur le shell → worker « redundant », jamais « activated ».
+    expect(outcome).toBe('redundant');
+    // Aucun contrôleur : rien ne peut servir un cache sans shell hors-ligne.
+    expect(await page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(false);
+    await page.close();
   } finally {
     await context?.close();
     await host.kill().catch(() => undefined);
